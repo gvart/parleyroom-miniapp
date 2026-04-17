@@ -2,16 +2,22 @@ import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/auth/AuthGate'
 import { useLessons } from '@/hooks/useLessons'
-import { Card } from '@/ui'
+import { useHomework } from '@/hooks/useHomework'
+import { Card, CategoryDot, Pill, Section, type PillTone } from '@/ui'
 import { lessonTime } from '@/lib/lesson'
+import { categorySlug, computeDue, isDoneStatus } from '@/lib/homework'
 
 export function Home() {
   const { t } = useTranslation()
   const { user } = useAuth()
   const navigate = useNavigate()
   const lessonsQuery = useLessons()
+  const homeworkQuery = useHomework()
 
   const lessons = lessonsQuery.data?.lessons ?? []
+  const dueHomework = (homeworkQuery.data?.homework ?? [])
+    .filter((h) => !isDoneStatus(h.status) && h.status !== 'REJECTED')
+    .slice(0, 3)
   const nextLesson = lessons.find(
     (l) => l.status === 'CONFIRMED' || l.status === 'IN_PROGRESS',
   )
@@ -224,6 +230,107 @@ export function Home() {
         <div style={{ padding: '0 20px 20px' }}>
           <Card style={{ height: 160, opacity: 0.5 }}>{null}</Card>
         </div>
+      )}
+
+      {dueHomework.length > 0 && (
+        <Section
+          eyebrow={t('homework')}
+          title={
+            dueHomework.length === 1
+              ? t('task_open_singular')
+              : `${dueHomework.length} ${t('tasks_open')}`
+          }
+          action={
+            <button
+              type="button"
+              onClick={() => navigate('/homework')}
+              className="tap"
+              style={{
+                border: 0,
+                background: 'transparent',
+                color: 'var(--ink)',
+                fontSize: 12,
+                fontWeight: 600,
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 4,
+              }}
+            >
+              {t('open')}
+              <span className="ms" style={{ fontSize: 14 }}>
+                arrow_forward
+              </span>
+            </button>
+          }
+        >
+          <Card padded={false}>
+            {dueHomework.map((h, i) => {
+              const due = computeDue(h.dueDate)
+              const tone: PillTone =
+                due.kind === 'overdue' ? 'live' : due.kind === 'today' ? 'warn' : 'neutral'
+              const dueText =
+                due.kind === 'overdue'
+                  ? t('overdue')
+                  : due.kind === 'today'
+                    ? t('today')
+                    : due.kind === 'tomorrow'
+                      ? t('tomorrow')
+                      : due.kind === 'date'
+                        ? due.label
+                        : t('due')
+              return (
+                <button
+                  type="button"
+                  key={h.id}
+                  onClick={() => navigate('/homework')}
+                  className="tap"
+                  style={{
+                    width: '100%',
+                    border: 0,
+                    background: 'transparent',
+                    color: 'var(--ink)',
+                    textAlign: 'left',
+                    display: 'flex',
+                    gap: 12,
+                    alignItems: 'center',
+                    padding: '14px 18px',
+                    borderBottom: i < dueHomework.length - 1 ? '1px solid var(--hair)' : 0,
+                    cursor: 'pointer',
+                  }}
+                >
+                  <CategoryDot cat={categorySlug(h.category)} />
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div
+                      style={{
+                        fontSize: 14,
+                        fontWeight: 500,
+                        marginBottom: 3,
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap',
+                      }}
+                    >
+                      {h.title}
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <Pill tone={tone}>{dueText}</Pill>
+                      <div
+                        style={{
+                          fontSize: 11,
+                          color: 'var(--ink-3)',
+                          textTransform: 'capitalize',
+                        }}
+                      >
+                        {h.category.toLowerCase()}
+                      </div>
+                    </div>
+                  </div>
+                </button>
+              )
+            })}
+          </Card>
+        </Section>
       )}
     </div>
   )

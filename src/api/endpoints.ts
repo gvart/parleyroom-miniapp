@@ -1,6 +1,9 @@
 import { apiFetch } from './client'
 import type {
   AuthResponse,
+  Homework,
+  HomeworkPage,
+  HomeworkStatus,
   Level,
   LessonPage,
   TelegramLink,
@@ -27,6 +30,17 @@ export interface VocabularyQuery {
   status?: VocabStatus
   page?: number
   pageSize?: number
+}
+
+export interface HomeworkQuery {
+  status?: HomeworkStatus
+  page?: number
+  pageSize?: number
+}
+
+export interface SubmitHomeworkRequest {
+  submissionText?: string | null
+  submissionUrl?: string | null
 }
 
 function qs(params: Record<string, unknown>): string {
@@ -72,4 +86,13 @@ export const api = {
 
   vocabulary: (query: VocabularyQuery = {}) =>
     apiFetch<VocabularyPage>(`/api/v1/vocabulary${qs({ ...query })}`),
+
+  homework: (query: HomeworkQuery = {}) =>
+    apiFetch<HomeworkPage>(`/api/v1/homework${qs({ ...query })}`),
+
+  submitHomework: (id: string, body: SubmitHomeworkRequest) =>
+    apiFetch<Homework>(`/api/v1/homework/${id}/submit`, {
+      method: 'POST',
+      body,
+    }),
 }

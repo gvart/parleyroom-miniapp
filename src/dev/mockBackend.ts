@@ -64,6 +64,112 @@ function lessonsBody(role: MockUser['role']) {
   }
 }
 
+function homeworkBody() {
+  const today = todayISO()
+  return {
+    homework: [
+      {
+        id: 'h1',
+        studentId: 'u-mock',
+        teacherId: 't1',
+        lessonId: 'l1',
+        title: 'Write: A day in Berlin',
+        description: 'Write 150–200 words using at least 4 Perfekt verbs.',
+        category: 'WRITING',
+        status: 'OPEN',
+        dueDate: today,
+        submissionText: null,
+        submissionUrl: null,
+        teacherFeedback: null,
+        attachmentType: null,
+        attachmentUrl: null,
+        attachmentName: null,
+        createdAt: '2026-03-10T00:00:00Z',
+        updatedAt: '2026-03-10T00:00:00Z',
+      },
+      {
+        id: 'h2',
+        studentId: 'u-mock',
+        teacherId: 't1',
+        lessonId: 'l1',
+        title: 'Grammar: Trennbare Verben',
+        description: 'Complete exercises 1–12 in the workbook.',
+        category: 'GRAMMAR',
+        status: 'OPEN',
+        dueDate: '2026-04-25',
+        submissionText: null,
+        submissionUrl: null,
+        teacherFeedback: null,
+        attachmentType: null,
+        attachmentUrl: null,
+        attachmentName: null,
+        createdAt: '2026-03-10T00:00:00Z',
+        updatedAt: '2026-03-12T00:00:00Z',
+      },
+      {
+        id: 'h3',
+        studentId: 'u-mock',
+        teacherId: 't1',
+        lessonId: null,
+        title: 'Reading: Der Prozess, Ch.1',
+        description: 'Read chapter 1 and note 5 new words.',
+        category: 'READING',
+        status: 'OPEN',
+        dueDate: '2026-04-12',
+        submissionText: null,
+        submissionUrl: null,
+        teacherFeedback: null,
+        attachmentType: null,
+        attachmentUrl: null,
+        attachmentName: null,
+        createdAt: '2026-03-05T00:00:00Z',
+        updatedAt: '2026-03-05T00:00:00Z',
+      },
+      {
+        id: 'h4',
+        studentId: 'u-mock',
+        teacherId: 't1',
+        lessonId: 'l2',
+        title: 'Vocab: Essen & Trinken',
+        description: 'Create 10 example sentences.',
+        category: 'VOCABULARY',
+        status: 'IN_REVIEW',
+        dueDate: '2026-04-18',
+        submissionText: 'Alle 10 Sätze im Anhang.',
+        submissionUrl: null,
+        teacherFeedback: null,
+        attachmentType: null,
+        attachmentUrl: null,
+        attachmentName: null,
+        createdAt: '2026-03-09T00:00:00Z',
+        updatedAt: '2026-03-15T00:00:00Z',
+      },
+      {
+        id: 'h5',
+        studentId: 'u-mock',
+        teacherId: 't1',
+        lessonId: 'l2',
+        title: 'Listening: DW Tagesschau',
+        description: 'Listen and transcribe the first 2 minutes.',
+        category: 'LISTENING',
+        status: 'DONE',
+        dueDate: '2026-03-13',
+        submissionText: 'Eingereicht.',
+        submissionUrl: null,
+        teacherFeedback: 'Very good! Small note on Umlaute.',
+        attachmentType: null,
+        attachmentUrl: null,
+        attachmentName: null,
+        createdAt: '2026-03-04T00:00:00Z',
+        updatedAt: '2026-03-13T00:00:00Z',
+      },
+    ],
+    total: 5,
+    page: 1,
+    pageSize: 20,
+  }
+}
+
 function vocabBody() {
   return {
     words: [
@@ -172,6 +278,34 @@ export function installMockBackend(): void {
     }
     if (url.includes('/api/v1/vocabulary')) {
       return json(vocabBody())
+    }
+    const submitMatch = url.match(/\/api\/v1\/homework\/([^/]+)\/submit$/)
+    if (submitMatch && method === 'POST') {
+      const body = init?.body
+        ? (JSON.parse(init.body as string) as { submissionText?: string })
+        : {}
+      return json({
+        id: submitMatch[1],
+        studentId: 'u-mock',
+        teacherId: 't1',
+        lessonId: null,
+        title: 'Submitted',
+        description: null,
+        category: 'WRITING',
+        status: 'SUBMITTED',
+        dueDate: null,
+        submissionText: body.submissionText ?? '',
+        submissionUrl: null,
+        teacherFeedback: null,
+        attachmentType: null,
+        attachmentUrl: null,
+        attachmentName: null,
+        createdAt: '2026-03-01T00:00:00Z',
+        updatedAt: new Date().toISOString(),
+      })
+    }
+    if (url.includes('/api/v1/homework')) {
+      return json(homeworkBody())
     }
 
     return original(input, init)

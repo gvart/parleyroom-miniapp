@@ -1,0 +1,20 @@
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { api, type HomeworkQuery, type SubmitHomeworkRequest } from '@/api/endpoints'
+
+export function useHomework(query: HomeworkQuery = {}) {
+  return useQuery({
+    queryKey: ['homework', query],
+    queryFn: () => api.homework(query),
+  })
+}
+
+export function useSubmitHomework() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: ({ id, body }: { id: string; body: SubmitHomeworkRequest }) =>
+      api.submitHomework(id, body),
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: ['homework'] })
+    },
+  })
+}

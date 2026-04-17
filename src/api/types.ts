@@ -94,3 +94,46 @@ export interface VocabularyPage {
   page: number
   pageSize: number
 }
+
+export type HomeworkCategory =
+  | 'WRITING'
+  | 'READING'
+  | 'GRAMMAR'
+  | 'VOCABULARY'
+  | 'LISTENING'
+
+export type HomeworkStatus =
+  | 'OPEN'
+  | 'SUBMITTED'
+  | 'IN_REVIEW'
+  | 'DONE'
+  | 'REJECTED'
+
+export type HomeworkAttachmentType = 'FILE' | 'LINK'
+
+export interface Homework {
+  id: string
+  studentId: string
+  teacherId: string
+  lessonId: string | null
+  title: string
+  description: string | null
+  category: HomeworkCategory
+  status: HomeworkStatus
+  dueDate: string | null
+  submissionText: string | null
+  submissionUrl: string | null
+  teacherFeedback: string | null
+  attachmentType: HomeworkAttachmentType | null
+  attachmentUrl: string | null
+  attachmentName: string | null
+  createdAt: string
+  updatedAt: string
+}
+
+export interface HomeworkPage {
+  homework: Homework[]
+  total: number
+  page: number
+  pageSize: number
+}
