@@ -9,11 +9,16 @@
     "preview": "vite preview --port 5174"
   },
   "dependencies": {
+    "@tanstack/react-query": "^5.99.0",
     "@telegram-apps/bridge": "^2.0.0",
     "@telegram-apps/sdk": "^3.0.0",
     "@telegram-apps/sdk-react": "^3.0.0",
+    "i18next": "^23.16.8",
+    "i18next-browser-languagedetector": "^8.2.1",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "react-i18next": "^15.7.4",
+    "react-router-dom": "^7.14.1"
   },
   "devDependencies": {
     "@types/react": "^19.0.0",

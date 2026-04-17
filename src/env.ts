@@ -1,8 +1,12 @@
 import { mockTelegramEnv, emitEvent } from '@telegram-apps/bridge'
+import { installMockBackend } from './dev/mockBackend'
 
 // In dev, fake the Telegram environment so the app renders in a normal browser.
 // Production builds never run this block, so real Telegram data is untouched.
 if (import.meta.env.DEV) {
+  if (new URLSearchParams(window.location.search).get('mock') === '1') {
+    installMockBackend()
+  }
   const themeParams = {
     bg_color: '#ffffff',
     text_color: '#000000',
