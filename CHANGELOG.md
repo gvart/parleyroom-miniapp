@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.12.0](https://github.com/gvart/parleyroom-miniapp/compare/v1.11.0...v1.12.0) (2026-04-17)
+
+
+### Features
+
+* **miniapp:** teacher materials/library browser ([d071fe6](https://github.com/gvart/parleyroom-miniapp/commit/d071fe65c703c0f4a845cf9459ec7345aeb4d45b))
+
 ## [1.11.0](https://github.com/gvart/parleyroom-miniapp/compare/v1.10.0...v1.11.0) (2026-04-17)
 
 
