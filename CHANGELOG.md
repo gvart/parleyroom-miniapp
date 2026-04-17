@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.0](https://github.com/gvart/parleyroom-miniapp/compare/v1.5.0...v1.6.0) (2026-04-17)
+
+
+### Features
+
+* **miniapp:** vocab review flashcards with grade buttons ([bc24105](https://github.com/gvart/parleyroom-miniapp/commit/bc241056fcd658ba7ff6071a134b816cafa46f46))
+
 ## [1.5.0](https://github.com/gvart/parleyroom-miniapp/compare/v1.4.0...v1.5.0) (2026-04-17)
 
 
