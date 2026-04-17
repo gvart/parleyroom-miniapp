@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.0](https://github.com/gvart/parleyroom-miniapp/compare/v1.4.0...v1.5.0) (2026-04-17)
+
+
+### Features
+
+* **miniapp:** homework section with submit sheet and home strip ([7c8884f](https://github.com/gvart/parleyroom-miniapp/commit/7c8884f70619bcfa3ddd9d569c55a64f057a6fbd))
+
 ## [1.4.0](https://github.com/gvart/parleyroom-miniapp/compare/v1.3.0...v1.4.0) (2026-04-17)
 
 
