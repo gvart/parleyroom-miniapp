@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.0](https://github.com/gvart/parleyroom-miniapp/compare/v1.7.0...v1.8.0) (2026-04-17)
+
+
+### Features
+
+* **miniapp:** goals screen + Home rhythm card ([0f336b1](https://github.com/gvart/parleyroom-miniapp/commit/0f336b12965cc4388ef2a7757705f1d0ab906dcd))
+
 ## [1.7.0](https://github.com/gvart/parleyroom-miniapp/compare/v1.6.0...v1.7.0) (2026-04-17)
 
 
