@@ -1,10 +1,11 @@
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Section, Sheet } from '@/ui'
+import { Section } from '@/ui'
 import { useLessons } from '@/hooks/useLessons'
 import { lessonDate, lessonTime, todayISO, tomorrowISO } from '@/lib/lesson'
 import type { Lesson } from '@/api/types'
 import { LessonRow } from './LessonRow'
+import { BookLessonSheet } from './BookLessonSheet'
 
 interface Buckets {
   today: Lesson[]
@@ -139,7 +140,7 @@ export function Lessons() {
                   {t('book')}
                 </div>
                 <div style={{ fontSize: 12, color: 'var(--ink-3)', marginTop: 2 }}>
-                  {t('coming_soon')}
+                  {t('book_lesson_title')}
                 </div>
               </div>
               <span className="ms" style={{ fontSize: 18, color: 'var(--ink-3)' }}>
@@ -150,14 +151,7 @@ export function Lessons() {
         </>
       )}
 
-      <Sheet open={showBookSheet} onClose={() => setShowBookSheet(false)}>
-        <div style={{ padding: '0 22px' }}>
-          <div className="serif" style={{ fontSize: 26, letterSpacing: '-0.01em', marginBottom: 6 }}>
-            {t('book')}
-          </div>
-          <div style={{ fontSize: 13, color: 'var(--ink-2)' }}>{t('coming_soon')}</div>
-        </div>
-      </Sheet>
+      <BookLessonSheet open={showBookSheet} onClose={() => setShowBookSheet(false)} />
     </div>
   )
 }

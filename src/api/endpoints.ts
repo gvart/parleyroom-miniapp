@@ -7,11 +7,14 @@ import type {
   Homework,
   HomeworkPage,
   HomeworkStatus,
+  Lesson,
+  LessonType,
   Level,
   LessonPage,
   NotificationPage,
   TelegramLink,
   UserProfile,
+  UserList,
   VocabularyPage,
   VocabularyWord,
   VocabStatus,
@@ -124,4 +127,22 @@ export const api = {
 
   abandonGoal: (id: string) =>
     apiFetch<Goal>(`/api/v1/goals/${id}/abandon`, { method: 'POST' }),
+
+  users: (page = 1, pageSize = 100) =>
+    apiFetch<UserList>(`/api/v1/users${qs({ page, pageSize })}`),
+
+  createLesson: (body: CreateLessonRequest) =>
+    apiFetch<Lesson>('/api/v1/lessons', { method: 'POST', body }),
+}
+
+export interface CreateLessonRequest {
+  teacherId: string
+  studentIds: string[]
+  title: string
+  type: LessonType
+  scheduledAt: string
+  durationMinutes?: number | null
+  topic: string
+  level?: Level | null
+  maxParticipants?: number | null
 }

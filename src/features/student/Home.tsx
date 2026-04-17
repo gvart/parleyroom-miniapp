@@ -253,7 +253,7 @@ export function Home() {
               <button
                 type="button"
                 className="tap"
-                onClick={() => navigate('/lessons')}
+                onClick={() => navigate('/calendar')}
                 style={{
                   border: 0,
                   background: 'var(--ink)',

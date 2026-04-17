@@ -382,8 +382,63 @@ export function installMockBackend(): void {
       }
       return json(me)
     }
+    if (url.endsWith('/api/v1/lessons') && method === 'POST') {
+      const body = init?.body
+        ? (JSON.parse(init.body as string) as {
+            teacherId: string
+            studentIds: string[]
+            title: string
+            topic: string
+            type: string
+            scheduledAt: string
+            durationMinutes?: number
+          })
+        : null
+      const created = {
+        id: `l-${Date.now()}`,
+        title: body?.title ?? 'New lesson',
+        topic: body?.topic ?? 'New lesson',
+        type: body?.type ?? 'ONE_ON_ONE',
+        scheduledAt: body?.scheduledAt ?? new Date().toISOString(),
+        durationMinutes: body?.durationMinutes ?? 60,
+        teacherId: body?.teacherId ?? 't1',
+        status: 'REQUEST',
+        level: null,
+        maxParticipants: null,
+        students: [
+          { id: body?.teacherId ?? 't1', firstName: 'Helena', lastName: 'König', status: 'CONFIRMED' },
+          { id: 'u-mock', firstName: 'Lina', lastName: 'Weber', status: 'REQUESTED' },
+        ],
+        startedAt: null,
+        createdBy: 'u-mock',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      }
+      return json(created, 201)
+    }
     if (url.includes('/api/v1/lessons')) {
       return json(lessonsBody(role))
+    }
+    if (url.endsWith('/api/v1/users') || url.includes('/api/v1/users?')) {
+      return json({
+        users: [
+          {
+            id: 't1',
+            email: 'helena@example.com',
+            firstName: 'Helena',
+            lastName: 'König',
+            initials: 'HK',
+            role: 'TEACHER',
+            status: 'ACTIVE',
+            locale: 'de',
+            level: null,
+            createdAt: '2026-01-01T00:00:00Z',
+          },
+        ],
+        total: 1,
+        page: 1,
+        pageSize: 100,
+      })
     }
     const reviewMatch = url.match(/\/api\/v1\/vocabulary\/([^/]+)\/review$/)
     if (reviewMatch && method === 'POST') {

@@ -198,3 +198,10 @@ export interface GoalPage {
   page: number
   pageSize: number
 }
+
+export interface UserList {
+  users: UserProfile[]
+  total: number
+  page: number
+  pageSize: number
+}
