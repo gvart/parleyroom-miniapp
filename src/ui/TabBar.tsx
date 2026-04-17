@@ -20,7 +20,8 @@ export function TabBar({ tabs }: TabBarProps) {
     <div
       style={{
         position: 'fixed',
-        bottom: 'calc(16px + env(safe-area-inset-bottom))',
+        bottom:
+          'calc(16px + var(--tg-viewport-safe-area-inset-bottom, env(safe-area-inset-bottom)) + var(--tg-viewport-content-safe-area-inset-bottom, 0px))',
         left: 16,
         right: 16,
         zIndex: 50,

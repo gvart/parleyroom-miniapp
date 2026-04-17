@@ -2,7 +2,12 @@ import './env'
 import './i18n'
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import { init, mountViewport, expandViewport } from '@telegram-apps/sdk-react'
+import {
+  init,
+  mountViewport,
+  expandViewport,
+  bindViewportCssVars,
+} from '@telegram-apps/sdk-react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { BrowserRouter } from 'react-router-dom'
 import { App } from './App'
@@ -16,6 +21,7 @@ void (async () => {
     try {
       await mountViewport()
       if (expandViewport.isAvailable()) expandViewport()
+      if (bindViewportCssVars.isAvailable()) bindViewportCssVars()
     } catch (err) {
       console.warn('[miniapp] viewport mount failed', err)
     }
