@@ -64,6 +64,63 @@ function lessonsBody(role: MockUser['role']) {
   }
 }
 
+interface MockNotification {
+  id: string
+  type: string
+  defaultViewed: boolean
+  actor: { id: string; firstName: string; lastName: string; role: string }
+  referenceId: string | null
+  ageMs: number
+}
+
+const NOTIFICATION_TEMPLATES: MockNotification[] = [
+  {
+    id: 'n1',
+    type: 'RESCHEDULE_ACCEPTED',
+    defaultViewed: false,
+    actor: { id: 't1', firstName: 'Helena', lastName: 'König', role: 'TEACHER' },
+    referenceId: 'l5',
+    ageMs: 1000 * 60 * 12,
+  },
+  {
+    id: 'n2',
+    type: 'LESSON_COMPLETED',
+    defaultViewed: false,
+    actor: { id: 't1', firstName: 'Helena', lastName: 'König', role: 'TEACHER' },
+    referenceId: 'l6',
+    ageMs: 1000 * 60 * 60 * 3,
+  },
+  {
+    id: 'n3',
+    type: 'VOCAB_REVIEW_DUE',
+    defaultViewed: true,
+    actor: { id: 'u-mock', firstName: 'Lina', lastName: 'Weber', role: 'STUDENT' },
+    referenceId: null,
+    ageMs: 1000 * 60 * 60 * 24,
+  },
+]
+
+// Tracks IDs that have been marked viewed during this session. Lives at module
+// scope so a single in-app POST /viewed sticks until the page reloads.
+const viewedNotificationIds = new Set<string>()
+
+function notificationsBody() {
+  const now = Date.now()
+  return {
+    notifications: NOTIFICATION_TEMPLATES.map((t) => ({
+      id: t.id,
+      type: t.type,
+      viewed: t.defaultViewed || viewedNotificationIds.has(t.id),
+      actor: t.actor,
+      referenceId: t.referenceId,
+      createdAt: new Date(now - t.ageMs).toISOString(),
+    })),
+    total: NOTIFICATION_TEMPLATES.length,
+    page: 1,
+    pageSize: 20,
+  }
+}
+
 function homeworkBody() {
   const today = todayISO()
   return {
@@ -327,6 +384,16 @@ export function installMockBackend(): void {
     }
     if (url.includes('/api/v1/homework')) {
       return json(homeworkBody())
+    }
+    if (url.endsWith('/api/v1/notifications/viewed') && method === 'POST') {
+      const body = init?.body
+        ? (JSON.parse(init.body as string) as { notificationIds?: string[] })
+        : {}
+      for (const id of body.notificationIds ?? []) viewedNotificationIds.add(id)
+      return new Response(null, { status: 204 })
+    }
+    if (url.includes('/api/v1/notifications')) {
+      return json(notificationsBody())
     }
 
     return original(input, init)

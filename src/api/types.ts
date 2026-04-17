@@ -137,3 +137,41 @@ export interface HomeworkPage {
   page: number
   pageSize: number
 }
+
+export type NotificationType =
+  | 'LESSON_CREATED'
+  | 'LESSON_REQUESTED'
+  | 'LESSON_ACCEPTED'
+  | 'LESSON_CANCELLED'
+  | 'RESCHEDULE_REQUESTED'
+  | 'RESCHEDULE_ACCEPTED'
+  | 'RESCHEDULE_REJECTED'
+  | 'JOIN_REQUESTED'
+  | 'JOIN_ACCEPTED'
+  | 'JOIN_REJECTED'
+  | 'LESSON_STARTED'
+  | 'LESSON_COMPLETED'
+  | 'VOCAB_REVIEW_DUE'
+
+export interface NotificationActor {
+  id: string
+  firstName: string
+  lastName: string
+  role: Role
+}
+
+export interface Notification {
+  id: string
+  type: NotificationType
+  viewed: boolean
+  actor: NotificationActor
+  referenceId: string | null
+  createdAt: string
+}
+
+export interface NotificationPage {
+  notifications: Notification[]
+  total: number
+  page: number
+  pageSize: number
+}

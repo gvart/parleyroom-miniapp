@@ -7,6 +7,7 @@ import { Lessons } from '@/features/student/Lessons'
 import { Homework } from '@/features/student/Homework'
 import { Vocab } from '@/features/student/Vocab'
 import { VocabReview } from '@/features/student/VocabReview'
+import { Notifications } from '@/features/shared/Notifications'
 import { Settings } from '@/features/shared/Settings'
 import { ProfileEdit } from '@/features/shared/ProfileEdit'
 import { TeacherStub } from '@/features/teacher/TeacherStub'
@@ -19,6 +20,7 @@ export function RoleRouter() {
       <AppShell tabs={TEACHER_TABS}>
         <Routes>
           <Route path="/" element={<TeacherStub />} />
+          <Route path="/notifications" element={<Notifications />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/settings/profile" element={<ProfileEdit />} />
           <Route path="*" element={<Navigate to="/" replace />} />
@@ -35,6 +37,7 @@ export function RoleRouter() {
         <Route path="/homework" element={<Homework />} />
         <Route path="/vocab" element={<Vocab />} />
         <Route path="/vocab/review" element={<VocabReview />} />
+        <Route path="/notifications" element={<Notifications />} />
         <Route path="/settings" element={<Settings />} />
         <Route path="/settings/profile" element={<ProfileEdit />} />
         <Route path="*" element={<Navigate to="/" replace />} />

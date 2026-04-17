@@ -98,6 +98,9 @@ const resources = {
       review_count_plural: '{{count}} words ready',
       review_minutes_estimate: '~{{minutes}} minutes of spaced repetition',
       back: 'Back',
+      notifications: 'Notifications',
+      all_caught_up: 'All caught up',
+      no_new_notifications: 'You have no new notifications.',
     },
   },
   de: {
@@ -195,6 +198,9 @@ const resources = {
       review_count_plural: '{{count}} Wörter bereit',
       review_minutes_estimate: '~{{minutes}} Min Wiederholung',
       back: 'Zurück',
+      notifications: 'Benachrichtigungen',
+      all_caught_up: 'Alles erledigt',
+      no_new_notifications: 'Keine neuen Benachrichtigungen.',
     },
   },
 } as const

@@ -6,6 +6,7 @@ import type {
   HomeworkStatus,
   Level,
   LessonPage,
+  NotificationPage,
   TelegramLink,
   UserProfile,
   VocabularyPage,
@@ -98,5 +99,14 @@ export const api = {
     apiFetch<Homework>(`/api/v1/homework/${id}/submit`, {
       method: 'POST',
       body,
+    }),
+
+  notifications: (page = 1, pageSize = 20) =>
+    apiFetch<NotificationPage>(`/api/v1/notifications${qs({ page, pageSize })}`),
+
+  markNotificationsViewed: (notificationIds: string[]) =>
+    apiFetch<void>('/api/v1/notifications/viewed', {
+      method: 'POST',
+      body: { notificationIds },
     }),
 }

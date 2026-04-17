@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/auth/AuthGate'
 import { useLessons } from '@/hooks/useLessons'
 import { useHomework } from '@/hooks/useHomework'
+import { useNotifications } from '@/hooks/useNotifications'
 import { Card, CategoryDot, Pill, Section, type PillTone } from '@/ui'
 import { lessonTime } from '@/lib/lesson'
 import { categorySlug, computeDue, isDoneStatus } from '@/lib/homework'
@@ -13,8 +14,11 @@ export function Home() {
   const navigate = useNavigate()
   const lessonsQuery = useLessons()
   const homeworkQuery = useHomework()
+  const notificationsQuery = useNotifications()
 
   const lessons = lessonsQuery.data?.lessons ?? []
+  const unreadCount =
+    notificationsQuery.data?.notifications.filter((n) => !n.viewed).length ?? 0
   const dueHomework = (homeworkQuery.data?.homework ?? [])
     .filter((h) => !isDoneStatus(h.status) && h.status !== 'REJECTED')
     .slice(0, 3)
@@ -56,6 +60,43 @@ export function Home() {
             <span style={{ color: 'var(--accent)' }}>.</span>
           </div>
         </div>
+        <button
+          type="button"
+          onClick={() => navigate('/notifications')}
+          className="tap"
+          aria-label={t('notifications')}
+          style={{
+            width: 44,
+            height: 44,
+            borderRadius: 999,
+            background: 'var(--card)',
+            border: '1px solid var(--hair)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            cursor: 'pointer',
+            position: 'relative',
+            color: 'var(--ink)',
+          }}
+        >
+          <span className="ms" style={{ fontSize: 22 }}>
+            notifications
+          </span>
+          {unreadCount > 0 && (
+            <span
+              style={{
+                position: 'absolute',
+                top: 10,
+                right: 11,
+                width: 8,
+                height: 8,
+                borderRadius: 999,
+                background: 'oklch(0.68 0.19 25)',
+                border: '2px solid var(--card)',
+              }}
+            />
+          )}
+        </button>
       </div>
 
       {nextLesson ? (
