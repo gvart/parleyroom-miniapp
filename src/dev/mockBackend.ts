@@ -13,8 +13,76 @@ function todayISO(): string {
 }
 
 function lessonsBody(role: MockUser['role']) {
-  if (role === 'TEACHER') return { lessons: [], total: 0, page: 1, pageSize: 20 }
   const today = todayISO()
+  if (role === 'TEACHER') {
+    return {
+      lessons: [
+        {
+          id: 'tl1',
+          title: 'Perfekt vs. Präteritum',
+          topic: 'Perfekt vs. Präteritum',
+          type: 'ONE_ON_ONE',
+          scheduledAt: `${today}T09:30:00Z`,
+          durationMinutes: 60,
+          teacherId: 'u-mock',
+          status: 'CONFIRMED',
+          level: 'B1',
+          maxParticipants: null,
+          students: [
+            { id: 'u-mock', firstName: 'Helena', lastName: 'König', status: 'CONFIRMED' },
+            { id: 's1', firstName: 'Lina', lastName: 'Weber', status: 'CONFIRMED' },
+          ],
+          startedAt: null,
+          createdBy: 'u-mock',
+          createdAt: '2026-03-10T00:00:00Z',
+          updatedAt: '2026-03-10T00:00:00Z',
+        },
+        {
+          id: 'tl2',
+          title: 'Reisevokabular',
+          topic: 'Reisevokabular',
+          type: 'ONE_ON_ONE',
+          scheduledAt: `${today}T11:00:00Z`,
+          durationMinutes: 45,
+          teacherId: 'u-mock',
+          status: 'CONFIRMED',
+          level: 'A2',
+          maxParticipants: null,
+          students: [
+            { id: 'u-mock', firstName: 'Helena', lastName: 'König', status: 'CONFIRMED' },
+            { id: 's2', firstName: 'Mateo', lastName: 'Alves', status: 'CONFIRMED' },
+          ],
+          startedAt: null,
+          createdBy: 'u-mock',
+          createdAt: '2026-03-10T00:00:00Z',
+          updatedAt: '2026-03-10T00:00:00Z',
+        },
+        {
+          id: 'tl3',
+          title: 'Erste Gespräche',
+          topic: 'Erste Gespräche',
+          type: 'ONE_ON_ONE',
+          scheduledAt: `${today}T16:30:00Z`,
+          durationMinutes: 45,
+          teacherId: 'u-mock',
+          status: 'REQUEST',
+          level: 'A1',
+          maxParticipants: null,
+          students: [
+            { id: 'u-mock', firstName: 'Helena', lastName: 'König', status: 'CONFIRMED' },
+            { id: 's4', firstName: 'Yuki', lastName: 'Tanaka', status: 'REQUESTED' },
+          ],
+          startedAt: null,
+          createdBy: 's4',
+          createdAt: '2026-03-10T00:00:00Z',
+          updatedAt: '2026-03-10T00:00:00Z',
+        },
+      ],
+      total: 3,
+      page: 1,
+      pageSize: 20,
+    }
+  }
   return {
     lessons: [
       {
@@ -382,6 +450,27 @@ export function installMockBackend(): void {
       }
       return json(me)
     }
+    const lessonActionMatch = url.match(/\/api\/v1\/lessons\/([^/]+)\/(accept|cancel)$/)
+    if (lessonActionMatch && method === 'POST') {
+      const [, id, action] = lessonActionMatch
+      return json({
+        id,
+        title: 'Updated',
+        topic: 'Updated',
+        type: 'ONE_ON_ONE',
+        scheduledAt: new Date().toISOString(),
+        durationMinutes: 60,
+        teacherId: 'u-mock',
+        status: action === 'accept' ? 'CONFIRMED' : 'CANCELLED',
+        level: 'B1',
+        maxParticipants: null,
+        students: [],
+        startedAt: null,
+        createdBy: 'u-mock',
+        createdAt: '2026-03-10T00:00:00Z',
+        updatedAt: new Date().toISOString(),
+      })
+    }
     if (url.endsWith('/api/v1/lessons') && method === 'POST') {
       const body = init?.body
         ? (JSON.parse(init.body as string) as {
@@ -420,22 +509,36 @@ export function installMockBackend(): void {
       return json(lessonsBody(role))
     }
     if (url.endsWith('/api/v1/users') || url.includes('/api/v1/users?')) {
+      const teacher = {
+        id: 't1',
+        email: 'helena@example.com',
+        firstName: 'Helena',
+        lastName: 'König',
+        initials: 'HK',
+        role: 'TEACHER',
+        status: 'ACTIVE',
+        locale: 'de',
+        level: null,
+        createdAt: '2026-01-01T00:00:00Z',
+      }
+      const sampleStudents = [
+        { id: 's1', firstName: 'Lina', lastName: 'Weber', initials: 'LW', level: 'B1' },
+        { id: 's2', firstName: 'Mateo', lastName: 'Alves', initials: 'MA', level: 'A2' },
+        { id: 's3', firstName: 'Priya', lastName: 'Shah', initials: 'PS', level: 'B2' },
+        { id: 's4', firstName: 'Yuki', lastName: 'Tanaka', initials: 'YT', level: 'A1' },
+        { id: 's5', firstName: 'Noa', lastName: 'Ben-Ami', initials: 'NB', level: 'C1' },
+        { id: 's6', firstName: 'Sören', lastName: 'Krüger', initials: 'SK', level: 'B1' },
+      ].map((s) => ({
+        ...s,
+        email: `${s.firstName.toLowerCase()}@example.com`,
+        role: 'STUDENT',
+        status: 'ACTIVE',
+        locale: 'en',
+        createdAt: '2026-02-01T00:00:00Z',
+      }))
       return json({
-        users: [
-          {
-            id: 't1',
-            email: 'helena@example.com',
-            firstName: 'Helena',
-            lastName: 'König',
-            initials: 'HK',
-            role: 'TEACHER',
-            status: 'ACTIVE',
-            locale: 'de',
-            level: null,
-            createdAt: '2026-01-01T00:00:00Z',
-          },
-        ],
-        total: 1,
+        users: [teacher, ...sampleStudents],
+        total: 1 + sampleStudents.length,
         page: 1,
         pageSize: 100,
       })

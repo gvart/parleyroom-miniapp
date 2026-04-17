@@ -133,6 +133,15 @@ export const api = {
 
   createLesson: (body: CreateLessonRequest) =>
     apiFetch<Lesson>('/api/v1/lessons', { method: 'POST', body }),
+
+  acceptLesson: (id: string) =>
+    apiFetch<Lesson>(`/api/v1/lessons/${id}/accept`, { method: 'POST' }),
+
+  cancelLesson: (id: string, reason?: string) =>
+    apiFetch<Lesson>(`/api/v1/lessons/${id}/cancel`, {
+      method: 'POST',
+      body: reason ? { reason } : null,
+    }),
 }
 
 export interface CreateLessonRequest {
