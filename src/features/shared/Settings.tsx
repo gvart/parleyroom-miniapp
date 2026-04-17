@@ -68,7 +68,7 @@ export function Settings() {
           onClick={() => navigate('/settings/profile')}
           style={{ display: 'flex', alignItems: 'center', gap: 14, cursor: 'pointer' }}
         >
-          <Avatar hue={172} initials={user.initials} size={56} />
+          <Avatar hue={172} initials={user.initials} size={56} src={user.avatarUrl} />
           <div style={{ flex: 1 }}>
             <div style={{ fontSize: 15, fontWeight: 600 }}>
               {user.firstName} {user.lastName}

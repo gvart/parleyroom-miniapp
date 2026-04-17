@@ -443,6 +443,31 @@ export function installMockBackend(): void {
         accessTokenExpiresIn: 3600,
       })
     }
+    if (url.endsWith('/api/v1/users/me/avatar')) {
+      if (method === 'POST') {
+        const form = init?.body instanceof FormData ? init.body : null
+        const file = form?.get('file')
+        if (file instanceof Blob) {
+          // Encode the uploaded blob as a data URL so the avatar renders without
+          // a real backend. Async — wrap in a Promise that resolves to a Response.
+          return new Promise<Response>((resolve) => {
+            const reader = new FileReader()
+            reader.onload = () => {
+              ;(me as { avatarUrl?: string | null }).avatarUrl =
+                typeof reader.result === 'string' ? reader.result : null
+              resolve(json(me))
+            }
+            reader.onerror = () => resolve(json(me))
+            reader.readAsDataURL(file)
+          })
+        }
+        return json(me)
+      }
+      if (method === 'DELETE') {
+        ;(me as { avatarUrl?: string | null }).avatarUrl = null
+        return json(me)
+      }
+    }
     if (url.endsWith('/api/v1/users/me')) {
       if (method === 'PATCH') {
         const patch = init?.body ? (JSON.parse(init.body as string) as Record<string, unknown>) : {}

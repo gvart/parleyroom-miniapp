@@ -1,9 +1,10 @@
-import { useState, type FormEvent } from 'react'
+import { useRef, useState, type ChangeEvent, type FormEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/auth/AuthGate'
 import { Avatar, Card } from '@/ui'
 import { useUpdateProfile } from '@/hooks/useUpdateProfile'
+import { useDeleteAvatar, useUploadAvatar } from '@/hooks/useAvatar'
 import type { Level } from '@/api/types'
 
 const LEVELS: Level[] = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2']
@@ -13,11 +14,42 @@ export function ProfileEdit() {
   const navigate = useNavigate()
   const { user, refreshUser } = useAuth()
   const updateProfile = useUpdateProfile()
+  const uploadAvatar = useUploadAvatar()
+  const deleteAvatar = useDeleteAvatar()
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   const [firstName, setFirstName] = useState(user.firstName)
   const [lastName, setLastName] = useState(user.lastName)
   const [level, setLevel] = useState<Level | null>(user.level ?? null)
   const [saved, setSaved] = useState(false)
+  const [avatarError, setAvatarError] = useState<string | null>(null)
+
+  async function onAvatarChange(event: ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0]
+    event.target.value = ''
+    if (!file) return
+    setAvatarError(null)
+    if (file.size > 5 * 1024 * 1024) {
+      setAvatarError('Image must be 5 MB or smaller.')
+      return
+    }
+    try {
+      await uploadAvatar.mutateAsync(file)
+      await refreshUser()
+    } catch (err) {
+      setAvatarError(err instanceof Error ? err.message : 'Upload failed')
+    }
+  }
+
+  async function onAvatarRemove() {
+    setAvatarError(null)
+    try {
+      await deleteAvatar.mutateAsync()
+      await refreshUser()
+    } catch (err) {
+      setAvatarError(err instanceof Error ? err.message : 'Remove failed')
+    }
+  }
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -90,10 +122,87 @@ export function ProfileEdit() {
           alignItems: 'center',
         }}
       >
-        <Avatar hue={172} initials={user.initials} size={96} />
-        <div style={{ fontSize: 12, color: 'var(--ink-3)', marginTop: 10 }}>
-          {t('coming_soon')} — photo upload
-        </div>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/jpeg,image/png,image/webp,image/gif"
+          onChange={onAvatarChange}
+          style={{ display: 'none' }}
+        />
+        <button
+          type="button"
+          onClick={() => fileInputRef.current?.click()}
+          className="tap"
+          disabled={uploadAvatar.isPending || deleteAvatar.isPending}
+          aria-label="Change photo"
+          style={{
+            position: 'relative',
+            border: 0,
+            background: 'transparent',
+            cursor: 'pointer',
+            padding: 0,
+          }}
+        >
+          <Avatar hue={172} initials={user.initials} size={96} src={user.avatarUrl} />
+          <span
+            style={{
+              position: 'absolute',
+              right: -2,
+              bottom: -2,
+              width: 32,
+              height: 32,
+              borderRadius: 999,
+              background: 'var(--ink)',
+              color: 'var(--bg)',
+              border: '3px solid var(--bg)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <span className="ms" style={{ fontSize: 16 }}>
+              {uploadAvatar.isPending ? 'hourglass_empty' : 'photo_camera'}
+            </span>
+          </span>
+        </button>
+        {user.avatarUrl ? (
+          <button
+            type="button"
+            onClick={onAvatarRemove}
+            className="tap"
+            disabled={deleteAvatar.isPending}
+            style={{
+              marginTop: 12,
+              border: 0,
+              background: 'transparent',
+              color: 'var(--ink-2)',
+              fontSize: 12,
+              fontWeight: 600,
+              cursor: 'pointer',
+              textDecoration: 'underline',
+            }}
+          >
+            {deleteAvatar.isPending ? 'Removing…' : 'Remove photo'}
+          </button>
+        ) : (
+          <div style={{ fontSize: 12, color: 'var(--ink-3)', marginTop: 10 }}>
+            Tap to add a photo
+          </div>
+        )}
+        {avatarError && (
+          <div
+            style={{
+              marginTop: 10,
+              padding: '8px 14px',
+              borderRadius: 12,
+              background: 'oklch(0.96 0.05 25)',
+              color: 'oklch(0.5 0.18 25)',
+              fontSize: 12,
+            }}
+          >
+            {avatarError}
+          </div>
+        )}
       </div>
 
       <form onSubmit={submit} style={{ padding: '0 20px' }}>

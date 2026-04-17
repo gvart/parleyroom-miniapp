@@ -147,6 +147,18 @@ export const api = {
 
   materials: (query: { type?: MaterialType; page?: number; pageSize?: number } = {}) =>
     apiFetch<MaterialPage>(`/api/v1/materials${qs({ ...query })}`),
+
+  uploadAvatar: (file: File) => {
+    const form = new FormData()
+    form.append('file', file)
+    return apiFetch<UserProfile>('/api/v1/users/me/avatar', {
+      method: 'POST',
+      body: form,
+    })
+  },
+
+  deleteAvatar: () =>
+    apiFetch<UserProfile>('/api/v1/users/me/avatar', { method: 'DELETE' }),
 }
 
 export interface CreateLessonRequest {
