@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.0](https://github.com/gvart/parleyroom-miniapp/compare/v1.2.1...v1.3.0) (2026-04-17)
+
+
+### Features
+
+* **miniapp:** expand viewport on boot for full-height presentation ([c2c25ab](https://github.com/gvart/parleyroom-miniapp/commit/c2c25ab4f72eecbfee7eb9aefb4e1d014ff6d195))
+
 ## [1.2.1](https://github.com/gvart/parleyroom-miniapp/compare/v1.2.0...v1.2.1) (2026-04-17)
 
 
