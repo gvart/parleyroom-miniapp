@@ -268,8 +268,9 @@ export function TeacherHome() {
             {students.map((s) => (
               <Card
                 key={s.id}
+                onClick={() => navigate(`/students/${s.id}`)}
                 padded={false}
-                style={{ minWidth: 140, padding: '14px 14px 16px', flexShrink: 0 }}
+                style={{ minWidth: 140, padding: '14px 14px 16px', flexShrink: 0, cursor: 'pointer' }}
               >
                 <Avatar hue={hueFor(s.id)} initials={initialsOf(s)} size={38} />
                 <div

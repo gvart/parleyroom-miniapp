@@ -13,6 +13,8 @@ import { Notifications } from '@/features/shared/Notifications'
 import { Settings } from '@/features/shared/Settings'
 import { ProfileEdit } from '@/features/shared/ProfileEdit'
 import { TeacherHome } from '@/features/teacher/TeacherHome'
+import { TeacherStudents } from '@/features/teacher/Students'
+import { StudentProfile } from '@/features/teacher/StudentProfile'
 
 export function RoleRouter() {
   const { user } = useAuth()
@@ -22,6 +24,8 @@ export function RoleRouter() {
       <AppShell tabs={TEACHER_TABS}>
         <Routes>
           <Route path="/" element={<TeacherHome />} />
+          <Route path="/students" element={<TeacherStudents />} />
+          <Route path="/students/:id" element={<StudentProfile />} />
           <Route path="/calendar" element={<Calendar />} />
           <Route path="/notifications" element={<Notifications />} />
           <Route path="/settings" element={<Settings />} />
