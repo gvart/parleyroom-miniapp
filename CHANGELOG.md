@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.11.0](https://github.com/gvart/parleyroom-miniapp/compare/v1.10.0...v1.11.0) (2026-04-17)
+
+
+### Features
+
+* **miniapp:** teacher students list and student profile ([bfd9d05](https://github.com/gvart/parleyroom-miniapp/commit/bfd9d058483135cf06c49288a48b81a772d4b993))
+
 ## [1.10.0](https://github.com/gvart/parleyroom-miniapp/compare/v1.9.0...v1.10.0) (2026-04-17)
 
 
