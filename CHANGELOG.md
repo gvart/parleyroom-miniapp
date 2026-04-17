@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.7.0](https://github.com/gvart/parleyroom-miniapp/compare/v1.6.0...v1.7.0) (2026-04-17)
+
+
+### Features
+
+* **miniapp:** notifications inbox + Home bell ([0a47fa2](https://github.com/gvart/parleyroom-miniapp/commit/0a47fa2b2ee13dc6483c21829fcca1c8c106dd12))
+
 ## [1.6.0](https://github.com/gvart/parleyroom-miniapp/compare/v1.5.0...v1.6.0) (2026-04-17)
 
 
