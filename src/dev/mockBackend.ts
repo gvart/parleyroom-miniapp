@@ -104,6 +104,58 @@ const NOTIFICATION_TEMPLATES: MockNotification[] = [
 // scope so a single in-app POST /viewed sticks until the page reloads.
 const viewedNotificationIds = new Set<string>()
 
+interface MockGoal {
+  id: string
+  studentId: string
+  teacherId: string | null
+  description: string
+  progress: number
+  setBy: string
+  targetDate: string | null
+  status: string
+  createdAt: string
+  updatedAt: string
+}
+
+let goalsList: MockGoal[] = [
+  {
+    id: 'g1',
+    studentId: 'u-mock',
+    teacherId: 't1',
+    description: 'Speak 30 minutes a day',
+    progress: 72,
+    setBy: 'TEACHER',
+    targetDate: '2026-04-30',
+    status: 'ACTIVE',
+    createdAt: '2026-03-01T00:00:00Z',
+    updatedAt: '2026-03-15T00:00:00Z',
+  },
+  {
+    id: 'g2',
+    studentId: 'u-mock',
+    teacherId: null,
+    description: 'Learn 10 new words this week',
+    progress: 60,
+    setBy: 'STUDENT',
+    targetDate: '2026-04-22',
+    status: 'ACTIVE',
+    createdAt: '2026-03-14T00:00:00Z',
+    updatedAt: '2026-03-15T00:00:00Z',
+  },
+  {
+    id: 'g3',
+    studentId: 'u-mock',
+    teacherId: 't1',
+    description: 'Finish 3 reading tasks',
+    progress: 33,
+    setBy: 'TEACHER',
+    targetDate: '2026-04-30',
+    status: 'ACTIVE',
+    createdAt: '2026-03-01T00:00:00Z',
+    updatedAt: '2026-03-15T00:00:00Z',
+  },
+]
+
 function notificationsBody() {
   const now = Date.now()
   return {
@@ -394,6 +446,44 @@ export function installMockBackend(): void {
     }
     if (url.includes('/api/v1/notifications')) {
       return json(notificationsBody())
+    }
+    const goalActionMatch = url.match(/\/api\/v1\/goals\/([^/]+)\/(complete|abandon)$/)
+    if (goalActionMatch && method === 'POST') {
+      const [, id, action] = goalActionMatch
+      goalsList = goalsList.map((g) =>
+        g.id === id
+          ? { ...g, status: action === 'complete' ? 'COMPLETED' : 'ABANDONED', progress: action === 'complete' ? 100 : g.progress }
+          : g,
+      )
+      return json(goalsList.find((g) => g.id === id) ?? goalsList[0])
+    }
+    if (url.endsWith('/api/v1/goals') && method === 'POST') {
+      const body = init?.body
+        ? (JSON.parse(init.body as string) as {
+            description: string
+            targetDate?: string | null
+          })
+        : { description: 'New goal', targetDate: null }
+      const created = {
+        id: `g-${Date.now()}`,
+        studentId: 'u-mock',
+        teacherId: null,
+        description: body.description,
+        progress: 0,
+        setBy: 'STUDENT',
+        targetDate: body.targetDate ?? null,
+        status: 'ACTIVE',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      }
+      goalsList = [...goalsList, created]
+      return json(created)
+    }
+    if (url.includes('/api/v1/goals')) {
+      const sp = new URL(url, 'http://x').searchParams
+      const status = sp.get('status')
+      const filtered = status ? goalsList.filter((g) => g.status === status) : goalsList
+      return json({ goals: filtered, total: filtered.length, page: 1, pageSize: 20 })
     }
 
     return original(input, init)

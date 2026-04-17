@@ -1,6 +1,9 @@
 import { apiFetch } from './client'
 import type {
   AuthResponse,
+  Goal,
+  GoalPage,
+  GoalStatus,
   Homework,
   HomeworkPage,
   HomeworkStatus,
@@ -109,4 +112,16 @@ export const api = {
       method: 'POST',
       body: { notificationIds },
     }),
+
+  goals: (status?: GoalStatus) =>
+    apiFetch<GoalPage>(`/api/v1/goals${qs({ status })}`),
+
+  createGoal: (body: { studentId: string; description: string; targetDate?: string | null }) =>
+    apiFetch<Goal>('/api/v1/goals', { method: 'POST', body }),
+
+  completeGoal: (id: string) =>
+    apiFetch<Goal>(`/api/v1/goals/${id}/complete`, { method: 'POST' }),
+
+  abandonGoal: (id: string) =>
+    apiFetch<Goal>(`/api/v1/goals/${id}/abandon`, { method: 'POST' }),
 }

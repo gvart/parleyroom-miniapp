@@ -4,9 +4,12 @@ import { useAuth } from '@/auth/AuthGate'
 import { useLessons } from '@/hooks/useLessons'
 import { useHomework } from '@/hooks/useHomework'
 import { useNotifications } from '@/hooks/useNotifications'
-import { Card, CategoryDot, Pill, Section, type PillTone } from '@/ui'
+import { useGoals } from '@/hooks/useGoals'
+import { Card, CategoryDot, Pill, Ring, Section, type PillTone } from '@/ui'
 import { lessonTime } from '@/lib/lesson'
 import { categorySlug, computeDue, isDoneStatus } from '@/lib/homework'
+
+const GOAL_HUES = [172, 290, 75]
 
 export function Home() {
   const { t } = useTranslation()
@@ -15,10 +18,12 @@ export function Home() {
   const lessonsQuery = useLessons()
   const homeworkQuery = useHomework()
   const notificationsQuery = useNotifications()
+  const goalsQuery = useGoals('ACTIVE')
 
   const lessons = lessonsQuery.data?.lessons ?? []
   const unreadCount =
     notificationsQuery.data?.notifications.filter((n) => !n.viewed).length ?? 0
+  const topGoals = (goalsQuery.data?.goals ?? []).slice(0, 3)
   const dueHomework = (homeworkQuery.data?.homework ?? [])
     .filter((h) => !isDoneStatus(h.status) && h.status !== 'REJECTED')
     .slice(0, 3)
@@ -370,6 +375,74 @@ export function Home() {
                 </button>
               )
             })}
+          </Card>
+        </Section>
+      )}
+
+      {topGoals.length > 0 && (
+        <Section
+          eyebrow={t('goals')}
+          title={t('your_rhythm')}
+          action={
+            <button
+              type="button"
+              onClick={() => navigate('/goals')}
+              className="tap"
+              style={{
+                border: 0,
+                background: 'transparent',
+                color: 'var(--ink)',
+                fontSize: 12,
+                fontWeight: 600,
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 4,
+              }}
+            >
+              {t('view_all')}
+              <span className="ms" style={{ fontSize: 14 }}>
+                arrow_forward
+              </span>
+            </button>
+          }
+        >
+          <Card onClick={() => navigate('/goals')} style={{ cursor: 'pointer' }}>
+            {topGoals.map((g, i) => (
+              <div
+                key={g.id}
+                style={{
+                  display: 'flex',
+                  gap: 12,
+                  alignItems: 'center',
+                  marginTop: i === 0 ? 0 : 14,
+                }}
+              >
+                <Ring
+                  value={g.progress}
+                  size={42}
+                  stroke={4}
+                  hue={GOAL_HUES[i % GOAL_HUES.length]}
+                />
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div
+                    style={{
+                      fontSize: 13,
+                      fontWeight: 500,
+                      lineHeight: 1.3,
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    {g.description}
+                  </div>
+                  <div className="mono" style={{ fontSize: 11, color: 'var(--ink-3)', marginTop: 2 }}>
+                    {g.progress}%
+                  </div>
+                </div>
+              </div>
+            ))}
           </Card>
         </Section>
       )}

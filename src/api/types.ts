@@ -175,3 +175,26 @@ export interface NotificationPage {
   page: number
   pageSize: number
 }
+
+export type GoalStatus = 'ACTIVE' | 'COMPLETED' | 'ABANDONED'
+export type GoalSetBy = 'TEACHER' | 'STUDENT'
+
+export interface Goal {
+  id: string
+  studentId: string
+  teacherId: string | null
+  description: string
+  progress: number
+  setBy: GoalSetBy
+  targetDate: string | null
+  status: GoalStatus
+  createdAt: string
+  updatedAt: string
+}
+
+export interface GoalPage {
+  goals: Goal[]
+  total: number
+  page: number
+  pageSize: number
+}
