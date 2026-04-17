@@ -15,6 +15,7 @@ import { ProfileEdit } from '@/features/shared/ProfileEdit'
 import { TeacherHome } from '@/features/teacher/TeacherHome'
 import { TeacherStudents } from '@/features/teacher/Students'
 import { StudentProfile } from '@/features/teacher/StudentProfile'
+import { Materials } from '@/features/teacher/Materials'
 
 export function RoleRouter() {
   const { user } = useAuth()
@@ -27,6 +28,7 @@ export function RoleRouter() {
           <Route path="/students" element={<TeacherStudents />} />
           <Route path="/students/:id" element={<StudentProfile />} />
           <Route path="/calendar" element={<Calendar />} />
+          <Route path="/materials" element={<Materials />} />
           <Route path="/notifications" element={<Notifications />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/settings/profile" element={<ProfileEdit />} />

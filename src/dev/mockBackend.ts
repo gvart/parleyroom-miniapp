@@ -605,6 +605,86 @@ export function installMockBackend(): void {
     if (url.includes('/api/v1/notifications')) {
       return json(notificationsBody())
     }
+    if (url.includes('/api/v1/materials')) {
+      const sp = new URL(url, 'http://x').searchParams
+      const type = sp.get('type')
+      const all = [
+        {
+          id: 'm1',
+          teacherId: 'u-mock',
+          studentId: null,
+          lessonId: null,
+          name: 'A day in the Black Forest.pdf',
+          type: 'PDF',
+          contentType: 'application/pdf',
+          fileSize: 540000,
+          downloadUrl: '#',
+          createdAt: '2026-03-01T00:00:00Z',
+        },
+        {
+          id: 'm2',
+          teacherId: 'u-mock',
+          studentId: null,
+          lessonId: null,
+          name: 'German news: a gentle intro',
+          type: 'AUDIO',
+          contentType: 'audio/mpeg',
+          fileSize: 3200000,
+          downloadUrl: '#',
+          createdAt: '2026-02-24T00:00:00Z',
+        },
+        {
+          id: 'm3',
+          teacherId: 'u-mock',
+          studentId: 's1',
+          lessonId: 'tl1',
+          name: 'Perfekt vs. Präteritum (slides)',
+          type: 'PDF',
+          contentType: 'application/pdf',
+          fileSize: 820000,
+          downloadUrl: '#',
+          createdAt: '2026-03-10T00:00:00Z',
+        },
+        {
+          id: 'm4',
+          teacherId: 'u-mock',
+          studentId: null,
+          lessonId: null,
+          name: 'Kaffeehaus conversations',
+          type: 'VIDEO',
+          contentType: 'video/mp4',
+          fileSize: 12400000,
+          downloadUrl: '#',
+          createdAt: '2026-02-20T00:00:00Z',
+        },
+        {
+          id: 'm5',
+          teacherId: 'u-mock',
+          studentId: null,
+          lessonId: null,
+          name: 'Ordering at a restaurant',
+          type: 'LINK',
+          contentType: null,
+          fileSize: null,
+          downloadUrl: 'https://www.dw.com/en/learn-german/s-2469',
+          createdAt: '2026-02-14T00:00:00Z',
+        },
+        {
+          id: 'm6',
+          teacherId: 'u-mock',
+          studentId: 's1',
+          lessonId: null,
+          name: 'Letters between friends.pdf',
+          type: 'PDF',
+          contentType: 'application/pdf',
+          fileSize: 410000,
+          downloadUrl: '#',
+          createdAt: '2026-03-07T00:00:00Z',
+        },
+      ]
+      const filtered = type ? all.filter((m) => m.type === type) : all
+      return json({ materials: filtered, total: filtered.length, page: 1, pageSize: 20 })
+    }
     const goalActionMatch = url.match(/\/api\/v1\/goals\/([^/]+)\/(complete|abandon)$/)
     if (goalActionMatch && method === 'POST') {
       const [, id, action] = goalActionMatch

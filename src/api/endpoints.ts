@@ -11,6 +11,8 @@ import type {
   LessonType,
   Level,
   LessonPage,
+  MaterialPage,
+  MaterialType,
   NotificationPage,
   TelegramLink,
   UserProfile,
@@ -142,6 +144,9 @@ export const api = {
       method: 'POST',
       body: reason ? { reason } : null,
     }),
+
+  materials: (query: { type?: MaterialType; page?: number; pageSize?: number } = {}) =>
+    apiFetch<MaterialPage>(`/api/v1/materials${qs({ ...query })}`),
 }
 
 export interface CreateLessonRequest {

@@ -205,3 +205,25 @@ export interface UserList {
   page: number
   pageSize: number
 }
+
+export type MaterialType = 'PDF' | 'AUDIO' | 'VIDEO' | 'LINK'
+
+export interface Material {
+  id: string
+  teacherId: string
+  studentId: string | null
+  lessonId: string | null
+  name: string
+  type: MaterialType
+  contentType: string | null
+  fileSize: number | null
+  downloadUrl: string | null
+  createdAt: string
+}
+
+export interface MaterialPage {
+  materials: Material[]
+  total: number
+  page: number
+  pageSize: number
+}
