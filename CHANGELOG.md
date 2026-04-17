@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.10.0](https://github.com/gvart/parleyroom-miniapp/compare/v1.9.0...v1.10.0) (2026-04-17)
+
+
+### Features
+
+* **miniapp:** teacher Home with KPI, requests, timeline, students ([73f346a](https://github.com/gvart/parleyroom-miniapp/commit/73f346acf1173a119ff23be313eaafdf6f0d992a))
+
 ## [1.9.0](https://github.com/gvart/parleyroom-miniapp/compare/v1.8.0...v1.9.0) (2026-04-17)
 
 
