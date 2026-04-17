@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.1](https://github.com/gvart/parleyroom-miniapp/compare/v1.2.0...v1.2.1) (2026-04-17)
+
+
+### Bug Fixes
+
+* **miniapp:** add @types/node so vite.config typechecks in CI ([30a86de](https://github.com/gvart/parleyroom-miniapp/commit/30a86decfa89ba58083fbbd766cc1cfa6a82e0a9))
+
 ## [1.2.0](https://github.com/gvart/parleyroom-miniapp/compare/v1.1.0...v1.2.0) (2026-04-17)
 
 
