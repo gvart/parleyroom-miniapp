@@ -69,3 +69,53 @@ body {
 .app pre.wrap {
   word-break: break-all;
 }
+
+.app .form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.app .form label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 13px;
+}
+
+.app .form label span {
+  color: var(--tg-hint);
+}
+
+.app .form input {
+  padding: 10px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--tg-hint, #ccc);
+  background: var(--tg-bg);
+  color: var(--tg-text);
+  font: inherit;
+}
+
+.app .form input:focus {
+  outline: 2px solid var(--tg-button, #3390ec);
+  outline-offset: -1px;
+  border-color: transparent;
+}
+
+.app .form button {
+  padding: 12px;
+  border: none;
+  border-radius: 6px;
+  background: var(--tg-button, #3390ec);
+  color: var(--tg-button-text, #ffffff);
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  margin-top: 4px;
+}
+
+.app .form button:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
