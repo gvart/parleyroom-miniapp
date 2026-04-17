@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.4.0](https://github.com/gvart/parleyroom-miniapp/compare/v1.3.0...v1.4.0) (2026-04-17)
+
+
+### Features
+
+* **miniapp:** request true fullscreen and paint Telegram chrome to match ([6b90270](https://github.com/gvart/parleyroom-miniapp/commit/6b90270fdae845967fcccca750d2673de3ffb45e))
+
+
+### Bug Fixes
+
+* **miniapp:** respect Telegram content safe area in fullscreen ([a28d9b2](https://github.com/gvart/parleyroom-miniapp/commit/a28d9b227cdbabb8f8e0b259554724fd726a0242))
+
+
+### Reverts
+
+* drop explicit fullscreen + chrome painting ([2149ca2](https://github.com/gvart/parleyroom-miniapp/commit/2149ca238795d58d4230de795417f371b6ad9542))
+
 ## [1.3.0](https://github.com/gvart/parleyroom-miniapp/compare/v1.2.1...v1.3.0) (2026-04-17)
 
 
