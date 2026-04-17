@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.13.0](https://github.com/gvart/parleyroom-miniapp/compare/v1.12.0...v1.13.0) (2026-04-17)
+
+
+### Features
+
+* **miniapp:** avatar upload from Profile Edit ([9a70b29](https://github.com/gvart/parleyroom-miniapp/commit/9a70b2931edd23013f5724158b43cf00a0074ea0))
+
 ## [1.12.0](https://github.com/gvart/parleyroom-miniapp/compare/v1.11.0...v1.12.0) (2026-04-17)
 
 
