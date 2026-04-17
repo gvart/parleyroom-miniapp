@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/gvart/parleyroom-miniapp/compare/v1.1.0...v1.2.0) (2026-04-17)
+
+
+### Features
+
+* **miniapp:** build student MVP on design system foundation ([2653de5](https://github.com/gvart/parleyroom-miniapp/commit/2653de5525174d12785da3545b73416d299f3b8c))
+
 ## [1.1.0](https://github.com/gvart/parleyroom-miniapp/compare/v1.0.0...v1.1.0) (2026-04-17)
 
 
