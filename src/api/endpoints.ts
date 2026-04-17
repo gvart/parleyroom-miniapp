@@ -9,6 +9,7 @@ import type {
   TelegramLink,
   UserProfile,
   VocabularyPage,
+  VocabularyWord,
   VocabStatus,
 } from './types'
 
@@ -86,6 +87,9 @@ export const api = {
 
   vocabulary: (query: VocabularyQuery = {}) =>
     apiFetch<VocabularyPage>(`/api/v1/vocabulary${qs({ ...query })}`),
+
+  reviewVocabularyWord: (id: string) =>
+    apiFetch<VocabularyWord>(`/api/v1/vocabulary/${id}/review`, { method: 'POST' }),
 
   homework: (query: HomeworkQuery = {}) =>
     apiFetch<HomeworkPage>(`/api/v1/homework${qs({ ...query })}`),

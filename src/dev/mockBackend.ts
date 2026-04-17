@@ -276,8 +276,29 @@ export function installMockBackend(): void {
     if (url.includes('/api/v1/lessons')) {
       return json(lessonsBody(role))
     }
+    const reviewMatch = url.match(/\/api\/v1\/vocabulary\/([^/]+)\/review$/)
+    if (reviewMatch && method === 'POST') {
+      return json({
+        id: reviewMatch[1],
+        studentId: 'u-mock',
+        lessonId: null,
+        german: '—',
+        english: '—',
+        exampleSentence: null,
+        exampleTranslation: null,
+        category: 'NOUN',
+        status: 'LEARNED',
+        nextReviewAt: null,
+        reviewCount: 1,
+        addedAt: '2026-01-01T00:00:00Z',
+      })
+    }
     if (url.includes('/api/v1/vocabulary')) {
-      return json(vocabBody())
+      const sp = new URL(url, 'http://x').searchParams
+      const status = sp.get('status')
+      const all = vocabBody().words
+      const filtered = status ? all.filter((w) => w.status === status) : all
+      return json({ words: filtered, total: filtered.length, page: 1, pageSize: 20 })
     }
     const submitMatch = url.match(/\/api\/v1\/homework\/([^/]+)\/submit$/)
     if (submitMatch && method === 'POST') {

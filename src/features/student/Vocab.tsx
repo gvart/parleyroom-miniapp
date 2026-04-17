@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Card, Pill } from '@/ui'
+import { useNavigate } from 'react-router-dom'
+import { Card, Pill, Ring } from '@/ui'
 import { useVocab } from '@/hooks/useVocab'
 import type { VocabStatus } from '@/api/types'
 
@@ -15,10 +16,14 @@ const FILTERS: Array<{ key: Filter; labelKey: string }> = [
 
 export function Vocab() {
   const { t } = useTranslation()
+  const navigate = useNavigate()
   const [filter, setFilter] = useState<Filter>('all')
   const vocabQuery = useVocab(filter === 'all' ? {} : { status: filter })
+  const reviewDueQuery = useVocab({ status: 'REVIEW' })
 
   const words = vocabQuery.data?.words ?? []
+  const reviewDueCount = reviewDueQuery.data?.words.length ?? 0
+  const reviewMinutes = Math.max(1, Math.round(reviewDueCount * 0.4))
 
   return (
     <div>
@@ -43,6 +48,35 @@ export function Vocab() {
           <span style={{ color: 'var(--accent)' }}>.</span>
         </div>
       </div>
+
+      {reviewDueCount > 0 && (
+        <div style={{ padding: '0 20px 18px' }}>
+          <Card
+            onClick={() => navigate('/vocab/review')}
+            style={{
+              cursor: 'pointer',
+              background: 'linear-gradient(135deg, var(--accent-soft) 0%, var(--card) 65%)',
+            }}
+          >
+            <div style={{ display: 'flex', gap: 14, alignItems: 'center' }}>
+              <Ring value={100} size={54} label={reviewDueCount} />
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ fontSize: 'var(--fs-title)', fontWeight: 600, marginBottom: 2 }}>
+                  {reviewDueCount === 1
+                    ? t('review_count_singular')
+                    : t('review_count_plural', { count: reviewDueCount })}
+                </div>
+                <div style={{ fontSize: 13, color: 'var(--ink-2)' }}>
+                  {t('review_minutes_estimate', { minutes: reviewMinutes })}
+                </div>
+              </div>
+              <span className="ms" style={{ fontSize: 22, color: 'var(--ink-3)' }}>
+                chevron_right
+              </span>
+            </div>
+          </Card>
+        </div>
+      )}
 
       <div style={{ padding: '0 20px 14px' }}>
         <div

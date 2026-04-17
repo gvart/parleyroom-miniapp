@@ -6,6 +6,7 @@ import { Home } from '@/features/student/Home'
 import { Lessons } from '@/features/student/Lessons'
 import { Homework } from '@/features/student/Homework'
 import { Vocab } from '@/features/student/Vocab'
+import { VocabReview } from '@/features/student/VocabReview'
 import { Settings } from '@/features/shared/Settings'
 import { ProfileEdit } from '@/features/shared/ProfileEdit'
 import { TeacherStub } from '@/features/teacher/TeacherStub'
@@ -33,6 +34,7 @@ export function RoleRouter() {
         <Route path="/lessons" element={<Lessons />} />
         <Route path="/homework" element={<Homework />} />
         <Route path="/vocab" element={<Vocab />} />
+        <Route path="/vocab/review" element={<VocabReview />} />
         <Route path="/settings" element={<Settings />} />
         <Route path="/settings/profile" element={<ProfileEdit />} />
         <Route path="*" element={<Navigate to="/" replace />} />
