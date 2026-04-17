@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.9.0](https://github.com/gvart/parleyroom-miniapp/compare/v1.8.0...v1.9.0) (2026-04-17)
+
+
+### Features
+
+* **miniapp:** calendar screen and lesson booking sheet ([a9a3ab6](https://github.com/gvart/parleyroom-miniapp/commit/a9a3ab69406f9a5490e97288abc1c8a3e4294651))
+
 ## [1.8.0](https://github.com/gvart/parleyroom-miniapp/compare/v1.7.0...v1.8.0) (2026-04-17)
 
 
