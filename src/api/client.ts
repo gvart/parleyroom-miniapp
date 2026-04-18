@@ -8,6 +8,14 @@ export function setApiToken(token: string | null): void {
   currentToken = token
 }
 
+export function getApiToken(): string | null {
+  return currentToken
+}
+
+export function apiUrl(path: string): string {
+  return `${API_BASE}${path}`
+}
+
 export class ApiError extends Error {
   constructor(
     public readonly status: number,
