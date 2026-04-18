@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.18.0](https://github.com/gvart/parleyroom-miniapp/compare/v1.17.0...v1.18.0) (2026-04-18)
+
+
+### Features
+
+* **miniapp:** subscribe to notification SSE stream ([579e9f3](https://github.com/gvart/parleyroom-miniapp/commit/579e9f3d1f8b8941a8068d0445e97d02cb017197))
+
 ## [1.17.0](https://github.com/gvart/parleyroom-miniapp/compare/v1.16.0...v1.17.0) (2026-04-18)
 
 
