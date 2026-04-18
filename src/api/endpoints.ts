@@ -17,6 +17,7 @@ import type {
   TelegramLink,
   UserProfile,
   UserList,
+  VideoAccess,
   VocabularyPage,
   VocabularyWord,
   VocabStatus,
@@ -138,6 +139,9 @@ export const api = {
 
   acceptLesson: (id: string) =>
     apiFetch<Lesson>(`/api/v1/lessons/${id}/accept`, { method: 'POST' }),
+
+  videoToken: (id: string) =>
+    apiFetch<VideoAccess>(`/api/v1/lessons/${id}/video-token`, { method: 'POST' }),
 
   cancelLesson: (id: string, reason?: string) =>
     apiFetch<Lesson>(`/api/v1/lessons/${id}/cancel`, {

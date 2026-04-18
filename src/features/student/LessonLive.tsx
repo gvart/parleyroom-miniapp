@@ -4,6 +4,8 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { useAuth } from '@/auth/AuthGate'
 import { Avatar, Pill, Sheet } from '@/ui'
 import { useLessons } from '@/hooks/useLessons'
+import { useLiveKit, type LiveKitStatus } from '@/hooks/useLiveKit'
+import { VideoTile } from './VideoTile'
 
 const SAMPLE_VOCAB = [
   ['die Vergangenheit', 'the past'],
@@ -20,6 +22,27 @@ function fmtElapsed(seconds: number): string {
   return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`
 }
 
+function statusMessage(status: LiveKitStatus): string | null {
+  switch (status) {
+    case 'fetching-token':
+      return 'Connecting…'
+    case 'connecting':
+      return 'Joining room…'
+    case 'connected':
+      return null
+    case 'lesson-not-started':
+      return 'Lesson hasn’t been started yet. Wait for your teacher to start it.'
+    case 'permission-denied':
+      return 'Camera or microphone access blocked. Update your browser permissions.'
+    case 'unavailable':
+      return 'Live video unavailable in preview mode. Open from a real lesson to connect.'
+    case 'error':
+      return 'Could not connect to the lesson room.'
+    default:
+      return null
+  }
+}
+
 export function LessonLive() {
   const { t } = useTranslation()
   const navigate = useNavigate()
@@ -27,21 +50,14 @@ export function LessonLive() {
   const { user } = useAuth()
   const lessonsQuery = useLessons()
   const lesson = lessonsQuery.data?.lessons.find((l) => l.id === id)
+  const live = useLiveKit(id)
 
-  const [mic, setMic] = useState(true)
-  const [cam, setCam] = useState(true)
   const [showRecap, setShowRecap] = useState(false)
   const [elapsed, setElapsed] = useState(0)
-  const [showHint, setShowHint] = useState(true)
 
   useEffect(() => {
     const t = setInterval(() => setElapsed((e) => e + 1), 1000)
     return () => clearInterval(t)
-  }, [])
-
-  useEffect(() => {
-    const t = setTimeout(() => setShowHint(false), 4000)
-    return () => clearTimeout(t)
   }, [])
 
   const teacher = lesson?.students.find((s) => s.id === lesson.teacherId)
@@ -52,6 +68,12 @@ export function LessonLive() {
     ? `${teacher.firstName[0] ?? ''}${teacher.lastName[0] ?? ''}`.toUpperCase()
     : 'HK'
   const userInitials = `${user.firstName[0] ?? ''}${user.lastName[0] ?? ''}`.toUpperCase()
+  const banner = statusMessage(live.status)
+
+  async function endCall() {
+    await live.disconnect()
+    navigate(-1)
+  }
 
   return (
     <div
@@ -71,21 +93,33 @@ export function LessonLive() {
           style={{
             position: 'absolute',
             inset: 0,
-            background: 'radial-gradient(circle at 50% 40%, oklch(0.35 0.12 172) 0%, oklch(0.12 0.05 200) 70%)',
+            background:
+              'radial-gradient(circle at 50% 40%, oklch(0.35 0.12 172) 0%, oklch(0.12 0.05 200) 70%)',
           }}
         />
 
-        <div
-          style={{
-            position: 'absolute',
-            inset: 0,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          <Avatar hue={172} initials={teacherInitials} size={120} />
-        </div>
+        {live.remoteVideoTrack ? (
+          <div style={{ position: 'absolute', inset: 0, background: '#000' }}>
+            <VideoTile track={live.remoteVideoTrack} />
+          </div>
+        ) : (
+          <div
+            style={{
+              position: 'absolute',
+              inset: 0,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <Avatar
+              hue={172}
+              initials={teacherInitials}
+              size={120}
+              live={live.status === 'connected'}
+            />
+          </div>
+        )}
 
         <div
           style={{
@@ -109,7 +143,7 @@ export function LessonLive() {
             }}
           >
             <span className="live-dot" />
-            Live · {fmtElapsed(elapsed)}
+            {live.status === 'connected' ? `Live · ${fmtElapsed(elapsed)}` : 'Live'}
           </Pill>
           <button
             type="button"
@@ -137,26 +171,32 @@ export function LessonLive() {
           </button>
         </div>
 
-        {showHint && (
+        {banner && (
           <div
             style={{
               position: 'absolute',
               top: 'calc(env(safe-area-inset-top) + 76px)',
               left: 16,
               right: 16,
-              padding: '8px 12px',
+              padding: '10px 14px',
               borderRadius: 12,
-              background: 'rgba(0,0,0,0.35)',
-              backdropFilter: 'blur(12px)',
-              WebkitBackdropFilter: 'blur(12px)',
-              color: 'rgba(242,241,236,0.85)',
-              fontSize: 11,
+              background: 'rgba(0,0,0,0.5)',
+              backdropFilter: 'blur(16px)',
+              WebkitBackdropFilter: 'blur(16px)',
+              color: 'rgba(242,241,236,0.9)',
+              fontSize: 12,
+              lineHeight: 1.4,
               textAlign: 'center',
               border: '1px solid rgba(255,255,255,0.06)',
               animation: 'fade-in .3s var(--ease)',
             }}
           >
-            {t('live_video_unavailable')}
+            {banner}
+            {live.errorMessage && (
+              <div style={{ marginTop: 6, fontSize: 11, color: 'rgba(242,241,236,0.55)' }}>
+                {live.errorMessage}
+              </div>
+            )}
           </div>
         )}
 
@@ -177,7 +217,9 @@ export function LessonLive() {
             justifyContent: 'center',
           }}
         >
-          {cam ? (
+          {live.cameraEnabled && live.localVideoTrack ? (
+            <VideoTile track={live.localVideoTrack} mirror />
+          ) : live.cameraEnabled ? (
             <Avatar hue={290} initials={userInitials} size={48} src={user.avatarUrl} />
           ) : (
             <span className="ms" style={{ fontSize: 28, color: 'rgba(255,255,255,0.6)' }}>
@@ -296,13 +338,21 @@ export function LessonLive() {
             alignItems: 'center',
           }}
         >
-          <CallBtn icon={mic ? 'mic' : 'mic_off'} active={mic} onClick={() => setMic(!mic)} />
-          <CallBtn icon={cam ? 'videocam' : 'videocam_off'} active={cam} onClick={() => setCam(!cam)} />
+          <CallBtn
+            icon={live.micEnabled ? 'mic' : 'mic_off'}
+            active={live.micEnabled}
+            onClick={() => void live.setMic(!live.micEnabled)}
+          />
+          <CallBtn
+            icon={live.cameraEnabled ? 'videocam' : 'videocam_off'}
+            active={live.cameraEnabled}
+            onClick={() => void live.setCamera(!live.cameraEnabled)}
+          />
           <CallBtn icon="screen_share" active />
           <CallBtn icon="translate" active />
           <button
             type="button"
-            onClick={() => navigate(-1)}
+            onClick={() => void endCall()}
             className="tap"
             aria-label={t('end_call')}
             style={{

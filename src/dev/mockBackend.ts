@@ -481,6 +481,14 @@ export function installMockBackend(): void {
       }
       return json(me)
     }
+    const videoTokenMatch = url.match(/\/api\/v1\/lessons\/([^/]+)\/video-token$/)
+    if (videoTokenMatch && method === 'POST') {
+      return json({
+        roomName: `mock-room-${videoTokenMatch[1]}`,
+        accessToken: 'mock-access-token',
+        url: 'mock://livekit',
+      })
+    }
     const lessonActionMatch = url.match(/\/api\/v1\/lessons\/([^/]+)\/(accept|cancel)$/)
     if (lessonActionMatch && method === 'POST') {
       const [, id, action] = lessonActionMatch

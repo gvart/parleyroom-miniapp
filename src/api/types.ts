@@ -227,3 +227,9 @@ export interface MaterialPage {
   page: number
   pageSize: number
 }
+
+export interface VideoAccess {
+  roomName: string
+  accessToken: string
+  url: string
+}
