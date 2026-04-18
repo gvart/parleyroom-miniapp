@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.16.0](https://github.com/gvart/parleyroom-miniapp/compare/v1.15.0...v1.16.0) (2026-04-18)
+
+
+### Features
+
+* **miniapp:** wire LiveKit video into Lesson Live ([cece765](https://github.com/gvart/parleyroom-miniapp/commit/cece765c9eb610f5109a65fb927d2f8c6f325b97))
+
 ## [1.15.0](https://github.com/gvart/parleyroom-miniapp/compare/v1.14.0...v1.15.0) (2026-04-18)
 
 
