@@ -27,17 +27,27 @@ export function BookLessonSheet({ open, onClose, defaultDate }: BookLessonSheetP
   const usersQuery = useUsers()
   const create = useCreateLesson()
 
+  const isTeacher = user.role === 'TEACHER'
+
   const teacherId = useMemo(() => {
+    if (isTeacher) return user.id
     const fromLessons = lessonsQuery.data?.lessons[0]?.teacherId
     if (fromLessons) return fromLessons
     return usersQuery.data?.users.find((u) => u.role === 'TEACHER')?.id
-  }, [lessonsQuery.data, usersQuery.data])
+  }, [isTeacher, user.id, lessonsQuery.data, usersQuery.data])
+
+  const availableStudents = useMemo(() => {
+    if (!isTeacher) return []
+    return (usersQuery.data?.users ?? []).filter((u) => u.role === 'STUDENT')
+  }, [isTeacher, usersQuery.data])
 
   const [topic, setTopic] = useState('')
   const [date, setDate] = useState(defaultDate ?? todayISO())
   const [time, setTime] = useState('10:00')
   const [duration, setDuration] = useState(60)
   const [type, setType] = useState<LessonType>('ONE_ON_ONE')
+  const [studentIds, setStudentIds] = useState<string[]>([])
+  const [maxParticipants, setMaxParticipants] = useState<number | ''>(6)
   const [submitted, setSubmitted] = useState(false)
 
   useEffect(() => {
@@ -47,26 +57,58 @@ export function BookLessonSheet({ open, onClose, defaultDate }: BookLessonSheetP
       setTime('10:00')
       setDuration(60)
       setType('ONE_ON_ONE')
+      setStudentIds([])
+      setMaxParticipants(6)
       setSubmitted(false)
     }
   }, [open, defaultDate])
 
+  // Reset student selection and maxParticipants when the lesson type changes —
+  // a 1:1 picked list doesn't translate to a group and vice versa.
+  function handleTypeChange(next: LessonType) {
+    if (next === type) return
+    setType(next)
+    setStudentIds([])
+    setMaxParticipants(next === 'ONE_ON_ONE' ? '' : 6)
+  }
+
+  function toggleStudent(id: string) {
+    setStudentIds((prev) => {
+      if (type === 'ONE_ON_ONE') return prev[0] === id ? [] : [id]
+      return prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
+    })
+  }
+
+  const isGroup = type !== 'ONE_ON_ONE'
+
+  const studentSelectionValid = isTeacher
+    ? type === 'ONE_ON_ONE'
+      ? studentIds.length === 1
+      : true // group: 0..N allowed; empty = open for join
+    : true // student flow: implicit self
+
   const canSubmit =
-    topic.trim().length > 0 && Boolean(teacherId) && !create.isPending
+    topic.trim().length > 0 &&
+    Boolean(teacherId) &&
+    studentSelectionValid &&
+    (!isTeacher || !isGroup || maxParticipants === '' || maxParticipants > 0) &&
+    !create.isPending
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     if (!canSubmit || !teacherId) return
     const scheduledAt = new Date(`${date}T${time}:00`).toISOString()
+    const finalStudentIds = isTeacher ? studentIds : [user.id]
     try {
       await create.mutateAsync({
         teacherId,
-        studentIds: [user.id],
+        studentIds: finalStudentIds,
         title: topic.trim(),
         topic: topic.trim(),
         type,
         scheduledAt,
         durationMinutes: duration,
+        maxParticipants: isGroup && maxParticipants !== '' ? maxParticipants : null,
       })
       setSubmitted(true)
       setTimeout(onClose, 1200)
@@ -85,6 +127,7 @@ export function BookLessonSheet({ open, onClose, defaultDate }: BookLessonSheetP
   }
   const inputStyle = {
     width: '100%',
+    minWidth: 0,
     padding: '12px 14px',
     background: 'var(--card)',
     color: 'var(--ink)',
@@ -93,6 +136,7 @@ export function BookLessonSheet({ open, onClose, defaultDate }: BookLessonSheetP
     fontSize: 15,
     fontFamily: 'inherit',
     outline: 'none',
+    boxSizing: 'border-box' as const,
   }
 
   return (
@@ -118,14 +162,16 @@ export function BookLessonSheet({ open, onClose, defaultDate }: BookLessonSheetP
             </span>
           </div>
           <div className="serif" style={{ fontSize: 26, marginBottom: 4 }}>
-            {t('request_sent_title')}
+            {isTeacher ? t('lesson_created_title') : t('request_sent_title')}
           </div>
-          <div style={{ fontSize: 13, color: 'var(--ink-2)' }}>{t('request_sent_sub')}</div>
+          <div style={{ fontSize: 13, color: 'var(--ink-2)' }}>
+            {isTeacher ? t('lesson_created_sub') : t('request_sent_sub')}
+          </div>
         </div>
       ) : (
         <form onSubmit={submit} style={{ padding: '0 22px 10px' }}>
           <div className="serif" style={{ fontSize: 26, letterSpacing: '-0.01em', marginBottom: 18 }}>
-            {t('book_lesson_title')}
+            {isTeacher ? t('create_lesson_title') : t('book_lesson_title')}
           </div>
 
           <div style={{ marginBottom: 14 }}>
@@ -142,31 +188,81 @@ export function BookLessonSheet({ open, onClose, defaultDate }: BookLessonSheetP
           <div style={{ marginBottom: 14 }}>
             <div style={labelStyle}>{t('lesson_type_label')}</div>
             <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-              {TYPES.map((opt) => (
-                <button
-                  type="button"
-                  key={opt.key}
-                  onClick={() => setType(opt.key)}
-                  className="tap"
-                  style={{
-                    padding: '8px 14px',
-                    borderRadius: 999,
-                    fontSize: 13,
-                    fontWeight: 600,
-                    cursor: 'pointer',
-                    border: '1px solid var(--hair)',
-                    background: type === opt.key ? 'var(--ink)' : 'transparent',
-                    color: type === opt.key ? 'var(--bg)' : 'var(--ink)',
-                  }}
-                >
-                  {t(opt.labelKey)}
-                </button>
-              ))}
+              {TYPES.map((opt) => {
+                const active = type === opt.key
+                return (
+                  <button
+                    type="button"
+                    key={opt.key}
+                    onClick={() => handleTypeChange(opt.key)}
+                    className="tap"
+                    style={{
+                      padding: '8px 14px',
+                      borderRadius: 999,
+                      fontSize: 13,
+                      fontWeight: 600,
+                      cursor: 'pointer',
+                      border: '1px solid var(--hair)',
+                      background: active ? 'var(--ink)' : 'transparent',
+                      color: active ? 'var(--bg)' : 'var(--ink)',
+                    }}
+                  >
+                    {t(opt.labelKey)}
+                  </button>
+                )
+              })}
             </div>
           </div>
 
+          {isTeacher && (
+            <div style={{ marginBottom: 14 }}>
+              <div style={labelStyle}>
+                {isGroup ? t('students_label_group') : t('student_label')}
+              </div>
+              {availableStudents.length === 0 ? (
+                <div style={{ fontSize: 13, color: 'var(--ink-2)' }}>
+                  {t('no_students_available')}
+                </div>
+              ) : (
+                <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                  {availableStudents.map((s) => {
+                    const selected = studentIds.includes(s.id)
+                    return (
+                      <button
+                        type="button"
+                        key={s.id}
+                        onClick={() => toggleStudent(s.id)}
+                        className="tap"
+                        style={{
+                          padding: '8px 14px',
+                          borderRadius: 999,
+                          fontSize: 13,
+                          fontWeight: 600,
+                          cursor: 'pointer',
+                          border: '1px solid var(--hair)',
+                          background: selected ? 'var(--ink)' : 'transparent',
+                          color: selected ? 'var(--bg)' : 'var(--ink)',
+                        }}
+                      >
+                        {selected && <span style={{ marginRight: 4 }}>✓</span>}
+                        {s.firstName} {s.lastName}
+                      </button>
+                    )
+                  })}
+                </div>
+              )}
+              {isGroup && (
+                <div style={{ fontSize: 12, color: 'var(--ink-3)', marginTop: 6 }}>
+                  {studentIds.length === 0
+                    ? t('group_open_for_join')
+                    : t('students_selected', { count: studentIds.length })}
+                </div>
+              )}
+            </div>
+          )}
+
           <div style={{ display: 'flex', gap: 10, marginBottom: 14 }}>
-            <div style={{ flex: 1 }}>
+            <div style={{ flex: 1, minWidth: 0 }}>
               <div style={labelStyle}>{t('date_label')}</div>
               <input
                 type="date"
@@ -175,7 +271,7 @@ export function BookLessonSheet({ open, onClose, defaultDate }: BookLessonSheetP
                 style={inputStyle}
               />
             </div>
-            <div style={{ flex: 1 }}>
+            <div style={{ flex: 1, minWidth: 0 }}>
               <div style={labelStyle}>{t('time_label')}</div>
               <input
                 type="time"
@@ -212,6 +308,25 @@ export function BookLessonSheet({ open, onClose, defaultDate }: BookLessonSheetP
               ))}
             </div>
           </div>
+
+          {isTeacher && isGroup && (
+            <div style={{ marginBottom: 18 }}>
+              <div style={labelStyle}>{t('max_participants_label')}</div>
+              <input
+                type="number"
+                inputMode="numeric"
+                min={1}
+                max={50}
+                value={maxParticipants}
+                onChange={(e) => {
+                  const v = e.target.value
+                  setMaxParticipants(v === '' ? '' : Math.max(1, parseInt(v, 10) || 1))
+                }}
+                placeholder={t('max_participants_placeholder')}
+                style={{ ...inputStyle, maxWidth: 140 }}
+              />
+            </div>
+          )}
 
           {!teacherId && (
             <div
@@ -264,9 +379,15 @@ export function BookLessonSheet({ open, onClose, defaultDate }: BookLessonSheetP
             }}
           >
             <span className="ms fill" style={{ fontSize: 18 }}>
-              send
+              {isTeacher ? 'event' : 'send'}
             </span>
-            {create.isPending ? `${t('send_request')}…` : t('send_request')}
+            {isTeacher
+              ? create.isPending
+                ? `${t('create_lesson_cta')}…`
+                : t('create_lesson_cta')
+              : create.isPending
+                ? `${t('send_request')}…`
+                : t('send_request')}
           </button>
         </form>
       )}
