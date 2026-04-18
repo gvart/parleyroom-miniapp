@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.17.0](https://github.com/gvart/parleyroom-miniapp/compare/v1.16.0...v1.17.0) (2026-04-18)
+
+
+### Features
+
+* **miniapp:** material upload (multipart) for teachers ([967749a](https://github.com/gvart/parleyroom-miniapp/commit/967749a62c57612627d47a00d0eac631fe7c3b9c))
+
 ## [1.16.0](https://github.com/gvart/parleyroom-miniapp/compare/v1.15.0...v1.16.0) (2026-04-18)
 
 
