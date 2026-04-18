@@ -8,7 +8,12 @@ interface AppShellProps {
 }
 
 // Routes that take over the whole viewport and should hide the floating tab bar.
-const FULLSCREEN_PREFIXES = ['/vocab/review', '/lesson/']
+function isFullscreen(pathname: string): boolean {
+  if (pathname.startsWith('/vocab/review')) return true
+  // /lessons/:id/live
+  if (/^\/lessons\/[^/]+\/live$/.test(pathname)) return true
+  return false
+}
 
 // Telegram puts an overlay header (Close button + ⋯ pill) on top of our content
 // in fullscreen mode. `--tg-viewport-content-safe-area-inset-top` is the height of
@@ -23,7 +28,7 @@ const BOTTOM_INSET =
 
 export function AppShell({ tabs, children }: AppShellProps) {
   const { pathname } = useLocation()
-  const fullscreen = FULLSCREEN_PREFIXES.some((p) => pathname.startsWith(p))
+  const fullscreen = isFullscreen(pathname)
   return (
     <div
       style={{

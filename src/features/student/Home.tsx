@@ -215,7 +215,7 @@ export function Home() {
               <button
                 type="button"
                 className="tap"
-                onClick={() => navigate('/lessons')}
+                onClick={() => nextLesson && navigate(`/lessons/${nextLesson.id}/live`)}
                 style={{
                   border: 0,
                   cursor: 'pointer',

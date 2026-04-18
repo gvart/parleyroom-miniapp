@@ -9,6 +9,7 @@ import { Vocab } from '@/features/student/Vocab'
 import { VocabReview } from '@/features/student/VocabReview'
 import { Goals } from '@/features/student/Goals'
 import { Calendar } from '@/features/student/Calendar'
+import { LessonLive } from '@/features/student/LessonLive'
 import { Notifications } from '@/features/shared/Notifications'
 import { Settings } from '@/features/shared/Settings'
 import { ProfileEdit } from '@/features/shared/ProfileEdit'
@@ -29,6 +30,7 @@ export function RoleRouter() {
           <Route path="/students/:id" element={<StudentProfile />} />
           <Route path="/calendar" element={<Calendar />} />
           <Route path="/materials" element={<Materials />} />
+          <Route path="/lessons/:id/live" element={<LessonLive />} />
           <Route path="/notifications" element={<Notifications />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/settings/profile" element={<ProfileEdit />} />
@@ -43,6 +45,7 @@ export function RoleRouter() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/lessons" element={<Lessons />} />
+        <Route path="/lessons/:id/live" element={<LessonLive />} />
         <Route path="/homework" element={<Homework />} />
         <Route path="/vocab" element={<Vocab />} />
         <Route path="/vocab/review" element={<VocabReview />} />

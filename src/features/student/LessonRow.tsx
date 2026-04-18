@@ -1,14 +1,16 @@
 import { useTranslation } from 'react-i18next'
+import { useNavigate } from 'react-router-dom'
 import { Card, Pill } from '@/ui'
 import { clubLabel, isClub, lessonTime } from '@/lib/lesson'
 import type { Lesson } from '@/api/types'
 
 interface LessonRowProps {
   lesson: Lesson
-  onClick?: () => void
 }
 
-export function LessonRow({ lesson, onClick }: LessonRowProps) {
+export function LessonRow({ lesson }: LessonRowProps) {
+  const navigate = useNavigate()
+  const onClick = () => navigate(`/lessons/${lesson.id}/live`)
   const { t } = useTranslation()
   const time = lessonTime(lesson.scheduledAt)
   const live = lesson.status === 'IN_PROGRESS'
@@ -19,7 +21,7 @@ export function LessonRow({ lesson, onClick }: LessonRowProps) {
   const teacherInitial = lesson.students.find((s) => s.id === lesson.teacherId)?.firstName
 
   return (
-    <Card onClick={onClick} style={{ cursor: onClick ? 'pointer' : 'default', position: 'relative' }}>
+    <Card onClick={onClick} style={{ cursor: 'pointer', position: 'relative' }}>
       <div style={{ display: 'flex', gap: 14, alignItems: 'center' }}>
         <div
           style={{
