@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.19.0](https://github.com/gvart/parleyroom-miniapp/compare/v1.18.0...v1.19.0) (2026-04-18)
+
+
+### Features
+
+* **lesson-sheet:** role + type aware picker with group lesson support ([#21](https://github.com/gvart/parleyroom-miniapp/issues/21)) ([19a6445](https://github.com/gvart/parleyroom-miniapp/commit/19a64457447c11d1b729c49a70ea17c35f068ead))
+
 ## [1.18.0](https://github.com/gvart/parleyroom-miniapp/compare/v1.17.0...v1.18.0) (2026-04-18)
 
 
