@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.14.0](https://github.com/gvart/parleyroom-miniapp/compare/v1.13.0...v1.14.0) (2026-04-18)
+
+
+### Features
+
+* **miniapp:** lesson live UI shell ([b77d388](https://github.com/gvart/parleyroom-miniapp/commit/b77d38878ad94304a1fe07dd00a837ed9ee3177e))
+
 ## [1.13.0](https://github.com/gvart/parleyroom-miniapp/compare/v1.12.0...v1.13.0) (2026-04-17)
 
 
