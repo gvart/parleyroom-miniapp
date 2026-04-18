@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.15.0](https://github.com/gvart/parleyroom-miniapp/compare/v1.14.0...v1.15.0) (2026-04-18)
+
+
+### Features
+
+* **miniapp:** change password and interface language settings ([6a45f8d](https://github.com/gvart/parleyroom-miniapp/commit/6a45f8d404c295879993de43267d430d41195ad6))
+
 ## [1.14.0](https://github.com/gvart/parleyroom-miniapp/compare/v1.13.0...v1.14.0) (2026-04-18)
 
 
