@@ -23,13 +23,13 @@ export function Settings() {
       items: [
         { icon: 'person', label: 'Edit profile', to: '/settings/profile' },
         { icon: 'credit_card', label: 'Subscription', comingSoon: true },
-        { icon: 'language', label: 'Interface language', comingSoon: true },
+        { icon: 'language', label: 'Interface language', to: '/settings/language' },
       ],
     },
     {
       title: 'Privacy',
       items: [
-        { icon: 'lock', label: 'Change password', comingSoon: true },
+        { icon: 'lock', label: 'Change password', to: '/settings/password' },
         { icon: 'notifications', label: 'Notifications', comingSoon: true },
         { icon: 'help', label: 'Support', comingSoon: true },
       ],

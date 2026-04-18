@@ -13,6 +13,8 @@ import { LessonLive } from '@/features/student/LessonLive'
 import { Notifications } from '@/features/shared/Notifications'
 import { Settings } from '@/features/shared/Settings'
 import { ProfileEdit } from '@/features/shared/ProfileEdit'
+import { ChangePassword } from '@/features/shared/ChangePassword'
+import { InterfaceLanguage } from '@/features/shared/InterfaceLanguage'
 import { TeacherHome } from '@/features/teacher/TeacherHome'
 import { TeacherStudents } from '@/features/teacher/Students'
 import { StudentProfile } from '@/features/teacher/StudentProfile'
@@ -34,6 +36,8 @@ export function RoleRouter() {
           <Route path="/notifications" element={<Notifications />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/settings/profile" element={<ProfileEdit />} />
+          <Route path="/settings/password" element={<ChangePassword />} />
+          <Route path="/settings/language" element={<InterfaceLanguage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </AppShell>

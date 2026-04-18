@@ -148,6 +148,16 @@ export const api = {
   materials: (query: { type?: MaterialType; page?: number; pageSize?: number } = {}) =>
     apiFetch<MaterialPage>(`/api/v1/materials${qs({ ...query })}`),
 
+  requestPasswordReset: () =>
+    apiFetch<{ token: string }>('/api/v1/password-reset', { method: 'POST' }),
+
+  confirmPasswordReset: (token: string, newPassword: string) =>
+    apiFetch<void>('/api/v1/password-reset/confirm', {
+      method: 'POST',
+      auth: false,
+      body: { token, newPassword },
+    }),
+
   uploadAvatar: (file: File) => {
     const form = new FormData()
     form.append('file', file)

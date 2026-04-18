@@ -443,6 +443,12 @@ export function installMockBackend(): void {
         accessTokenExpiresIn: 3600,
       })
     }
+    if (url.endsWith('/api/v1/password-reset') && method === 'POST') {
+      return json({ token: 'mock-reset-token' }, 201)
+    }
+    if (url.endsWith('/api/v1/password-reset/confirm') && method === 'POST') {
+      return new Response(null, { status: 200 })
+    }
     if (url.endsWith('/api/v1/users/me/avatar')) {
       if (method === 'POST') {
         const form = init?.body instanceof FormData ? init.body : null
