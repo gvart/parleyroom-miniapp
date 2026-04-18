@@ -152,6 +152,33 @@ export const api = {
   materials: (query: { type?: MaterialType; page?: number; pageSize?: number } = {}) =>
     apiFetch<MaterialPage>(`/api/v1/materials${qs({ ...query })}`),
 
+  createMaterial: (input: {
+    name: string
+    type: MaterialType
+    file?: File | null
+    url?: string | null
+    studentId?: string | null
+    lessonId?: string | null
+  }) => {
+    const form = new FormData()
+    const metadata: Record<string, unknown> = {
+      name: input.name,
+      type: input.type,
+    }
+    if (input.studentId) metadata.studentId = input.studentId
+    if (input.lessonId) metadata.lessonId = input.lessonId
+    if (input.url) metadata.url = input.url
+    form.append(
+      'metadata',
+      new Blob([JSON.stringify(metadata)], { type: 'application/json' }),
+    )
+    if (input.file) form.append('file', input.file)
+    return apiFetch<{ id: string; name: string; type: MaterialType }>(
+      '/api/v1/materials',
+      { method: 'POST', body: form },
+    )
+  },
+
   requestPasswordReset: () =>
     apiFetch<{ token: string }>('/api/v1/password-reset', { method: 'POST' }),
 

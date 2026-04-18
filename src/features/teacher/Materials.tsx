@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { Card, Pill, Sheet } from '@/ui'
 import { useMaterials } from '@/hooks/useMaterials'
 import type { Material, MaterialType } from '@/api/types'
+import { UploadMaterialSheet } from './UploadMaterialSheet'
 
 const TYPE_HUE: Record<MaterialType, number> = {
   PDF: 25,
@@ -29,7 +30,7 @@ export function Materials() {
   const { t } = useTranslation()
   const materialsQuery = useMaterials()
   const [openMaterial, setOpenMaterial] = useState<Material | null>(null)
-  const [comingSoon, setComingSoon] = useState(false)
+  const [uploadOpen, setUploadOpen] = useState(false)
 
   const items = materialsQuery.data?.materials ?? []
 
@@ -74,9 +75,9 @@ export function Materials() {
         </div>
         <button
           type="button"
-          onClick={() => setComingSoon(true)}
+          onClick={() => setUploadOpen(true)}
           className="tap"
-          aria-label={t('coming_soon')}
+          aria-label={t('upload_material_title')}
           style={{
             width: 40,
             height: 40,
@@ -235,16 +236,7 @@ export function Materials() {
         )}
       </Sheet>
 
-      <Sheet open={comingSoon} onClose={() => setComingSoon(false)}>
-        <div style={{ padding: '0 22px' }}>
-          <div className="serif" style={{ fontSize: 26, letterSpacing: '-0.01em', marginBottom: 6 }}>
-            {t('coming_soon')}
-          </div>
-          <div style={{ fontSize: 13, color: 'var(--ink-2)' }}>
-            {t('empty_materials_sub')}
-          </div>
-        </div>
-      </Sheet>
+      <UploadMaterialSheet open={uploadOpen} onClose={() => setUploadOpen(false)} />
     </div>
   )
 }

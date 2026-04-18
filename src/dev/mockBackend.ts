@@ -644,6 +644,40 @@ export function installMockBackend(): void {
     if (url.includes('/api/v1/notifications')) {
       return json(notificationsBody())
     }
+    if (url.endsWith('/api/v1/materials') && method === 'POST') {
+      return new Promise<Response>((resolve) => {
+        const form = init?.body instanceof FormData ? init.body : null
+        const meta = form?.get('metadata')
+        const file = form?.get('file')
+        const finalize = (m: Record<string, unknown>) => {
+          resolve(
+            json(
+              {
+                id: `mat-${Date.now()}`,
+                teacherId: 'u-mock',
+                studentId: m.studentId ?? null,
+                lessonId: m.lessonId ?? null,
+                name: m.name ?? 'New material',
+                type: m.type ?? 'PDF',
+                contentType: file instanceof Blob ? file.type : null,
+                fileSize: file instanceof Blob ? file.size : null,
+                downloadUrl: m.url ?? '#',
+                createdAt: new Date().toISOString(),
+              },
+              201,
+            ),
+          )
+        }
+        if (meta instanceof Blob) {
+          meta
+            .text()
+            .then((s) => finalize(JSON.parse(s) as Record<string, unknown>))
+            .catch(() => finalize({}))
+        } else {
+          finalize({})
+        }
+      })
+    }
     if (url.includes('/api/v1/materials')) {
       const sp = new URL(url, 'http://x').searchParams
       const type = sp.get('type')
