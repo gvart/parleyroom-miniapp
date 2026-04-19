@@ -33,8 +33,26 @@ export function useNotifications() {
       return
     }
 
-    const refresh = () => {
+    const refresh = (event?: MessageEvent) => {
       void qc.invalidateQueries({ queryKey: ['notifications'] })
+      if (!event?.data) return
+      try {
+        const parsed = JSON.parse(event.data) as { type?: string }
+        if (
+          parsed.type === 'MATERIAL_SHARED' ||
+          parsed.type === 'FOLDER_SHARED' ||
+          parsed.type === 'MATERIAL_ATTACHED_TO_LESSON'
+        ) {
+          void qc.invalidateQueries({ queryKey: ['materials'] })
+          void qc.invalidateQueries({ queryKey: ['material-folders'] })
+          void qc.invalidateQueries({ queryKey: ['lesson-materials'] })
+        }
+        if (parsed.type?.startsWith('LESSON') || parsed.type?.startsWith('RESCHEDULE')) {
+          void qc.invalidateQueries({ queryKey: ['lessons'] })
+        }
+      } catch {
+        // Non-JSON (pings/heartbeats) — nothing to do beyond the notifications refresh.
+      }
     }
 
     es.addEventListener('message', refresh)

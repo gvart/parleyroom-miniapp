@@ -19,6 +19,7 @@ import { TeacherHome } from '@/features/teacher/TeacherHome'
 import { TeacherStudents } from '@/features/teacher/Students'
 import { StudentProfile } from '@/features/teacher/StudentProfile'
 import { Materials } from '@/features/teacher/Materials'
+import { StudentMaterials } from '@/features/student/Materials'
 
 export function RoleRouter() {
   const { user } = useAuth()
@@ -51,6 +52,7 @@ export function RoleRouter() {
         <Route path="/lessons" element={<Lessons />} />
         <Route path="/lessons/:id/live" element={<LessonLive />} />
         <Route path="/homework" element={<Homework />} />
+        <Route path="/materials" element={<StudentMaterials />} />
         <Route path="/vocab" element={<Vocab />} />
         <Route path="/vocab/review" element={<VocabReview />} />
         <Route path="/goals" element={<Goals />} />

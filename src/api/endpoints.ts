@@ -1,6 +1,7 @@
 import { apiFetch } from './client'
 import type {
   AuthResponse,
+  FolderTreeNode,
   Goal,
   GoalPage,
   GoalStatus,
@@ -8,10 +9,13 @@ import type {
   HomeworkPage,
   HomeworkStatus,
   Lesson,
+  LessonMaterialList,
   LessonType,
   Level,
   LessonPage,
+  MaterialFolder,
   MaterialPage,
+  MaterialSkill,
   MaterialType,
   NotificationPage,
   TelegramLink,
@@ -149,24 +153,45 @@ export const api = {
       body: reason ? { reason } : null,
     }),
 
-  materials: (query: { type?: MaterialType; page?: number; pageSize?: number } = {}) =>
-    apiFetch<MaterialPage>(`/api/v1/materials${qs({ ...query })}`),
+  materials: (
+    query: {
+      folderId?: string
+      unfiled?: boolean
+      lessonId?: string
+      type?: MaterialType
+      level?: Level
+      skill?: MaterialSkill
+      page?: number
+      pageSize?: number
+    } = {},
+  ) => apiFetch<MaterialPage>(`/api/v1/materials${qs({ ...query })}`),
+
+  materialFolders: (tree = true) =>
+    apiFetch<FolderTreeNode[]>(`/api/v1/material-folders${qs({ tree })}`),
+
+  materialFolder: (id: string) =>
+    apiFetch<MaterialFolder>(`/api/v1/material-folders/${id}`),
+
+  lessonMaterials: (lessonId: string) =>
+    apiFetch<LessonMaterialList>(`/api/v1/lessons/${lessonId}/materials`),
 
   createMaterial: (input: {
     name: string
     type: MaterialType
     file?: File | null
     url?: string | null
-    studentId?: string | null
-    lessonId?: string | null
+    folderId?: string | null
+    level?: Level | null
+    skill?: MaterialSkill | null
   }) => {
     const form = new FormData()
     const metadata: Record<string, unknown> = {
       name: input.name,
       type: input.type,
     }
-    if (input.studentId) metadata.studentId = input.studentId
-    if (input.lessonId) metadata.lessonId = input.lessonId
+    if (input.folderId) metadata.folderId = input.folderId
+    if (input.level) metadata.level = input.level
+    if (input.skill) metadata.skill = input.skill
     if (input.url) metadata.url = input.url
     form.append(
       'metadata',

@@ -6,6 +6,7 @@ import { Avatar, Pill, Sheet } from '@/ui'
 import { useLessons } from '@/hooks/useLessons'
 import { useLiveKit, type LiveKitStatus } from '@/hooks/useLiveKit'
 import { VideoTile } from './VideoTile'
+import { LessonAttachmentsList } from './LessonAttachmentsList'
 
 const SAMPLE_VOCAB = [
   ['die Vergangenheit', 'the past'],
@@ -384,6 +385,7 @@ export function LessonLive() {
           <div style={{ fontSize: 13, color: '#A7A69C', marginBottom: 18 }}>
             {t('lesson_notes_sub')}
           </div>
+          {id && <LessonAttachmentsList lessonId={id} dark />}
           <div style={{ marginBottom: 16 }}>
             <div
               style={{
