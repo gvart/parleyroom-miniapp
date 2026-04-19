@@ -5,6 +5,8 @@ export function notificationIcon(type: NotificationType): string {
     return 'videocam'
   }
   if (type.startsWith('VOCAB')) return 'menu_book'
+  if (type === 'MATERIAL_SHARED' || type === 'MATERIAL_ATTACHED_TO_LESSON') return 'description'
+  if (type === 'FOLDER_SHARED') return 'folder_shared'
   return 'notifications'
 }
 
@@ -37,6 +39,12 @@ export function notificationText(n: Notification): string {
       return `${who} declined your join request.`
     case 'VOCAB_REVIEW_DUE':
       return 'You have words ready to review.'
+    case 'MATERIAL_SHARED':
+      return `${who} shared a material with you.`
+    case 'FOLDER_SHARED':
+      return `${who} shared a folder with you.`
+    case 'MATERIAL_ATTACHED_TO_LESSON':
+      return `${who} added materials to your lesson.`
   }
 }
 

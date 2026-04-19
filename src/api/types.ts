@@ -152,6 +152,9 @@ export type NotificationType =
   | 'LESSON_STARTED'
   | 'LESSON_COMPLETED'
   | 'VOCAB_REVIEW_DUE'
+  | 'MATERIAL_SHARED'
+  | 'FOLDER_SHARED'
+  | 'MATERIAL_ATTACHED_TO_LESSON'
 
 export interface NotificationActor {
   id: string
@@ -207,14 +210,16 @@ export interface UserList {
 }
 
 export type MaterialType = 'PDF' | 'AUDIO' | 'VIDEO' | 'LINK'
+export type MaterialSkill = 'SPEAKING' | 'LISTENING' | 'READING' | 'WRITING' | 'GRAMMAR' | 'VOCAB'
 
 export interface Material {
   id: string
   teacherId: string
-  studentId: string | null
-  lessonId: string | null
+  folderId: string | null
   name: string
   type: MaterialType
+  level: Level | null
+  skill: MaterialSkill | null
   contentType: string | null
   fileSize: number | null
   downloadUrl: string | null
@@ -226,6 +231,33 @@ export interface MaterialPage {
   total: number
   page: number
   pageSize: number
+}
+
+export interface MaterialFolder {
+  id: string
+  teacherId: string
+  parentFolderId: string | null
+  name: string
+  materialCount: number
+  childFolderCount: number
+  sharedWithCount: number
+  createdAt: string
+  updatedAt: string
+}
+
+export interface FolderTreeNode {
+  folder: MaterialFolder
+  children: FolderTreeNode[]
+}
+
+export interface LessonMaterial {
+  material: Material
+  attachedBy: string
+  attachedAt: string
+}
+
+export interface LessonMaterialList {
+  items: LessonMaterial[]
 }
 
 export interface VideoAccess {

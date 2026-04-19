@@ -1,14 +1,15 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { api } from '@/api/endpoints'
-import type { MaterialType } from '@/api/types'
+import type { Level, MaterialSkill, MaterialType } from '@/api/types'
 
 interface CreateMaterialInput {
   name: string
   type: MaterialType
   file?: File | null
   url?: string | null
-  studentId?: string | null
-  lessonId?: string | null
+  folderId?: string | null
+  level?: Level | null
+  skill?: MaterialSkill | null
 }
 
 export function useCreateMaterial() {
@@ -17,6 +18,7 @@ export function useCreateMaterial() {
     mutationFn: (input: CreateMaterialInput) => api.createMaterial(input),
     onSuccess: () => {
       void qc.invalidateQueries({ queryKey: ['materials'] })
+      void qc.invalidateQueries({ queryKey: ['material-folders'] })
     },
   })
 }

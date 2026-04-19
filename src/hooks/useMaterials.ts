@@ -1,10 +1,21 @@
 import { useQuery } from '@tanstack/react-query'
 import { api } from '@/api/endpoints'
-import type { MaterialType } from '@/api/types'
+import type { Level, MaterialSkill, MaterialType } from '@/api/types'
 
-export function useMaterials(type?: MaterialType) {
+export interface MaterialsQuery {
+  folderId?: string
+  unfiled?: boolean
+  lessonId?: string
+  type?: MaterialType
+  level?: Level
+  skill?: MaterialSkill
+  page?: number
+  pageSize?: number
+}
+
+export function useMaterials(query: MaterialsQuery = {}) {
   return useQuery({
-    queryKey: ['materials', type ?? 'all'],
-    queryFn: () => api.materials(type ? { type } : {}),
+    queryKey: ['materials', query],
+    queryFn: () => api.materials(query),
   })
 }

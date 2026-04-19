@@ -3,7 +3,7 @@ import type { TabDef } from '@/ui'
 export const STUDENT_TABS: TabDef[] = [
   { key: 'home', path: '/', label: 'Home', icon: 'home' },
   { key: 'lessons', path: '/lessons', label: 'Lessons', icon: 'event_note' },
-  { key: 'homework', path: '/homework', label: 'Tasks', icon: 'task_alt' },
+  { key: 'materials', path: '/materials', label: 'Library', icon: 'collections_bookmark' },
   { key: 'vocab', path: '/vocab', label: 'Words', icon: 'menu_book' },
   { key: 'settings', path: '/settings', label: 'You', icon: 'person' },
 ]
