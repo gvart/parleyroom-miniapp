@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.20.0](https://github.com/gvart/parleyroom-miniapp/compare/v1.19.0...v1.20.0) (2026-04-19)
+
+
+### Features
+
+* **materials:** student folder browser + in-lesson attachments ([#23](https://github.com/gvart/parleyroom-miniapp/issues/23)) ([d74cd8d](https://github.com/gvart/parleyroom-miniapp/commit/d74cd8d289ce59c6d03f1481ea74c055571b61c9))
+
 ## [1.19.0](https://github.com/gvart/parleyroom-miniapp/compare/v1.18.0...v1.19.0) (2026-04-18)
 
 
