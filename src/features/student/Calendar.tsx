@@ -4,6 +4,7 @@ import { Pill } from '@/ui'
 import { useLessons } from '@/hooks/useLessons'
 import { isClub, lessonDate, lessonTime, todayISO } from '@/lib/lesson'
 import { BookLessonSheet } from './BookLessonSheet'
+import { LessonActionsSheet } from './LessonActionsSheet'
 import type { Lesson } from '@/api/types'
 
 const HOURS = ['08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20']
@@ -54,6 +55,7 @@ export function Calendar() {
   const today = todayISO()
   const [selected, setSelected] = useState(today)
   const [sheetOpen, setSheetOpen] = useState(false)
+  const [openedLesson, setOpenedLesson] = useState<Lesson | null>(null)
 
   const week = useMemo<DayCell[]>(() => {
     const start = startOfWeek(new Date())
@@ -231,9 +233,16 @@ export function Calendar() {
                     const teacherName =
                       l.students.find((s) => s.id === l.teacherId)?.firstName ?? ''
                     return (
-                      <div
+                      <button
+                        type="button"
                         key={l.id}
+                        onClick={() => setOpenedLesson(l)}
+                        className="tap"
                         style={{
+                          display: 'block',
+                          width: '100%',
+                          textAlign: 'left',
+                          cursor: 'pointer',
                           background: live
                             ? 'linear-gradient(135deg, oklch(0.38 0.12 145), oklch(0.28 0.1 200))'
                             : club
@@ -251,6 +260,8 @@ export function Calendar() {
                           boxShadow: live
                             ? '0 8px 20px oklch(0.28 0.1 200 / 0.3)'
                             : 'none',
+                          fontFamily: 'inherit',
+                          fontSize: 'inherit',
                         }}
                       >
                         <div
@@ -285,7 +296,7 @@ export function Calendar() {
                             ? `${l.students.length}${l.maxParticipants ? `/${l.maxParticipants}` : ''}`
                             : teacherName}
                         </div>
-                      </div>
+                      </button>
                     )
                   })}
                 </div>
@@ -299,6 +310,11 @@ export function Calendar() {
         open={sheetOpen}
         onClose={() => setSheetOpen(false)}
         defaultDate={selected}
+      />
+      <LessonActionsSheet
+        open={Boolean(openedLesson)}
+        lesson={openedLesson}
+        onClose={() => setOpenedLesson(null)}
       />
     </div>
   )

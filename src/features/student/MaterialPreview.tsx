@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { openLink } from '@telegram-apps/sdk-react'
 import type { Material } from '@/api/types'
 import { API_BASE, getApiToken } from '@/api/client'
+import { Banner, Button } from '@/ui'
 
 interface Props {
   material: Material
@@ -89,23 +90,13 @@ export function MaterialPreview({ material, onClose }: Props) {
         </div>
       </div>
 
-      {error && (
-        <div
-          style={{
-            padding: '10px 14px',
-            borderRadius: 12,
-            background: 'oklch(0.96 0.05 25)',
-            color: 'oklch(0.5 0.18 25)',
-            fontSize: 13,
-          }}
-        >
-          {error}
-        </div>
-      )}
+      {error && <Banner tone="error">{error}</Banner>}
 
       {isLink && material.downloadUrl && (
-        <button
-          type="button"
+        <Button
+          variant="primary"
+          block
+          leadingIcon="open_in_new"
           onClick={() => {
             try {
               openLink(material.downloadUrl!)
@@ -114,28 +105,9 @@ export function MaterialPreview({ material, onClose }: Props) {
             }
             onClose()
           }}
-          className="tap"
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 8,
-            width: '100%',
-            border: 0,
-            background: 'var(--ink)',
-            color: 'var(--bg)',
-            padding: '14px',
-            borderRadius: 999,
-            fontSize: 14,
-            fontWeight: 600,
-            cursor: 'pointer',
-          }}
         >
-          <span className="ms" style={{ fontSize: 18 }}>
-            open_in_new
-          </span>
           {t('open_link')}
-        </button>
+        </Button>
       )}
 
       {!isLink && loading && (

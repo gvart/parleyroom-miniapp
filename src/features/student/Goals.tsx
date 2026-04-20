@@ -2,16 +2,24 @@ import { useEffect, useState, type FormEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/auth/AuthGate'
-import { Card, Ring, Section, Sheet } from '@/ui'
-import { useAbandonGoal, useCompleteGoal, useCreateGoal, useGoals } from '@/hooks/useGoals'
+import { Banner, Button, Card, Ring, Section, Sheet, TextField } from '@/ui'
+import {
+  useAbandonGoal,
+  useCompleteGoal,
+  useCreateGoal,
+  useDeleteGoal,
+  useGoals,
+  useUpdateGoalProgress,
+} from '@/hooks/useGoals'
 import type { Goal } from '@/api/types'
 
 const HUES = [172, 290, 75, 25, 210, 145]
+const PROGRESS_STEPS = [0, 25, 50, 75, 100] as const
 
 export function Goals() {
   const { t } = useTranslation()
   const navigate = useNavigate()
-  const goalsQuery = useGoals('ACTIVE')
+  const goalsQuery = useGoals({ status: 'ACTIVE' })
   const [sheetOpen, setSheetOpen] = useState(false)
 
   const goals = goalsQuery.data?.goals ?? []
@@ -81,23 +89,9 @@ export function Goals() {
           <div style={{ fontSize: 13, color: 'var(--ink-2)', marginBottom: 16 }}>
             {t('empty_goals_sub')}
           </div>
-          <button
-            type="button"
-            onClick={() => setSheetOpen(true)}
-            className="tap"
-            style={{
-              border: 0,
-              background: 'var(--ink)',
-              color: 'var(--bg)',
-              padding: '10px 18px',
-              borderRadius: 999,
-              fontSize: 13,
-              fontWeight: 600,
-              cursor: 'pointer',
-            }}
-          >
+          <Button variant="primary" size="sm" onClick={() => setSheetOpen(true)}>
             {t('set_goal')}
-          </button>
+          </Button>
         </div>
       ) : (
         <Section eyebrow={t('this_week')}>
@@ -123,13 +117,17 @@ function GoalCard({ goal, hue }: { goal: Goal; hue: number }) {
   const { t } = useTranslation()
   const complete = useCompleteGoal()
   const abandon = useAbandonGoal()
+  const remove = useDeleteGoal()
+  const updateProgress = useUpdateGoalProgress()
   const [menuOpen, setMenuOpen] = useState(false)
+  const [confirmDelete, setConfirmDelete] = useState(false)
 
-  const meta =
-    goal.setBy === 'TEACHER' ? t('set_by_teacher') : t('set_by_you')
+  const meta = goal.setBy === 'TEACHER' ? t('set_by_teacher') : t('set_by_you')
   const targetMeta = goal.targetDate
     ? `${meta} · ${t('target_by', { date: goal.targetDate.slice(5) })}`
     : meta
+
+  const anyError = complete.error ?? abandon.error ?? remove.error ?? updateProgress.error
 
   return (
     <Card style={{ marginBottom: 10, position: 'relative' }}>
@@ -168,57 +166,122 @@ function GoalCard({ goal, hue }: { goal: Goal; hue: number }) {
       {menuOpen && (
         <div
           style={{
-            display: 'flex',
-            gap: 8,
             marginTop: 12,
             paddingTop: 12,
             borderTop: '1px solid var(--hair)',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 10,
           }}
         >
-          <button
-            type="button"
-            onClick={() => {
-              complete.mutate(goal.id)
-              setMenuOpen(false)
-            }}
-            disabled={complete.isPending}
-            className="tap"
-            style={{
-              flex: 1,
-              border: 0,
-              background: 'var(--ink)',
-              color: 'var(--bg)',
-              padding: '10px',
-              borderRadius: 999,
-              fontSize: 12,
-              fontWeight: 600,
-              cursor: 'pointer',
-            }}
-          >
-            {t('complete')}
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              abandon.mutate(goal.id)
-              setMenuOpen(false)
-            }}
-            disabled={abandon.isPending}
-            className="tap"
-            style={{
-              flex: 1,
-              border: '1px solid var(--hair-strong)',
-              background: 'transparent',
-              color: 'var(--ink)',
-              padding: '10px',
-              borderRadius: 999,
-              fontSize: 12,
-              fontWeight: 600,
-              cursor: 'pointer',
-            }}
-          >
-            {t('abandon')}
-          </button>
+          <div>
+            <div
+              style={{
+                fontSize: 11,
+                color: 'var(--ink-3)',
+                textTransform: 'uppercase',
+                letterSpacing: '0.08em',
+                fontWeight: 600,
+                marginBottom: 8,
+              }}
+            >
+              {t('progress_label')}
+            </div>
+            <div style={{ display: 'flex', gap: 6 }}>
+              {PROGRESS_STEPS.map((p) => {
+                const active = Math.abs(goal.progress - p) < 5
+                return (
+                  <button
+                    key={p}
+                    type="button"
+                    onClick={() => updateProgress.mutate({ id: goal.id, progress: p })}
+                    disabled={updateProgress.isPending || active}
+                    className="tap"
+                    style={{
+                      flex: 1,
+                      padding: '8px',
+                      borderRadius: 12,
+                      fontSize: 12,
+                      fontWeight: 600,
+                      cursor: active ? 'default' : 'pointer',
+                      border: '1px solid var(--hair)',
+                      background: active ? 'var(--ink)' : 'transparent',
+                      color: active ? 'var(--bg)' : 'var(--ink)',
+                    }}
+                  >
+                    {p}%
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+
+          {anyError && (
+            <Banner tone="error">
+              {anyError instanceof Error ? anyError.message : t('action_failed')}
+            </Banner>
+          )}
+
+          {confirmDelete ? (
+            <Banner tone="error" icon="delete">
+              <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                <span style={{ flex: 1 }}>{t('delete_goal_confirm')}</span>
+                <Button
+                  size="sm"
+                  variant="danger"
+                  loading={remove.isPending}
+                  onClick={() => remove.mutate(goal.id)}
+                >
+                  {t('delete')}
+                </Button>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => setConfirmDelete(false)}
+                >
+                  {t('cancel_no')}
+                </Button>
+              </div>
+            </Banner>
+          ) : (
+            <div style={{ display: 'flex', gap: 8 }}>
+              <Button
+                size="sm"
+                variant="primary"
+                block
+                loading={complete.isPending}
+                onClick={() => {
+                  complete.mutate(goal.id)
+                  setMenuOpen(false)
+                }}
+              >
+                {t('complete')}
+              </Button>
+              <Button
+                size="sm"
+                variant="secondary"
+                block
+                loading={abandon.isPending}
+                onClick={() => {
+                  abandon.mutate(goal.id)
+                  setMenuOpen(false)
+                }}
+              >
+                {t('abandon')}
+              </Button>
+              <Button
+                size="sm"
+                variant="ghost"
+                aria-label={t('delete')}
+                onClick={() => setConfirmDelete(true)}
+                style={{ color: 'oklch(0.55 0.2 25)' }}
+              >
+                <span className="ms" style={{ fontSize: 18 }}>
+                  delete_outline
+                </span>
+              </Button>
+            </div>
+          )}
         </div>
       )}
     </Card>
@@ -242,8 +305,9 @@ function NewGoalSheet({ open, onClose, onCreated }: NewGoalProps) {
     if (open) {
       setDescription('')
       setTargetDate('')
+      create.reset()
     }
-  }, [open])
+  }, [open, create])
 
   const canSubmit = description.trim().length > 0 && !create.isPending
 
@@ -262,26 +326,6 @@ function NewGoalSheet({ open, onClose, onCreated }: NewGoalProps) {
     }
   }
 
-  const labelStyle = {
-    fontSize: 11,
-    color: 'var(--ink-3)',
-    textTransform: 'uppercase' as const,
-    letterSpacing: '0.08em',
-    fontWeight: 600,
-    marginBottom: 8,
-  }
-  const inputStyle = {
-    width: '100%',
-    padding: '12px 14px',
-    background: 'var(--card)',
-    color: 'var(--ink)',
-    border: '1px solid var(--hair)',
-    borderRadius: 14,
-    fontSize: 15,
-    fontFamily: 'inherit',
-    outline: 'none',
-  }
-
   return (
     <Sheet open={open} onClose={onClose}>
       <form onSubmit={submit} style={{ padding: '0 22px 10px' }}>
@@ -293,61 +337,42 @@ function NewGoalSheet({ open, onClose, onCreated }: NewGoalProps) {
         </div>
 
         <div style={{ marginBottom: 14 }}>
-          <div style={labelStyle}>{t('goal_description_label')}</div>
-          <input
+          <TextField
+            label={t('goal_description_label')}
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             placeholder={t('goal_description_placeholder')}
-            style={inputStyle}
             autoFocus
           />
         </div>
 
         <div style={{ marginBottom: 18 }}>
-          <div style={labelStyle}>{t('goal_target_date')}</div>
-          <input
+          <TextField
             type="date"
+            label={t('goal_target_date')}
             value={targetDate}
             onChange={(e) => setTargetDate(e.target.value)}
-            style={inputStyle}
           />
         </div>
 
         {create.error && (
-          <div
-            style={{
-              marginBottom: 12,
-              padding: '10px 14px',
-              borderRadius: 12,
-              background: 'oklch(0.96 0.05 25)',
-              color: 'oklch(0.5 0.18 25)',
-              fontSize: 13,
-            }}
-          >
-            {create.error instanceof Error ? create.error.message : 'Create failed'}
+          <div style={{ marginBottom: 12 }}>
+            <Banner tone="error">
+              {create.error instanceof Error ? create.error.message : 'Create failed'}
+            </Banner>
           </div>
         )}
 
-        <button
+        <Button
           type="submit"
+          variant="primary"
+          block
           disabled={!canSubmit}
-          className="tap"
-          style={{
-            width: '100%',
-            border: 0,
-            cursor: canSubmit ? 'pointer' : 'not-allowed',
-            background: canSubmit ? 'var(--ink)' : 'var(--hair-strong)',
-            color: canSubmit ? 'var(--bg)' : 'var(--ink-3)',
-            padding: '14px',
-            borderRadius: 999,
-            fontSize: 14,
-            fontWeight: 600,
-          }}
+          loading={create.isPending}
         >
-          {create.isPending ? `${t('set_goal')}…` : t('set_goal')}
-        </button>
+          {t('set_goal')}
+        </Button>
       </form>
     </Sheet>
   )
 }
-

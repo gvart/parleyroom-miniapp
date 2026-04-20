@@ -45,6 +45,12 @@ export interface LessonStudent {
   status: string
 }
 
+export interface PendingReschedule {
+  newScheduledAt: string
+  note: string | null
+  requestedBy: string
+}
+
 export interface Lesson {
   id: string
   title: string
@@ -58,9 +64,20 @@ export interface Lesson {
   maxParticipants: number | null
   students: LessonStudent[]
   startedAt: string | null
+  pendingReschedule?: PendingReschedule | null
+  studentReflection?: string | null
+  studentHardToday?: string | null
+  teacherNotes?: string | null
+  teacherWentWell?: string | null
+  teacherWorkingOn?: string | null
   createdBy: string
   createdAt: string
   updatedAt: string
+}
+
+export interface StartLessonResponse {
+  document: unknown
+  videoRoom: VideoAccess
 }
 
 export interface LessonPage {

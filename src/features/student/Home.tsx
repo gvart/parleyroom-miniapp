@@ -18,7 +18,7 @@ export function Home() {
   const lessonsQuery = useLessons()
   const homeworkQuery = useHomework()
   const notificationsQuery = useNotifications()
-  const goalsQuery = useGoals('ACTIVE')
+  const goalsQuery = useGoals({ status: 'ACTIVE' })
 
   const lessons = lessonsQuery.data?.lessons ?? []
   const unreadCount =
