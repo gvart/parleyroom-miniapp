@@ -28,7 +28,11 @@ export function RescheduleSheet({ open, lesson, onClose, onDone }: Props) {
       setSubmitted(false)
       request.reset()
     }
-  }, [open, lesson, request])
+    // `request` is a fresh object on every render (TanStack Query v5), so
+    // depending on it would re-run this effect on each keystroke and wipe
+    // the form. Only re-initialize when the sheet opens or the lesson changes.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, lesson])
 
   if (!lesson) return null
 

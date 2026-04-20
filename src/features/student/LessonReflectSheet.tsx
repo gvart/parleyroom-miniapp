@@ -29,7 +29,8 @@ export function LessonReflectSheet({ open, lesson, onClose, onDone }: Props) {
       setSubmitted(false)
       reflect.reset()
     }
-  }, [open, reflect])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open])
 
   if (!lesson) return null
 

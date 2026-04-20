@@ -25,7 +25,8 @@ export function AssignGoalSheet({ open, studentId, studentName, onClose, onDone 
       setSubmitted(false)
       create.reset()
     }
-  }, [open, create])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open])
 
   if (!studentId) return null
 

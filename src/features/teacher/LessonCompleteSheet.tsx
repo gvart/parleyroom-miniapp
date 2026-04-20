@@ -27,7 +27,8 @@ export function LessonCompleteSheet({ open, lesson, onClose, onDone }: Props) {
       setSubmitted(false)
       complete.reset()
     }
-  }, [open, lesson, complete])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, lesson])
 
   if (!lesson) return null
 

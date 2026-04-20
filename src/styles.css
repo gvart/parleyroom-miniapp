@@ -67,6 +67,18 @@ body,
   margin: 0;
   padding: 0;
   min-height: 100vh;
+  /* Keep rubber-band / pull-to-refresh inside the app — stops the whole
+     Telegram webview from scrolling when the user drags near the edges. */
+  overscroll-behavior: none;
+}
+
+html,
+body {
+  /* Lock the document so only designated scroll containers inside the app
+     scroll. Without this, iOS/Telegram treat the body as scrollable and the
+     user can drag the whole mini-app around. */
+  height: 100%;
+  overflow: hidden;
 }
 
 body {
@@ -75,6 +87,14 @@ body {
   font-family: 'Geist', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   -webkit-font-smoothing: antialiased;
   transition: background 0.4s var(--ease), color 0.3s var(--ease);
+  -webkit-tap-highlight-color: transparent;
+}
+
+#root {
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
 }
 
 button {

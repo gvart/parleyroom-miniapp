@@ -11,15 +11,6 @@ import { LessonAttachmentsList } from './LessonAttachmentsList'
 import { LessonReflectSheet } from './LessonReflectSheet'
 import { LessonCompleteSheet } from '../teacher/LessonCompleteSheet'
 
-const SAMPLE_VOCAB = [
-  ['die Vergangenheit', 'the past'],
-  ['beiläufig', 'casually'],
-  ['die Erzählung', 'the narrative'],
-] as const
-
-const SAMPLE_RULE =
-  'Präteritum is used in written German (novels, news); Perfekt dominates in spoken conversation, especially in the south.'
-
 function fmtElapsed(seconds: number): string {
   const m = Math.floor(seconds / 60)
   const s = seconds % 60
@@ -254,37 +245,6 @@ export function LessonLive() {
           )}
         </div>
 
-        <div
-          style={{
-            position: 'absolute',
-            bottom: 220,
-            left: 16,
-            right: 120,
-            padding: '10px 14px',
-            borderRadius: 16,
-            background: 'rgba(0,0,0,0.5)',
-            backdropFilter: 'blur(16px)',
-            WebkitBackdropFilter: 'blur(16px)',
-            color: '#F2F1EC',
-            fontSize: 13,
-            lineHeight: 1.35,
-            border: '1px solid rgba(255,255,255,0.08)',
-          }}
-        >
-          <div
-            style={{
-              fontSize: 10,
-              color: 'oklch(0.75 0.14 172)',
-              letterSpacing: '0.1em',
-              textTransform: 'uppercase',
-              fontWeight: 600,
-              marginBottom: 4,
-            }}
-          >
-            {t('live_caption_de')}
-          </div>
-          „Heute sprechen wir über den Unterschied zwischen Perfekt und Präteritum…"
-        </div>
       </div>
 
       <div
@@ -302,18 +262,7 @@ export function LessonLive() {
           }}
         >
           <div>
-            <div
-              style={{
-                fontSize: 10,
-                color: 'oklch(0.7 0.1 172)',
-                letterSpacing: '0.1em',
-                fontWeight: 700,
-                textTransform: 'uppercase',
-              }}
-            >
-              {t('lesson_deck')} · 3/8
-            </div>
-            <div className="serif" style={{ fontSize: 18, marginTop: 2 }}>
+            <div className="serif" style={{ fontSize: 18 }}>
               {lesson?.topic ?? teacherName}
             </div>
           </div>
@@ -340,20 +289,6 @@ export function LessonLive() {
             </span>
             {t('notes_button')}
           </button>
-        </div>
-
-        <div style={{ display: 'flex', gap: 4, marginBottom: 16 }}>
-          {[0, 1, 2, 3, 4, 5, 6, 7].map((i) => (
-            <div
-              key={i}
-              style={{
-                flex: 1,
-                height: 3,
-                borderRadius: 999,
-                background: i < 3 ? 'oklch(0.75 0.14 172)' : 'rgba(255,255,255,0.12)',
-              }}
-            />
-          ))}
         </div>
 
         <div
@@ -424,67 +359,6 @@ export function LessonLive() {
             {t('lesson_notes_sub')}
           </div>
           {id && <LessonAttachmentsList lessonId={id} dark />}
-          <div style={{ marginBottom: 16 }}>
-            <div
-              style={{
-                fontSize: 11,
-                color: '#A7A69C',
-                textTransform: 'uppercase',
-                letterSpacing: '0.08em',
-                fontWeight: 600,
-                marginBottom: 8,
-              }}
-            >
-              {t('new_vocabulary')}
-            </div>
-            {SAMPLE_VOCAB.map(([de, en]) => (
-              <div
-                key={de}
-                style={{
-                  padding: '10px 12px',
-                  background: 'rgba(255,255,255,0.04)',
-                  borderRadius: 10,
-                  marginBottom: 6,
-                  fontSize: 14,
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                }}
-              >
-                <span>
-                  {de} · {en}
-                </span>
-                <span className="ms" style={{ fontSize: 16, color: 'oklch(0.7 0.12 172)' }}>
-                  add_circle
-                </span>
-              </div>
-            ))}
-          </div>
-          <div>
-            <div
-              style={{
-                fontSize: 11,
-                color: '#A7A69C',
-                textTransform: 'uppercase',
-                letterSpacing: '0.08em',
-                fontWeight: 600,
-                marginBottom: 8,
-              }}
-            >
-              {t('key_rule')}
-            </div>
-            <div
-              style={{
-                padding: '12px 14px',
-                background: 'rgba(255,255,255,0.04)',
-                borderRadius: 12,
-                fontSize: 14,
-                lineHeight: 1.5,
-              }}
-            >
-              {SAMPLE_RULE}
-            </div>
-          </div>
         </div>
       </Sheet>
     </div>

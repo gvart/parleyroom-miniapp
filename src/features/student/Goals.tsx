@@ -307,7 +307,8 @@ function NewGoalSheet({ open, onClose, onCreated }: NewGoalProps) {
       setTargetDate('')
       create.reset()
     }
-  }, [open, create])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open])
 
   const canSubmit = description.trim().length > 0 && !create.isPending
 
