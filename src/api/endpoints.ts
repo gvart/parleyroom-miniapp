@@ -6,6 +6,7 @@ import type {
   GoalPage,
   GoalStatus,
   Homework,
+  HomeworkCategory,
   HomeworkPage,
   HomeworkStatus,
   Lesson,
@@ -18,6 +19,7 @@ import type {
   MaterialSkill,
   MaterialType,
   NotificationPage,
+  StartLessonResponse,
   TelegramLink,
   UserProfile,
   UserList,
@@ -48,6 +50,7 @@ export interface VocabularyQuery {
 }
 
 export interface HomeworkQuery {
+  studentId?: string
   status?: HomeworkStatus
   page?: number
   pageSize?: number
@@ -56,6 +59,31 @@ export interface HomeworkQuery {
 export interface SubmitHomeworkRequest {
   submissionText?: string | null
   submissionUrl?: string | null
+}
+
+export interface CreateHomeworkRequest {
+  studentId: string
+  title: string
+  category: HomeworkCategory
+  description?: string | null
+  lessonId?: string | null
+  dueDate?: string | null
+}
+
+export interface RescheduleRequest {
+  newScheduledAt: string
+  note?: string | null
+}
+
+export interface CompleteLessonRequest {
+  teacherNotes?: string | null
+  teacherWentWell?: string | null
+  teacherWorkingOn?: string | null
+}
+
+export interface ReflectLessonRequest {
+  studentReflection?: string | null
+  studentHardToday?: string | null
 }
 
 function qs(params: Record<string, unknown>): string {
@@ -114,6 +142,9 @@ export const api = {
       body,
     }),
 
+  createHomework: (body: CreateHomeworkRequest) =>
+    apiFetch<Homework>('/api/v1/homework', { method: 'POST', body }),
+
   notifications: (page = 1, pageSize = 20) =>
     apiFetch<NotificationPage>(`/api/v1/notifications${qs({ page, pageSize })}`),
 
@@ -123,8 +154,8 @@ export const api = {
       body: { notificationIds },
     }),
 
-  goals: (status?: GoalStatus) =>
-    apiFetch<GoalPage>(`/api/v1/goals${qs({ status })}`),
+  goals: (query: { studentId?: string; status?: GoalStatus } = {}) =>
+    apiFetch<GoalPage>(`/api/v1/goals${qs({ ...query })}`),
 
   createGoal: (body: { studentId: string; description: string; targetDate?: string | null }) =>
     apiFetch<Goal>('/api/v1/goals', { method: 'POST', body }),
@@ -134,6 +165,15 @@ export const api = {
 
   abandonGoal: (id: string) =>
     apiFetch<Goal>(`/api/v1/goals/${id}/abandon`, { method: 'POST' }),
+
+  updateGoalProgress: (id: string, progress: number) =>
+    apiFetch<Goal>(`/api/v1/goals/${id}/progress`, {
+      method: 'PUT',
+      body: { progress },
+    }),
+
+  deleteGoal: (id: string) =>
+    apiFetch<void>(`/api/v1/goals/${id}`, { method: 'DELETE' }),
 
   users: (page = 1, pageSize = 100) =>
     apiFetch<UserList>(`/api/v1/users${qs({ page, pageSize })}`),
@@ -152,6 +192,39 @@ export const api = {
       method: 'POST',
       body: reason ? { reason } : null,
     }),
+
+  startLesson: (id: string) =>
+    apiFetch<StartLessonResponse>(`/api/v1/lessons/${id}/start`, { method: 'POST' }),
+
+  completeLesson: (id: string, body: CompleteLessonRequest = {}) =>
+    apiFetch<unknown>(`/api/v1/lessons/${id}/complete`, { method: 'POST', body }),
+
+  reflectOnLesson: (id: string, body: ReflectLessonRequest) =>
+    apiFetch<unknown>(`/api/v1/lessons/${id}/reflect`, { method: 'POST', body }),
+
+  joinLesson: (id: string) =>
+    apiFetch<void>(`/api/v1/lessons/${id}/join`, { method: 'POST' }),
+
+  acceptJoinRequest: (lessonId: string, studentId: string) =>
+    apiFetch<void>(
+      `/api/v1/lessons/${lessonId}/participants/${studentId}/accept`,
+      { method: 'POST' },
+    ),
+
+  rejectJoinRequest: (lessonId: string, studentId: string) =>
+    apiFetch<void>(
+      `/api/v1/lessons/${lessonId}/participants/${studentId}/reject`,
+      { method: 'POST' },
+    ),
+
+  requestReschedule: (id: string, body: RescheduleRequest) =>
+    apiFetch<void>(`/api/v1/lessons/${id}/reschedule`, { method: 'POST', body }),
+
+  acceptReschedule: (id: string) =>
+    apiFetch<Lesson>(`/api/v1/lessons/${id}/reschedule/accept`, { method: 'POST' }),
+
+  rejectReschedule: (id: string) =>
+    apiFetch<void>(`/api/v1/lessons/${id}/reschedule/reject`, { method: 'POST' }),
 
   materials: (
     query: {

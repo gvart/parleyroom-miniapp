@@ -1,17 +1,23 @@
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
+import { useAuth } from '@/auth/AuthGate'
 import { Card, Pill } from '@/ui'
 import { clubLabel, isClub, lessonTime } from '@/lib/lesson'
 import type { Lesson } from '@/api/types'
 
 interface LessonRowProps {
   lesson: Lesson
+  onOpen?: (lesson: Lesson) => void
 }
 
-export function LessonRow({ lesson }: LessonRowProps) {
+export function LessonRow({ lesson, onOpen }: LessonRowProps) {
   const navigate = useNavigate()
-  const onClick = () => navigate(`/lessons/${lesson.id}/live`)
+  const { user } = useAuth()
   const { t } = useTranslation()
+  const onClick = () => {
+    if (onOpen) onOpen(lesson)
+    else navigate(`/lessons/${lesson.id}/live`)
+  }
   const time = lessonTime(lesson.scheduledAt)
   const live = lesson.status === 'IN_PROGRESS'
   const requested = lesson.status === 'REQUEST'
@@ -19,6 +25,10 @@ export function LessonRow({ lesson }: LessonRowProps) {
   const participants = lesson.students.length
   const capacity = lesson.maxParticipants
   const teacherInitial = lesson.students.find((s) => s.id === lesson.teacherId)?.firstName
+  const enrolled = lesson.students.some((s) => s.id === user.id)
+  const atCapacity = capacity != null && participants >= capacity
+  const canJoin = club && !enrolled && !atCapacity && lesson.status !== 'CANCELLED'
+  const hasPendingReschedule = Boolean(lesson.pendingReschedule)
 
   return (
     <Card onClick={onClick} style={{ cursor: 'pointer', position: 'relative' }}>
@@ -41,7 +51,7 @@ export function LessonRow({ lesson }: LessonRowProps) {
         </div>
         <div style={{ width: 1, height: 38, background: 'var(--hair)' }} />
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ display: 'flex', gap: 6, alignItems: 'center', marginBottom: 2 }}>
+          <div style={{ display: 'flex', gap: 6, alignItems: 'center', marginBottom: 2, flexWrap: 'wrap' }}>
             {live && (
               <Pill tone="live">
                 <span className="live-dot" />
@@ -50,6 +60,8 @@ export function LessonRow({ lesson }: LessonRowProps) {
             )}
             {requested && <Pill tone="warn">{t('review')}</Pill>}
             {club && <Pill tone="violet">{clubLabel(lesson)}</Pill>}
+            {hasPendingReschedule && <Pill tone="warn">{t('reschedule_pending')}</Pill>}
+            {canJoin && <Pill tone="accent">{t('join_available')}</Pill>}
           </div>
           <div
             style={{

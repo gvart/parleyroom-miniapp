@@ -6,6 +6,7 @@ import { lessonDate, lessonTime, todayISO, tomorrowISO } from '@/lib/lesson'
 import type { Lesson } from '@/api/types'
 import { LessonRow } from './LessonRow'
 import { BookLessonSheet } from './BookLessonSheet'
+import { LessonActionsSheet } from './LessonActionsSheet'
 
 interface Buckets {
   today: Lesson[]
@@ -17,6 +18,7 @@ export function Lessons() {
   const { t } = useTranslation()
   const lessonsQuery = useLessons()
   const [showBookSheet, setShowBookSheet] = useState(false)
+  const [openedLesson, setOpenedLesson] = useState<Lesson | null>(null)
 
   const buckets = useMemo<Buckets>(() => {
     const out: Buckets = { today: [], tomorrow: [], upcoming: [] }
@@ -106,7 +108,7 @@ export function Lessons() {
               <Section key={g.key} eyebrow={g.eyebrow}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                   {buckets[g.key].map((l) => (
-                    <LessonRow key={l.id} lesson={l} />
+                    <LessonRow key={l.id} lesson={l} onOpen={setOpenedLesson} />
                   ))}
                 </div>
               </Section>
@@ -152,6 +154,11 @@ export function Lessons() {
       )}
 
       <BookLessonSheet open={showBookSheet} onClose={() => setShowBookSheet(false)} />
+      <LessonActionsSheet
+        open={Boolean(openedLesson)}
+        lesson={openedLesson}
+        onClose={() => setOpenedLesson(null)}
+      />
     </div>
   )
 }

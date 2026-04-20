@@ -6,9 +6,13 @@ import { useLessons } from '@/hooks/useLessons'
 import { useUsers } from '@/hooks/useCreateLesson'
 import { useNotifications } from '@/hooks/useNotifications'
 import { useAcceptLesson, useCancelLesson } from '@/hooks/useLessonActions'
-import { Avatar, Card, Pill, Section, StatChip } from '@/ui'
+import { Avatar, Button, Card, Pill, Section, StatChip } from '@/ui'
 import { isClub, lessonDate, lessonTime, todayISO } from '@/lib/lesson'
 import type { Lesson, UserProfile } from '@/api/types'
+
+function minutesUntil(scheduledAt: string): number {
+  return Math.round((new Date(scheduledAt).getTime() - Date.now()) / 60000)
+}
 
 const HUES = [172, 290, 75, 25, 210, 145, 60]
 
@@ -128,7 +132,7 @@ export function TeacherHome() {
         <div style={{ padding: '0 20px 16px' }}>
           <Card
             padded={false}
-            onClick={() => navigate(`/calendar`)}
+            onClick={() => navigate(`/lessons/${live.id}/live`)}
             style={{
               background:
                 'linear-gradient(135deg, oklch(0.4 0.14 145) 0%, oklch(0.22 0.08 200) 100%)',
@@ -224,7 +228,7 @@ export function TeacherHome() {
                 key={l.id}
                 lesson={l}
                 last={i === todayLessons.length - 1}
-                onClick={() => navigate('/calendar')}
+                onClick={() => navigate(`/lessons/${l.id}/live`)}
               />
             ))}
           </Card>
@@ -332,44 +336,24 @@ function RequestCard({ lesson }: { lesson: Lesson }) {
         {lesson.level && <Pill tone="warn">{lesson.level}</Pill>}
       </div>
       <div style={{ display: 'flex', gap: 8 }}>
-        <button
-          type="button"
+        <Button
+          size="sm"
+          variant="primary"
+          block
+          loading={accept.isPending}
           onClick={() => accept.mutate(lesson.id)}
-          disabled={accept.isPending}
-          className="tap"
-          style={{
-            flex: 1,
-            border: 0,
-            background: 'var(--ink)',
-            color: 'var(--bg)',
-            padding: '10px',
-            borderRadius: 999,
-            fontSize: 13,
-            fontWeight: 600,
-            cursor: 'pointer',
-          }}
         >
           {t('accept')}
-        </button>
-        <button
-          type="button"
+        </Button>
+        <Button
+          size="sm"
+          variant="secondary"
+          block
+          loading={cancel.isPending}
           onClick={() => cancel.mutate({ id: lesson.id })}
-          disabled={cancel.isPending}
-          className="tap"
-          style={{
-            flex: 1,
-            border: '1px solid var(--hair-strong)',
-            background: 'transparent',
-            color: 'var(--ink)',
-            padding: '10px',
-            borderRadius: 999,
-            fontSize: 13,
-            fontWeight: 600,
-            cursor: 'pointer',
-          }}
         >
           {t('reject')}
-        </button>
+        </Button>
       </div>
     </Card>
   )
@@ -388,6 +372,9 @@ function TimelineRow({ lesson, last, onClick }: TimelineRowProps) {
   const time = lessonTime(lesson.scheduledAt)
   const live = lesson.status === 'IN_PROGRESS'
   const partnerInitials = partner ? initialsOf(partner) : '??'
+  const minsUntil = minutesUntil(lesson.scheduledAt)
+  const startable =
+    lesson.status === 'CONFIRMED' && !lesson.startedAt && minsUntil <= 15 && minsUntil > -120
 
   return (
     <button
@@ -482,12 +469,24 @@ function TimelineRow({ lesson, last, onClick }: TimelineRowProps) {
             : lesson.topic}
         </div>
       </div>
-      {live && (
+      {live ? (
         <Pill tone="live">
           <span className="live-dot" />
           {t('live')}
         </Pill>
-      )}
+      ) : startable ? (
+        <Button
+          size="sm"
+          variant="primary"
+          leadingIcon="play_arrow"
+          onClick={(e) => {
+            e.stopPropagation()
+            onClick()
+          }}
+        >
+          {t('start_cta')}
+        </Button>
+      ) : null}
     </button>
   )
 }

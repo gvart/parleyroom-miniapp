@@ -1,11 +1,15 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate, useParams } from 'react-router-dom'
-import { Avatar, Card, Section } from '@/ui'
+import { Avatar, Button, Card, Pill, Ring, Section } from '@/ui'
 import { useUsers } from '@/hooks/useCreateLesson'
 import { useLessons } from '@/hooks/useLessons'
+import { useHomework } from '@/hooks/useHomework'
+import { useGoals } from '@/hooks/useGoals'
 import { hueFor, initialsOf } from './avatarHue'
 import { lessonTime, todayISO } from '@/lib/lesson'
+import { AssignHomeworkSheet } from './AssignHomeworkSheet'
+import { AssignGoalSheet } from './AssignGoalSheet'
 import type { Lesson } from '@/api/types'
 
 export function StudentProfile() {
@@ -14,6 +18,10 @@ export function StudentProfile() {
   const { id } = useParams<{ id: string }>()
   const usersQuery = useUsers()
   const lessonsQuery = useLessons()
+  const homeworkQuery = useHomework(id ? { studentId: id } : {})
+  const goalsQuery = useGoals(id ? { studentId: id } : {})
+  const [assignHwOpen, setAssignHwOpen] = useState(false)
+  const [assignGoalOpen, setAssignGoalOpen] = useState(false)
 
   const student = usersQuery.data?.users.find((u) => u.id === id)
 
@@ -71,6 +79,12 @@ export function StudentProfile() {
     year: 'numeric',
   })
 
+  const studentName = `${student.firstName} ${student.lastName}`.trim()
+  const homework = homeworkQuery.data?.homework ?? []
+  const activeHomework = homework.filter((h) => h.status !== 'DONE' && h.status !== 'REJECTED')
+  const goals = goalsQuery.data?.goals ?? []
+  const activeGoals = goals.filter((g) => g.status === 'ACTIVE')
+
   return (
     <div>
       <div style={{ padding: '8px 20px 0' }}>
@@ -103,7 +117,7 @@ export function StudentProfile() {
           <Avatar hue={hueFor(student.id)} initials={initialsOf(student)} size={88} />
         </div>
         <div className="serif" style={{ fontSize: 28, marginTop: 12, letterSpacing: '-0.02em' }}>
-          {student.firstName} {student.lastName}
+          {studentName}
         </div>
         <div style={{ fontSize: 13, color: 'var(--ink-2)', marginTop: 2 }}>
           {student.level ?? 'student'} · {t('joined', { date: joinedDate })}
@@ -165,6 +179,27 @@ export function StudentProfile() {
         </Card>
       </div>
 
+      <div style={{ padding: '0 20px 18px', display: 'flex', gap: 8 }}>
+        <Button
+          variant="primary"
+          size="sm"
+          block
+          leadingIcon="task_alt"
+          onClick={() => setAssignHwOpen(true)}
+        >
+          {t('assign_homework')}
+        </Button>
+        <Button
+          variant="secondary"
+          size="sm"
+          block
+          leadingIcon="flag"
+          onClick={() => setAssignGoalOpen(true)}
+        >
+          {t('assign_goal')}
+        </Button>
+      </div>
+
       <Section eyebrow={t('upcoming_eyebrow')} title={t('next_lessons')}>
         {studentLessons.length === 0 ? (
           <Card style={{ textAlign: 'center', padding: '20px' }}>
@@ -209,6 +244,161 @@ export function StudentProfile() {
           </div>
         )}
       </Section>
+
+      <Section eyebrow={t('student_goals')}>
+        {activeGoals.length === 0 ? (
+          <Card style={{ textAlign: 'center', padding: '16px' }}>
+            <div style={{ fontSize: 13, color: 'var(--ink-2)' }}>{t('no_goals_yet')}</div>
+          </Card>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {activeGoals.map((g, i) => (
+              <Card key={g.id}>
+                <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+                  <Ring
+                    value={g.progress}
+                    size={46}
+                    stroke={4}
+                    hue={[172, 290, 75, 210, 145][i % 5]}
+                  />
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontSize: 14, fontWeight: 600 }}>{g.description}</div>
+                    <div style={{ fontSize: 12, color: 'var(--ink-2)' }}>
+                      {g.setBy === 'TEACHER' ? t('set_by_teacher') : t('set_by_you')}
+                      {g.targetDate ? ` · ${g.targetDate.slice(0, 10)}` : ''}
+                    </div>
+                  </div>
+                  <div
+                    className="mono"
+                    style={{ fontSize: 13, color: 'var(--ink-3)', fontWeight: 600 }}
+                  >
+                    {g.progress}%
+                  </div>
+                </div>
+              </Card>
+            ))}
+          </div>
+        )}
+      </Section>
+
+      <Section eyebrow={t('student_homework')}>
+        {homework.length === 0 ? (
+          <Card style={{ textAlign: 'center', padding: '16px' }}>
+            <div style={{ fontSize: 13, color: 'var(--ink-2)' }}>{t('no_homework_yet')}</div>
+          </Card>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {homework.slice(0, 6).map((h) => {
+              const tone =
+                h.status === 'DONE'
+                  ? 'accent'
+                  : h.status === 'REJECTED'
+                    ? 'live'
+                    : h.status === 'SUBMITTED' || h.status === 'IN_REVIEW'
+                      ? 'violet'
+                      : 'warn'
+              return (
+                <Card key={h.id}>
+                  <div
+                    style={{
+                      display: 'flex',
+                      gap: 10,
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                    }}
+                  >
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div
+                        style={{
+                          fontSize: 14,
+                          fontWeight: 600,
+                          marginBottom: 2,
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          whiteSpace: 'nowrap',
+                        }}
+                      >
+                        {h.title}
+                      </div>
+                      <div style={{ fontSize: 12, color: 'var(--ink-2)' }}>
+                        {h.category.toLowerCase()}
+                        {h.dueDate ? ` · ${h.dueDate.slice(0, 10)}` : ''}
+                      </div>
+                    </div>
+                    <Pill tone={tone}>{h.status.toLowerCase().replace('_', ' ')}</Pill>
+                  </div>
+                  {h.submissionText && (
+                    <div
+                      style={{
+                        marginTop: 10,
+                        padding: '8px 10px',
+                        background: 'var(--bg-2)',
+                        borderRadius: 10,
+                        fontSize: 12,
+                        color: 'var(--ink-2)',
+                        lineHeight: 1.4,
+                      }}
+                    >
+                      {h.submissionText}
+                    </div>
+                  )}
+                  {h.submissionUrl && (
+                    <div
+                      style={{
+                        marginTop: 10,
+                        fontSize: 12,
+                      }}
+                    >
+                      <a
+                        href={h.submissionUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{
+                          color: 'var(--accent-deep)',
+                          textDecoration: 'none',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: 4,
+                        }}
+                      >
+                        <span className="ms" style={{ fontSize: 14 }}>
+                          open_in_new
+                        </span>
+                        {h.submissionUrl}
+                      </a>
+                    </div>
+                  )}
+                </Card>
+              )
+            })}
+            {activeHomework.length > 0 && (
+              <div
+                style={{
+                  fontSize: 11,
+                  color: 'var(--ink-3)',
+                  textAlign: 'center',
+                  marginTop: 4,
+                }}
+              >
+                {t('open_count', { count: activeHomework.length })}
+              </div>
+            )}
+          </div>
+        )}
+      </Section>
+
+      <AssignHomeworkSheet
+        open={assignHwOpen}
+        studentId={id ?? null}
+        studentName={studentName}
+        onClose={() => setAssignHwOpen(false)}
+      />
+      <AssignGoalSheet
+        open={assignGoalOpen}
+        studentId={id ?? null}
+        studentName={studentName}
+        onClose={() => setAssignGoalOpen(false)}
+      />
     </div>
   )
 }

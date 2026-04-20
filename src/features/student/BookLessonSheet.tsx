@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState, type FormEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '@/auth/AuthGate'
-import { Sheet } from '@/ui'
+import { Banner, Button, Sheet, TextField } from '@/ui'
 import { useCreateLesson, useUsers } from '@/hooks/useCreateLesson'
 import { useLessons } from '@/hooks/useLessons'
 import { todayISO } from '@/lib/lesson'
@@ -125,19 +125,6 @@ export function BookLessonSheet({ open, onClose, defaultDate }: BookLessonSheetP
     fontWeight: 600,
     marginBottom: 8,
   }
-  const inputStyle = {
-    width: '100%',
-    minWidth: 0,
-    padding: '12px 14px',
-    background: 'var(--card)',
-    color: 'var(--ink)',
-    border: '1px solid var(--hair)',
-    borderRadius: 14,
-    fontSize: 15,
-    fontFamily: 'inherit',
-    outline: 'none',
-    boxSizing: 'border-box' as const,
-  }
 
   return (
     <Sheet open={open} onClose={onClose}>
@@ -175,12 +162,11 @@ export function BookLessonSheet({ open, onClose, defaultDate }: BookLessonSheetP
           </div>
 
           <div style={{ marginBottom: 14 }}>
-            <div style={labelStyle}>{t('topic_label')}</div>
-            <input
+            <TextField
+              label={t('topic_label')}
               value={topic}
               onChange={(e) => setTopic(e.target.value)}
               placeholder={t('topic_placeholder')}
-              style={inputStyle}
               autoFocus
             />
           </div>
@@ -263,21 +249,19 @@ export function BookLessonSheet({ open, onClose, defaultDate }: BookLessonSheetP
 
           <div style={{ display: 'flex', gap: 10, marginBottom: 14 }}>
             <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={labelStyle}>{t('date_label')}</div>
-              <input
+              <TextField
                 type="date"
+                label={t('date_label')}
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
-                style={inputStyle}
               />
             </div>
             <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={labelStyle}>{t('time_label')}</div>
-              <input
+              <TextField
                 type="time"
+                label={t('time_label')}
                 value={time}
                 onChange={(e) => setTime(e.target.value)}
-                style={inputStyle}
               />
             </div>
           </div>
@@ -310,85 +294,47 @@ export function BookLessonSheet({ open, onClose, defaultDate }: BookLessonSheetP
           </div>
 
           {isTeacher && isGroup && (
-            <div style={{ marginBottom: 18 }}>
-              <div style={labelStyle}>{t('max_participants_label')}</div>
-              <input
+            <div style={{ marginBottom: 18, maxWidth: 160 }}>
+              <TextField
                 type="number"
                 inputMode="numeric"
                 min={1}
                 max={50}
-                value={maxParticipants}
+                label={t('max_participants_label')}
+                value={maxParticipants === '' ? '' : String(maxParticipants)}
                 onChange={(e) => {
                   const v = e.target.value
                   setMaxParticipants(v === '' ? '' : Math.max(1, parseInt(v, 10) || 1))
                 }}
                 placeholder={t('max_participants_placeholder')}
-                style={{ ...inputStyle, maxWidth: 140 }}
               />
             </div>
           )}
 
           {!teacherId && (
-            <div
-              style={{
-                marginBottom: 12,
-                padding: '10px 14px',
-                borderRadius: 12,
-                background: 'oklch(0.95 0.05 75)',
-                color: 'oklch(0.45 0.12 75)',
-                fontSize: 13,
-              }}
-            >
-              {t('no_teacher_found')}
+            <div style={{ marginBottom: 12 }}>
+              <Banner tone="warn">{t('no_teacher_found')}</Banner>
             </div>
           )}
 
           {create.error && (
-            <div
-              style={{
-                marginBottom: 12,
-                padding: '10px 14px',
-                borderRadius: 12,
-                background: 'oklch(0.96 0.05 25)',
-                color: 'oklch(0.5 0.18 25)',
-                fontSize: 13,
-              }}
-            >
-              {create.error instanceof Error ? create.error.message : t('booking_failed')}
+            <div style={{ marginBottom: 12 }}>
+              <Banner tone="error">
+                {create.error instanceof Error ? create.error.message : t('booking_failed')}
+              </Banner>
             </div>
           )}
 
-          <button
+          <Button
             type="submit"
+            variant="primary"
+            block
             disabled={!canSubmit}
-            className="tap"
-            style={{
-              width: '100%',
-              border: 0,
-              cursor: canSubmit ? 'pointer' : 'not-allowed',
-              background: canSubmit ? 'var(--ink)' : 'var(--hair-strong)',
-              color: canSubmit ? 'var(--bg)' : 'var(--ink-3)',
-              padding: '14px',
-              borderRadius: 999,
-              fontSize: 14,
-              fontWeight: 600,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: 6,
-            }}
+            loading={create.isPending}
+            leadingIcon={isTeacher ? 'event' : 'send'}
           >
-            <span className="ms fill" style={{ fontSize: 18 }}>
-              {isTeacher ? 'event' : 'send'}
-            </span>
-            {isTeacher
-              ? create.isPending
-                ? `${t('create_lesson_cta')}…`
-                : t('create_lesson_cta')
-              : create.isPending
-                ? `${t('send_request')}…`
-                : t('send_request')}
-          </button>
+            {isTeacher ? t('create_lesson_cta') : t('send_request')}
+          </Button>
         </form>
       )}
     </Sheet>

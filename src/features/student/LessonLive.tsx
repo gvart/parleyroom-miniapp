@@ -5,8 +5,11 @@ import { useAuth } from '@/auth/AuthGate'
 import { Avatar, Pill, Sheet } from '@/ui'
 import { useLessons } from '@/hooks/useLessons'
 import { useLiveKit, type LiveKitStatus } from '@/hooks/useLiveKit'
+import { useStartLesson } from '@/hooks/useLessonActions'
 import { VideoTile } from './VideoTile'
 import { LessonAttachmentsList } from './LessonAttachmentsList'
+import { LessonReflectSheet } from './LessonReflectSheet'
+import { LessonCompleteSheet } from '../teacher/LessonCompleteSheet'
 
 const SAMPLE_VOCAB = [
   ['die Vergangenheit', 'the past'],
@@ -54,7 +57,19 @@ export function LessonLive() {
   const live = useLiveKit(id)
 
   const [showRecap, setShowRecap] = useState(false)
+  const [reflectOpen, setReflectOpen] = useState(false)
+  const [completeOpen, setCompleteOpen] = useState(false)
   const [elapsed, setElapsed] = useState(0)
+  const startLesson = useStartLesson()
+  const isTeacher = user.role === 'TEACHER' || user.role === 'ADMIN'
+  const canStart =
+    isTeacher && lesson?.status === 'CONFIRMED' && !lesson.startedAt
+
+  useEffect(() => {
+    if (canStart && lesson && !startLesson.isPending && !startLesson.isSuccess) {
+      startLesson.mutate(lesson.id)
+    }
+  }, [canStart, lesson, startLesson])
 
   useEffect(() => {
     const t = setInterval(() => setElapsed((e) => e + 1), 1000)
@@ -73,7 +88,17 @@ export function LessonLive() {
 
   async function endCall() {
     await live.disconnect()
-    navigate(-1)
+    if (!lesson) {
+      navigate(-1)
+      return
+    }
+    if (isTeacher) {
+      setCompleteOpen(true)
+    } else if (lesson.status === 'IN_PROGRESS' || lesson.status === 'COMPLETED') {
+      setReflectOpen(true)
+    } else {
+      navigate(-1)
+    }
   }
 
   return (
@@ -376,6 +401,19 @@ export function LessonLive() {
           </button>
         </div>
       </div>
+
+      <LessonReflectSheet
+        open={reflectOpen}
+        lesson={lesson ?? null}
+        onClose={() => setReflectOpen(false)}
+        onDone={() => navigate(-1)}
+      />
+      <LessonCompleteSheet
+        open={completeOpen}
+        lesson={lesson ?? null}
+        onClose={() => setCompleteOpen(false)}
+        onDone={() => navigate(-1)}
+      />
 
       <Sheet open={showRecap} onClose={() => setShowRecap(false)} dark>
         <div style={{ padding: '0 22px 10px' }}>

@@ -2,10 +2,12 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { api } from '@/api/endpoints'
 import type { GoalStatus } from '@/api/types'
 
-export function useGoals(status?: GoalStatus) {
+export function useGoals(params?: { studentId?: string; status?: GoalStatus }) {
+  const studentId = params?.studentId
+  const status = params?.status
   return useQuery({
-    queryKey: ['goals', status ?? 'all'],
-    queryFn: () => api.goals(status),
+    queryKey: ['goals', studentId ?? 'self', status ?? 'all'],
+    queryFn: () => api.goals({ studentId, status }),
   })
 }
 
@@ -34,6 +36,27 @@ export function useAbandonGoal() {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: (id: string) => api.abandonGoal(id),
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: ['goals'] })
+    },
+  })
+}
+
+export function useUpdateGoalProgress() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: ({ id, progress }: { id: string; progress: number }) =>
+      api.updateGoalProgress(id, progress),
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: ['goals'] })
+    },
+  })
+}
+
+export function useDeleteGoal() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (id: string) => api.deleteGoal(id),
     onSuccess: () => {
       void qc.invalidateQueries({ queryKey: ['goals'] })
     },
