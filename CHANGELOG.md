@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.21.0](https://github.com/gvart/parleyroom-miniapp/compare/v1.20.0...v1.21.0) (2026-04-20)
+
+
+### Features
+
+* **miniapp:** close portal feature gap — reschedule, join, reflect, complete + teacher management ([#25](https://github.com/gvart/parleyroom-miniapp/issues/25)) ([7eeae1d](https://github.com/gvart/parleyroom-miniapp/commit/7eeae1ddb0fab37ebbdbbec18264908994f2de77))
+
 ## [1.20.0](https://github.com/gvart/parleyroom-miniapp/compare/v1.19.0...v1.20.0) (2026-04-19)
 
 
