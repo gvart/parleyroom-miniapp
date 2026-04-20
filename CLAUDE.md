@@ -1,6 +1,6 @@
 # miniapp
 
-The Telegram Mini App front-door for **Parleyroom** — bare-bones today: students sign in via Telegram `initData` (with email/password fallback to link the Telegram id) and land on Home / Lessons / Vocab / Settings. Teachers see a stub pointing them to the web portal until the teacher screens are built.
+The Telegram Mini App front-door for **Parleyroom**. Students get the full learning loop (book, reschedule, join shared lessons, live video, reflect, vocab SRS, homework, goals, materials with in-app JWT preview). Teachers get a working management surface (today timeline with start-lesson CTA, request acceptance, student profile with assign-homework / assign-goal / submission review, start & complete live lessons, material upload).
 
 Production: Cloudflare Pages, project `parleyroom-miniapp`, served at `https://miniapp.rosehub.eu`. Backend at `https://api.rosehub.eu` (env var `VITE_API_BASE_URL`).
 
@@ -34,12 +34,19 @@ src/
     ThemeProvider.tsx — toggles `:root.theme-dark` from prefers-color-scheme
     tabs.ts         — STUDENT_TABS / TEACHER_TABS definitions
   ui/               — design primitives ported from the design handoff
-    Avatar.tsx, Card.tsx, CategoryDot.tsx, Pill.tsx, Ring.tsx,
-    Section.tsx, Sheet.tsx, StatChip.tsx, TabBar.tsx
+    Avatar.tsx, Banner.tsx, Button.tsx, Card.tsx, CategoryDot.tsx,
+    Pill.tsx, Ring.tsx, Section.tsx, Sheet.tsx, StatChip.tsx,
+    TabBar.tsx, TextField.tsx (+ TextArea, FieldLabel)
   features/
-    student/        — Home, Lessons, Vocab, LessonRow
-    shared/         — Settings, ProfileEdit
-    teacher/        — TeacherStub
+    student/        — Home, Lessons, LessonRow, LessonLive, LessonActionsSheet,
+                      RescheduleSheet, LessonReflectSheet, BookLessonSheet,
+                      Calendar, Vocab, VocabReview, Goals, Homework, Materials,
+                      MaterialPreview, LessonAttachmentsList, VideoTile
+    shared/         — Settings, ProfileEdit, ChangePassword, InterfaceLanguage,
+                      Notifications
+    teacher/        — TeacherHome, Students, StudentProfile, Materials,
+                      UploadMaterialSheet, AssignHomeworkSheet,
+                      AssignGoalSheet, LessonCompleteSheet
   lib/
     lesson.ts       — date helpers (todayISO, lessonTime, isClub, …)
   i18n.ts           — i18next bootstrap
@@ -90,6 +97,29 @@ npm run preview
 
 `src/env.ts` mocks the Telegram environment in DEV so the app renders in a normal browser. Edit the mock user there to test different ids / roles.
 
-## Out of scope today
+## UI primitives — use them, don't duplicate
 
-Homework, Vocab Review (flashcards), Goals, Calendar, Notifications stream, Teacher screens (Today/Students/Profile/Materials), Lesson Live (LiveKit video), Avatar upload, in-app theme/density tweak panel. Each is its own follow-up.
+When building a new screen or sheet, compose from `src/ui/`:
+
+- **Button** — variants `primary` | `secondary` | `danger` | `ghost`, sizes `md` | `sm`, `block`, `leadingIcon`, `loading`, `disabled`. Don't hand-roll pill buttons.
+- **TextField / TextArea** — already include the uppercase label + error/hint slot. Don't redeclare the input styles.
+- **Banner** — tones `info` | `warn` | `error` | `success`. Don't paste `oklch(0.96 0.05 25)` banners inline.
+- **Sheet** — every modal is a bottom sheet. Use `dark` prop only for video-context sheets.
+
+The inline-styles-with-tokens pattern still applies **inside** these primitives; don't refactor them to Tailwind or CSS modules (intentional per the Claude Design handoff).
+
+## Backend contract (selected)
+
+Full list in `src/api/endpoints.ts`. Lesson lifecycle beyond the obvious:
+
+- `POST /lessons/{id}/reschedule` (body `{ newScheduledAt, note? }`) → request. Counterparty confirms via `POST /lessons/{id}/reschedule/accept` or `.../reject`. `Lesson.pendingReschedule` surfaces the in-flight proposal.
+- `POST /lessons/{id}/join` — student requests to join a group lesson. Teacher confirms per-student via `POST /lessons/{id}/participants/{studentId}/accept`.
+- `POST /lessons/{id}/start` — teacher-only. Returns `{ document, videoRoom }`. Sets IN_PROGRESS so students can join the room.
+- `POST /lessons/{id}/complete` — teacher-only. Body accepts `teacherNotes`, `teacherWentWell`, `teacherWorkingOn` (all optional).
+- `POST /lessons/{id}/reflect` — student-only. Body accepts `studentReflection`, `studentHardToday` (at least one required).
+- `POST /homework` — teacher assigns. Body: `{ studentId, title, category, description?, lessonId?, dueDate? }`. Enum values in `types.ts`.
+- `PUT /goals/{id}/progress` body `{ progress }` (0-100). Separate from `/complete` and `/abandon`.
+
+## Out of scope (follow-ups)
+
+In-app theme/density panel, teacher-side homework grading (status review beyond read), shared lesson document sync, vocab manual status override, lesson reschedule counter-proposals, push notifications, offline cache.
