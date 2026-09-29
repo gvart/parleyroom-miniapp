@@ -76,7 +76,7 @@ export function LessonActionsSheet({ open, lesson, onClose }: Props) {
             {lesson.pendingReschedule && <Pill tone="warn">{t('reschedule_pending')}</Pill>}
             {enrolled && club && <Pill tone="accent">{t('pill_joined')}</Pill>}
           </div>
-          <div className="serif" style={{ fontSize: 24, letterSpacing: '-0.01em', marginBottom: 4 }}>
+          <div className="font-headline" style={{ fontSize: 24, letterSpacing: '-0.01em', marginBottom: 4 }}>
             {lesson.topic}
           </div>
           <div style={{ fontSize: 13, color: 'var(--ink-2)', marginBottom: 18 }}>

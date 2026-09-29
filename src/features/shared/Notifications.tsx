@@ -55,7 +55,7 @@ export function Notifications() {
             arrow_back
           </span>
         </button>
-        <div className="serif" style={{ fontSize: 22, letterSpacing: '-0.01em' }}>
+        <div className="font-headline" style={{ fontSize: 22, letterSpacing: '-0.01em' }}>
           {t('notifications')}
         </div>
         <div style={{ width: 40 }} />
@@ -66,7 +66,7 @@ export function Notifications() {
           !notificationsQuery.isLoading && (
             <div style={{ padding: '40px 30px', textAlign: 'center' }}>
               <div style={{ fontSize: 40, marginBottom: 10 }}>◌</div>
-              <div className="serif" style={{ fontSize: 22, marginBottom: 4 }}>
+              <div className="font-headline" style={{ fontSize: 22, marginBottom: 4 }}>
                 {t('all_caught_up')}
               </div>
               <div style={{ fontSize: 13, color: 'var(--ink-2)' }}>{t('no_new_notifications')}</div>

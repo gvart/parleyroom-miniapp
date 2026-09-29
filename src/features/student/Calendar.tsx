@@ -96,7 +96,7 @@ export function Calendar() {
             {t('calendar')}
           </div>
           <div
-            className="serif"
+            className="font-headline"
             style={{ fontSize: 30, lineHeight: 1.05, letterSpacing: '-0.02em' }}
           >
             {monthLabel}
@@ -187,7 +187,7 @@ export function Calendar() {
         {dayLessons.length === 0 ? (
           <div style={{ padding: '40px 30px', textAlign: 'center' }}>
             <div style={{ fontSize: 36, marginBottom: 10 }}>·</div>
-            <div className="serif" style={{ fontSize: 20, color: 'var(--ink-2)' }}>
+            <div className="font-headline" style={{ fontSize: 20, color: 'var(--ink-2)' }}>
               {t('no_lessons_today')}
             </div>
           </div>

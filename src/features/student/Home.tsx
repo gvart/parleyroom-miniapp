@@ -5,11 +5,11 @@ import { useLessons } from '@/hooks/useLessons'
 import { useHomework } from '@/hooks/useHomework'
 import { useNotifications } from '@/hooks/useNotifications'
 import { useGoals } from '@/hooks/useGoals'
-import { Card, Pill, Ring, Section, type PillTone } from '@/ui'
+import { Card, Pill, Ring, Section, type PillTone, type Tone } from '@/ui'
 import { lessonTime } from '@/lib/lesson'
 import { computeDue, isDoneStatus } from '@/lib/homework'
 
-const GOAL_HUES = [172, 290, 75]
+const GOAL_TONES: Tone[] = ['leaf', 'grape', 'sunny']
 
 export function Home() {
   const { t } = useTranslation()
@@ -58,7 +58,7 @@ export function Home() {
             {t('good_morning')}
           </div>
           <div
-            className="serif"
+            className="font-headline"
             style={{ fontSize: 38, lineHeight: 1.02, letterSpacing: '-0.02em' }}
           >
             {user.firstName}
@@ -173,7 +173,7 @@ export function Home() {
                 {live ? t('room_live') : t('next_lesson')}
               </div>
               <div
-                className="serif"
+                className="font-headline"
                 style={{
                   fontSize: 26,
                   lineHeight: 1.12,
@@ -244,7 +244,7 @@ export function Home() {
           <div style={{ padding: '0 20px 20px' }}>
             <Card style={{ textAlign: 'center', padding: '28px 20px' }}>
               <div style={{ fontSize: 28, marginBottom: 6 }}>✺</div>
-              <div className="serif" style={{ fontSize: 22, marginBottom: 4 }}>
+              <div className="font-headline" style={{ fontSize: 22, marginBottom: 4 }}>
                 {t('empty_lessons_title')}
               </div>
               <div style={{ fontSize: 13, color: 'var(--ink-2)', marginBottom: 14 }}>
@@ -412,7 +412,7 @@ export function Home() {
                   value={g.progress}
                   size={42}
                   stroke={4}
-                  hue={GOAL_HUES[i % GOAL_HUES.length]}
+                  tone={GOAL_TONES[i % GOAL_TONES.length]}
                 />
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div

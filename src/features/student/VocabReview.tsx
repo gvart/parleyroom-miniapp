@@ -204,7 +204,7 @@ export function VocabReview() {
                   {t(wordTypeLabelKey(currentWord.wordType))}
                 </div>
                 <div
-                  className="serif"
+                  className="font-headline"
                   style={{
                     fontSize: 44,
                     lineHeight: 1.05,
@@ -255,7 +255,7 @@ export function VocabReview() {
                   {t('meaning')}
                 </div>
                 <div
-                  className="serif"
+                  className="font-headline"
                   style={{
                     fontSize: 32,
                     lineHeight: 1.1,
@@ -266,7 +266,7 @@ export function VocabReview() {
                 </div>
                 {currentWord.exampleSentence && (
                   <div
-                    className="serif"
+                    className="font-headline"
                     style={{
                       marginTop: 14,
                       fontSize: 14,
@@ -339,7 +339,7 @@ function DoneScreen({ title, sub, onBack }: { title: string; sub: string; onBack
           height: 84,
           borderRadius: 999,
           background: 'var(--accent-soft)',
-          color: 'var(--accent-deep)',
+          color: 'var(--accent-ink)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -350,7 +350,7 @@ function DoneScreen({ title, sub, onBack }: { title: string; sub: string; onBack
           check
         </span>
       </div>
-      <div className="serif" style={{ fontSize: 30, letterSpacing: '-0.02em' }}>
+      <div className="font-headline" style={{ fontSize: 30, letterSpacing: '-0.02em' }}>
         {title}
       </div>
       <div style={{ fontSize: 14, color: 'var(--ink-2)', maxWidth: 280 }}>{sub}</div>

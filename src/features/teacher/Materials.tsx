@@ -66,7 +66,7 @@ export function Materials() {
             {t('materials')}
           </div>
           <div
-            className="serif"
+            className="font-headline"
             style={{ fontSize: 30, lineHeight: 1.05, letterSpacing: '-0.02em' }}
           >
             {t('library_title')}
@@ -101,7 +101,7 @@ export function Materials() {
         !materialsQuery.isLoading && (
           <div style={{ padding: '40px 30px', textAlign: 'center' }}>
             <div style={{ fontSize: 40, marginBottom: 10 }}>◌</div>
-            <div className="serif" style={{ fontSize: 22, marginBottom: 4 }}>
+            <div className="font-headline" style={{ fontSize: 22, marginBottom: 4 }}>
               {t('empty_materials_title')}
             </div>
             <div style={{ fontSize: 13, color: 'var(--ink-2)', maxWidth: 280, margin: '0 auto' }}>
@@ -194,7 +194,7 @@ export function Materials() {
       <Sheet open={!!openMaterial} onClose={() => setOpenMaterial(null)}>
         {openMaterial && (
           <div style={{ padding: '0 22px' }}>
-            <div className="serif" style={{ fontSize: 26, letterSpacing: '-0.01em', marginBottom: 6 }}>
+            <div className="font-headline" style={{ fontSize: 26, letterSpacing: '-0.01em', marginBottom: 6 }}>
               {openMaterial.name}
             </div>
             <div style={{ fontSize: 13, color: 'var(--ink-2)', marginBottom: 18 }}>

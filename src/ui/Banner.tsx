@@ -3,10 +3,10 @@ import type { CSSProperties, ReactNode } from 'react'
 export type BannerTone = 'info' | 'warn' | 'error' | 'success'
 
 const tones: Record<BannerTone, { bg: string; fg: string; icon: string }> = {
-  info: { bg: 'var(--accent-soft)', fg: 'var(--accent-deep)', icon: 'info' },
-  warn: { bg: 'oklch(0.95 0.05 75)', fg: 'oklch(0.45 0.12 75)', icon: 'warning' },
-  error: { bg: 'oklch(0.96 0.05 25)', fg: 'oklch(0.5 0.18 25)', icon: 'error' },
-  success: { bg: 'oklch(0.95 0.07 145)', fg: 'oklch(0.38 0.12 145)', icon: 'check_circle' },
+  info: { bg: 'var(--sky-soft)', fg: 'var(--sky-ink)', icon: 'info' },
+  warn: { bg: 'var(--sunny-soft)', fg: 'var(--sunny-ink)', icon: 'warning' },
+  error: { bg: 'var(--coral-soft)', fg: 'var(--coral-ink)', icon: 'error' },
+  success: { bg: 'var(--leaf-soft)', fg: 'var(--leaf-ink)', icon: 'check_circle' },
 }
 
 interface BannerProps {
@@ -20,19 +20,22 @@ export function Banner({ tone = 'info', icon, children, style }: BannerProps) {
   const t = tones[tone]
   return (
     <div
+      role={tone === 'error' ? 'alert' : undefined}
       style={{
         display: 'flex',
         alignItems: 'flex-start',
         gap: 10,
-        padding: '10px 14px',
-        borderRadius: 12,
+        padding: '12px 14px',
+        borderRadius: 18,
         background: t.bg,
         color: t.fg,
-        fontSize: 13,
+        fontSize: 'var(--text-small)',
+        fontWeight: 700,
+        boxShadow: 'var(--glass-highlight)',
         ...style,
       }}
     >
-      <span className="ms fill" style={{ fontSize: 18, flexShrink: 0, marginTop: 1 }}>
+      <span className="ms fill" style={{ fontSize: 18, flexShrink: 0, marginTop: 1 }} aria-hidden="true">
         {icon ?? t.icon}
       </span>
       <div style={{ flex: 1, minWidth: 0 }}>{children}</div>

@@ -1,16 +1,29 @@
-import type { ReactNode } from 'react'
+import { useEffect, type ReactNode } from 'react'
 
 interface SheetProps {
   open: boolean
   onClose: () => void
   children: ReactNode
+  /** Force dark tokens (video-context sheets). */
   dark?: boolean
 }
 
+/**
+ * L2 floating glass bottom sheet (portal `GlassSheet`). The scrim is a plain
+ * tint — no second backdrop-filter — so the blur budget stays at 2 layers.
+ */
 export function Sheet({ open, onClose, children, dark = false }: SheetProps) {
+  useEffect(() => {
+    if (!open) return
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose()
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [open, onClose])
+
   if (!open) return null
   return (
     <div
+      className={dark ? 'dark' : undefined}
       style={{
         position: 'fixed',
         inset: 0,
@@ -18,36 +31,11 @@ export function Sheet({ open, onClose, children, dark = false }: SheetProps) {
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'flex-end',
-        animation: 'fade-in .2s var(--ease)',
       }}
     >
-      <div
-        onClick={onClose}
-        style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.28)' }}
-      />
-      <div
-        style={{
-          position: 'relative',
-          background: dark ? '#1A1A18' : 'var(--bg)',
-          color: dark ? '#F2F1EC' : 'var(--ink)',
-          borderRadius: '24px 24px 0 0',
-          padding: '10px 0 32px',
-          paddingBottom: 'calc(32px + env(safe-area-inset-bottom))',
-          animation: 'sheet-in .35s var(--ease)',
-          boxShadow: '0 -24px 60px rgba(0,0,0,0.25)',
-          maxHeight: '85%',
-          overflow: 'auto',
-        }}
-      >
-        <div
-          style={{
-            width: 38,
-            height: 5,
-            borderRadius: 999,
-            background: dark ? 'rgba(255,255,255,0.2)' : 'rgba(15,15,14,0.15)',
-            margin: '8px auto 14px',
-          }}
-        />
+      <div className="sheet-backdrop" onClick={onClose} />
+      <div role="dialog" aria-modal="true" className="sheet-popup glass-chrome">
+        <div className="sheet-grabber" aria-hidden="true" />
         {children}
       </div>
     </div>

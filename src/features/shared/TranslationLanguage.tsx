@@ -49,7 +49,7 @@ export function TranslationLanguage() {
             arrow_back
           </span>
         </button>
-        <div className="serif" style={{ fontSize: 22, letterSpacing: '-0.01em' }}>
+        <div className="font-headline" style={{ fontSize: 22, letterSpacing: '-0.01em' }}>
           {t('translation_language_title')}
         </div>
       </div>

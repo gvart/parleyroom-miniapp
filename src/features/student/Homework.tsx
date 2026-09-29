@@ -80,7 +80,7 @@ export function Homework() {
         >
           {t('homework')}
         </div>
-        <div className="serif" style={{ fontSize: 34, lineHeight: 1.05, letterSpacing: '-0.02em' }}>
+        <div className="font-headline" style={{ fontSize: 34, lineHeight: 1.05, letterSpacing: '-0.02em' }}>
           {t('tasks')}
           <span style={{ color: 'var(--accent)' }}>.</span>
         </div>
@@ -95,9 +95,9 @@ export function Homework() {
             gap: 8,
           }}
         >
-          <StatChip icon="pending_actions" value={groups.open.length} label={t('tab_open')} hue={25} />
-          <StatChip icon="rate_review" value={groups.review.length} label={t('tab_reviewed')} hue={210} />
-          <StatChip icon="task_alt" value={groups.done.length} label={t('tab_done')} hue={172} />
+          <StatChip icon="pending_actions" value={groups.open.length} label={t('tab_open')} tone="coral" />
+          <StatChip icon="rate_review" value={groups.review.length} label={t('tab_reviewed')} tone="sky" />
+          <StatChip icon="task_alt" value={groups.done.length} label={t('tab_done')} tone="leaf" />
         </div>
       )}
 
@@ -132,7 +132,7 @@ export function Homework() {
       {isEmpty ? (
         <div style={{ padding: '40px 30px', textAlign: 'center' }}>
           <div style={{ fontSize: 40, marginBottom: 10 }}>◌</div>
-          <div className="serif" style={{ fontSize: 22, marginBottom: 4 }}>
+          <div className="font-headline" style={{ fontSize: 22, marginBottom: 4 }}>
             {t('empty_homework_title')}
           </div>
           <div style={{ fontSize: 13, color: 'var(--ink-2)' }}>{t('empty_homework_sub')}</div>
@@ -194,7 +194,7 @@ export function Homework() {
       ) : (
         <div style={{ padding: '40px 30px', textAlign: 'center' }}>
           <div style={{ fontSize: 36, marginBottom: 10 }}>✓</div>
-          <div className="serif" style={{ fontSize: 20, marginBottom: 4 }}>
+          <div className="font-headline" style={{ fontSize: 20, marginBottom: 4 }}>
             {t('empty_stack_title')}
           </div>
           <div style={{ fontSize: 13, color: 'var(--ink-2)' }}>{t('empty_stack_sub')}</div>
@@ -279,7 +279,7 @@ function HomeworkSubmitSheet({ task, onClose }: SheetProps) {
                 height: 72,
                 borderRadius: 999,
                 background: 'var(--accent-soft)',
-                color: 'var(--accent-deep)',
+                color: 'var(--accent-ink)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -291,7 +291,7 @@ function HomeworkSubmitSheet({ task, onClose }: SheetProps) {
                 check
               </span>
             </div>
-            <div className="serif" style={{ fontSize: 26, marginBottom: 4 }}>
+            <div className="font-headline" style={{ fontSize: 26, marginBottom: 4 }}>
               {t('submitted_title')}
             </div>
             <div style={{ fontSize: 13, color: 'var(--ink-2)' }}>{t('submitted_sub')}</div>
@@ -312,7 +312,7 @@ function HomeworkSubmitSheet({ task, onClose }: SheetProps) {
                 {dueText}
               </div>
               <div
-                className="serif"
+                className="font-headline"
                 style={{ fontSize: 24, lineHeight: 1.15, letterSpacing: '-0.01em' }}
               >
                 {task.title}

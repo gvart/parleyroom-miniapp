@@ -172,7 +172,7 @@ function SplashScreen() {
       }}
     >
       <div
-        className="serif"
+        className="font-headline"
         style={{ fontSize: 38, letterSpacing: '-0.02em', lineHeight: 1 }}
       >
         Parleyroom<span style={{ color: 'var(--accent)' }}>.</span>
@@ -200,7 +200,7 @@ function ErrorScreen({ message }: { message: string }) {
       }}
     >
       <div style={{ fontSize: 40 }}>◌</div>
-      <div className="serif" style={{ fontSize: 24, letterSpacing: '-0.02em' }}>
+      <div className="font-headline" style={{ fontSize: 24, letterSpacing: '-0.02em' }}>
         {t('something_went_wrong')}
       </div>
       <div style={{ fontSize: 13, color: 'var(--ink-2)', maxWidth: 280 }}>{message}</div>
@@ -299,7 +299,7 @@ function LinkForm({ rawInitData, isSubmitting, onStart, onError, onSuccess }: Li
           Parleyroom
         </div>
         <div
-          className="serif"
+          className="font-headline"
           style={{ fontSize: 32, letterSpacing: '-0.02em', lineHeight: 1.1 }}
         >
           {t('link_account_title')}

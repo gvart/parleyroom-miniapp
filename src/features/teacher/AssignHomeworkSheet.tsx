@@ -71,7 +71,7 @@ export function AssignHomeworkSheet({ open, studentId, studentName, onClose, onD
               height: 72,
               borderRadius: 999,
               background: 'var(--accent-soft)',
-              color: 'var(--accent-deep)',
+              color: 'var(--accent-ink)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -83,7 +83,7 @@ export function AssignHomeworkSheet({ open, studentId, studentName, onClose, onD
               task_alt
             </span>
           </div>
-          <div className="serif" style={{ fontSize: 26, marginBottom: 4 }}>
+          <div className="font-headline" style={{ fontSize: 26, marginBottom: 4 }}>
             {t('homework_assigned_title')}
           </div>
           <div style={{ fontSize: 13, color: 'var(--ink-2)' }}>
@@ -92,7 +92,7 @@ export function AssignHomeworkSheet({ open, studentId, studentName, onClose, onD
         </div>
       ) : (
         <form onSubmit={submit} style={{ padding: '0 22px 10px' }}>
-          <div className="serif" style={{ fontSize: 26, letterSpacing: '-0.01em', marginBottom: 4 }}>
+          <div className="font-headline" style={{ fontSize: 26, letterSpacing: '-0.01em', marginBottom: 4 }}>
             {t('assign_homework_title')}
           </div>
           {studentName && (

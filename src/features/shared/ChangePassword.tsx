@@ -61,7 +61,7 @@ export function ChangePassword() {
                 height: 84,
                 borderRadius: 999,
                 background: 'var(--accent-soft)',
-                color: 'var(--accent-deep)',
+                color: 'var(--accent-ink)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -73,7 +73,7 @@ export function ChangePassword() {
                 lock_reset
               </span>
             </div>
-            <div className="serif" style={{ fontSize: 30, letterSpacing: '-0.02em', marginBottom: 6 }}>
+            <div className="font-headline" style={{ fontSize: 30, letterSpacing: '-0.02em', marginBottom: 6 }}>
               {t('password_updated_title')}
             </div>
             <div
@@ -115,7 +115,7 @@ export function ChangePassword() {
       <ScreenHeader title={t('change_password_title')} />
 
       <form onSubmit={submit} style={{ padding: '0 20px' }}>
-        <div className="serif" style={{ fontSize: 26, letterSpacing: '-0.02em', marginBottom: 6 }}>
+        <div className="font-headline" style={{ fontSize: 26, letterSpacing: '-0.02em', marginBottom: 6 }}>
           {t('new_password')}
         </div>
         <div style={{ fontSize: 13, color: 'var(--ink-2)', marginBottom: 22 }}>
@@ -281,7 +281,7 @@ function ScreenHeader({ title }: { title: string }) {
           arrow_back
         </span>
       </button>
-      <div className="serif" style={{ fontSize: 22, letterSpacing: '-0.01em' }}>
+      <div className="font-headline" style={{ fontSize: 22, letterSpacing: '-0.01em' }}>
         {title}
       </div>
     </div>

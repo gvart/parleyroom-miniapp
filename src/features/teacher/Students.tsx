@@ -39,7 +39,7 @@ export function TeacherStudents() {
           {t('students')}
         </div>
         <div
-          className="serif"
+          className="font-headline"
           style={{ fontSize: 34, lineHeight: 1.05, letterSpacing: '-0.02em' }}
         >
           {students.length === 1
@@ -84,7 +84,7 @@ export function TeacherStudents() {
       {filtered.length === 0 ? (
         <div style={{ padding: '40px 30px', textAlign: 'center' }}>
           <div style={{ fontSize: 36, marginBottom: 10 }}>◌</div>
-          <div className="serif" style={{ fontSize: 20, color: 'var(--ink-2)' }}>
+          <div className="font-headline" style={{ fontSize: 20, color: 'var(--ink-2)' }}>
             {t('no_students_found')}
           </div>
         </div>

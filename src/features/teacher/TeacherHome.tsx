@@ -78,7 +78,7 @@ export function TeacherHome() {
             {t('good_morning')}
           </div>
           <div
-            className="serif"
+            className="font-headline"
             style={{ fontSize: 38, lineHeight: 1.02, letterSpacing: '-0.02em' }}
           >
             {user.firstName}
@@ -166,7 +166,7 @@ export function TeacherHome() {
                 >
                   ● Live · {lessonTime(live.scheduledAt)}
                 </div>
-                <div className="serif" style={{ fontSize: 20, lineHeight: 1.1 }}>
+                <div className="font-headline" style={{ fontSize: 20, lineHeight: 1.1 }}>
                   {live.topic}
                 </div>
               </div>
@@ -186,10 +186,10 @@ export function TeacherHome() {
           gap: 8,
         }}
       >
-        <StatChip icon="groups" value={students.length} label={t('active_students')} hue={172} />
-        <StatChip icon="event" value={todayLessons.length} label={t('today')} hue={210} />
-        <StatChip icon="schedule" value={requests.length} label={t('requests')} hue={25} />
-        <StatChip icon="task_alt" value={'—'} label={t('pending_homework')} hue={290} />
+        <StatChip icon="groups" value={students.length} label={t('active_students')} tone="leaf" />
+        <StatChip icon="event" value={todayLessons.length} label={t('today')} tone="sky" />
+        <StatChip icon="schedule" value={requests.length} label={t('requests')} tone="coral" />
+        <StatChip icon="task_alt" value={'—'} label={t('pending_homework')} tone="grape" />
       </div>
 
       {requests.length > 0 && (
@@ -301,7 +301,7 @@ export function TeacherHome() {
       {todayLessons.length === 0 && requests.length === 0 && (
         <div style={{ padding: '40px 30px', textAlign: 'center' }}>
           <div style={{ fontSize: 40, marginBottom: 10 }}>✺</div>
-          <div className="serif" style={{ fontSize: 22, marginBottom: 4 }}>
+          <div className="font-headline" style={{ fontSize: 22, marginBottom: 4 }}>
             {t('quiet_day_title')}
           </div>
           <div style={{ fontSize: 13, color: 'var(--ink-2)' }}>{t('quiet_day_sub')}</div>

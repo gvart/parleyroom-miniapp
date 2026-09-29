@@ -109,7 +109,7 @@ export function ProfileEdit() {
         >
           <span className="ms" style={{ fontSize: 20 }}>arrow_back</span>
         </button>
-        <div className="serif" style={{ fontSize: 22, letterSpacing: '-0.01em' }}>
+        <div className="font-headline" style={{ fontSize: 22, letterSpacing: '-0.01em' }}>
           {t('edit_profile')}
         </div>
       </div>

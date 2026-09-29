@@ -118,7 +118,7 @@ export function LessonLive() {
         }}
       >
         <div style={{ fontSize: 48 }}>🎉</div>
-        <div className="serif" style={{ fontSize: 28, letterSpacing: '-0.02em' }}>
+        <div className="font-headline" style={{ fontSize: 28, letterSpacing: '-0.02em' }}>
           {t('lesson_finished_title')}
         </div>
         <div style={{ fontSize: 14, color: 'rgba(242,241,236,0.7)', maxWidth: 280 }}>
@@ -320,7 +320,7 @@ export function LessonLive() {
           }}
         >
           <div>
-            <div className="serif" style={{ fontSize: 18 }}>
+            <div className="font-headline" style={{ fontSize: 18 }}>
               {lesson?.topic ?? teacherName}
             </div>
           </div>
@@ -402,7 +402,7 @@ export function LessonLive() {
 
       <Sheet open={showRecap} onClose={() => setShowRecap(false)} dark>
         <div style={{ padding: '0 22px 10px' }}>
-          <div className="serif" style={{ fontSize: 26, letterSpacing: '-0.01em', marginBottom: 4 }}>
+          <div className="font-headline" style={{ fontSize: 26, letterSpacing: '-0.01em', marginBottom: 4 }}>
             {t('lesson_notes_title')}
           </div>
           <div style={{ fontSize: 13, color: '#A7A69C', marginBottom: 18 }}>

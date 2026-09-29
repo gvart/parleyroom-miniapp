@@ -61,7 +61,7 @@ export function AssignGoalSheet({ open, studentId, studentName, onClose, onDone 
               height: 72,
               borderRadius: 999,
               background: 'var(--accent-soft)',
-              color: 'var(--accent-deep)',
+              color: 'var(--accent-ink)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -73,7 +73,7 @@ export function AssignGoalSheet({ open, studentId, studentName, onClose, onDone 
               flag
             </span>
           </div>
-          <div className="serif" style={{ fontSize: 26, marginBottom: 4 }}>
+          <div className="font-headline" style={{ fontSize: 26, marginBottom: 4 }}>
             {t('goal_assigned_title')}
           </div>
           <div style={{ fontSize: 13, color: 'var(--ink-2)' }}>
@@ -82,7 +82,7 @@ export function AssignGoalSheet({ open, studentId, studentName, onClose, onDone 
         </div>
       ) : (
         <form onSubmit={submit} style={{ padding: '0 22px 10px' }}>
-          <div className="serif" style={{ fontSize: 26, letterSpacing: '-0.01em', marginBottom: 4 }}>
+          <div className="font-headline" style={{ fontSize: 26, letterSpacing: '-0.01em', marginBottom: 4 }}>
             {t('assign_goal_title')}
           </div>
           {studentName && (

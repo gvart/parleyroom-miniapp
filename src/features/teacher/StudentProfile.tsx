@@ -83,7 +83,7 @@ export function StudentProfile() {
             arrow_back
           </span>
         </button>
-        <div className="serif" style={{ fontSize: 22, color: 'var(--ink-2)' }}>
+        <div className="font-headline" style={{ fontSize: 22, color: 'var(--ink-2)' }}>
           {t('student_not_found')}
         </div>
       </div>
@@ -129,7 +129,7 @@ export function StudentProfile() {
         <div style={{ display: 'inline-flex' }}>
           <Avatar hue={hueFor(student.id)} initials={initialsOf(student)} size={88} />
         </div>
-        <div className="serif" style={{ fontSize: 28, marginTop: 12, letterSpacing: '-0.02em' }}>
+        <div className="font-headline" style={{ fontSize: 28, marginTop: 12, letterSpacing: '-0.02em' }}>
           {studentName}
         </div>
         <div style={{ fontSize: 13, color: 'var(--ink-2)', marginTop: 2 }}>
@@ -318,7 +318,7 @@ export function StudentProfile() {
                     value={g.progress}
                     size={46}
                     stroke={4}
-                    hue={[172, 290, 75, 210, 145][i % 5]}
+                    tone={(['leaf', 'grape', 'sunny', 'sky', 'coral'] as const)[i % 5]}
                   />
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ fontSize: 14, fontWeight: 600 }}>{g.description}</div>

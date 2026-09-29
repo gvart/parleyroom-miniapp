@@ -1,13 +1,17 @@
 import { AuthGate } from '@/auth/AuthGate'
+import { BlobBackground } from '@/layout/BlobBackground'
 import { ThemeProvider } from '@/layout/ThemeProvider'
 import { RoleRouter } from '@/layout/RoleRouter'
 
 export function App() {
   return (
     <ThemeProvider>
-      <AuthGate>
-        <RoleRouter />
-      </AuthGate>
+      <BlobBackground />
+      <div style={{ position: 'relative', zIndex: 1 }}>
+        <AuthGate>
+          <RoleRouter />
+        </AuthGate>
+      </div>
     </ThemeProvider>
   )
 }

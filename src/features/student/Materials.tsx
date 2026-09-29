@@ -114,7 +114,7 @@ export function StudentMaterials() {
           {t('materials')}
         </div>
         <div
-          className="serif"
+          className="font-headline"
           style={{ fontSize: 30, lineHeight: 1.05, letterSpacing: '-0.02em' }}
         >
           {t('library_title')}
@@ -224,7 +224,7 @@ export function StudentMaterials() {
       {materials.length === 0 && visibleFolders.length === 0 && !materialsQuery.isLoading && !folderTree.isLoading ? (
         <div style={{ padding: '40px 30px', textAlign: 'center' }}>
           <div style={{ fontSize: 40, marginBottom: 10 }}>◌</div>
-          <div className="serif" style={{ fontSize: 22, marginBottom: 4 }}>
+          <div className="font-headline" style={{ fontSize: 22, marginBottom: 4 }}>
             {t('empty_materials_title')}
           </div>
           <div style={{ fontSize: 13, color: 'var(--ink-2)', maxWidth: 280, margin: '0 auto' }}>

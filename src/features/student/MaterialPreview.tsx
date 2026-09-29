@@ -79,7 +79,7 @@ export function MaterialPreview({ material, onClose }: Props) {
   return (
     <div style={{ padding: '0 22px', display: 'flex', flexDirection: 'column', gap: 14 }}>
       <div>
-        <div className="serif" style={{ fontSize: 26, letterSpacing: '-0.01em' }}>
+        <div className="font-headline" style={{ fontSize: 26, letterSpacing: '-0.01em' }}>
           {material.name}
         </div>
         <div style={{ fontSize: 13, color: 'var(--ink-2)', marginTop: 4 }}>

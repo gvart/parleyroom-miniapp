@@ -104,7 +104,7 @@ export function UploadMaterialSheet({ open, onClose }: Props) {
   return (
     <Sheet open={open} onClose={onClose}>
       <form onSubmit={submit} style={{ padding: '0 22px 10px' }}>
-        <div className="serif" style={{ fontSize: 26, letterSpacing: '-0.01em', marginBottom: 18 }}>
+        <div className="font-headline" style={{ fontSize: 26, letterSpacing: '-0.01em', marginBottom: 18 }}>
           {t('upload_material_title')}
         </div>
 

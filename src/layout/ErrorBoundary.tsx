@@ -34,7 +34,7 @@ export class ErrorBoundary extends Component<{ children: ReactNode }, State> {
           }}
         >
           <div style={{ fontSize: 40 }}>◌</div>
-          <div className="serif" style={{ fontSize: 24, letterSpacing: '-0.02em' }}>
+          <div className="font-headline" style={{ fontSize: 24, letterSpacing: '-0.02em' }}>
             {i18n.t('something_went_wrong')}
           </div>
           <div style={{ fontSize: 13, color: 'var(--ink-2)', maxWidth: 280 }}>

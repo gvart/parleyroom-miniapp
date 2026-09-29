@@ -55,7 +55,7 @@ export function FirstRunLocalePicker({ user, onConfirmed }: Props) {
     >
       <div>
         <div
-          className="serif"
+          className="font-headline"
           style={{ fontSize: 30, letterSpacing: '-0.02em', lineHeight: 1.1, marginBottom: 8 }}
         >
           {t('choose_language_title')}

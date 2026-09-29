@@ -14,11 +14,14 @@ interface ButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'sty
   style?: CSSProperties
 }
 
-const sizeMap: Record<ButtonSize, CSSProperties> = {
-  md: { padding: '14px', fontSize: 14, borderRadius: 999 },
-  sm: { padding: '10px 14px', fontSize: 13, borderRadius: 999 },
+const variantClass: Record<ButtonVariant, string> = {
+  primary: 'btn-primary',
+  secondary: 'btn-ghost',
+  danger: 'btn-danger',
+  ghost: 'btn-plain',
 }
 
+/** Liquid Glass 3D-squish button (portal `Button`). */
 export function Button({
   variant = 'primary',
   size = 'md',
@@ -29,64 +32,28 @@ export function Button({
   disabled,
   children,
   style,
+  className,
   ...rest
 }: ButtonProps) {
-  const isDisabled = disabled || loading
-  const base: CSSProperties = {
-    display: 'inline-flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 6,
-    border: 0,
-    cursor: isDisabled ? 'not-allowed' : 'pointer',
-    fontWeight: 600,
-    width: block ? '100%' : undefined,
-    fontFamily: 'inherit',
-    transition: 'background .15s var(--ease), color .15s var(--ease), border-color .15s var(--ease)',
-    ...sizeMap[size],
-  }
-
-  const variantStyle: CSSProperties = (() => {
-    if (variant === 'primary') {
-      return {
-        background: isDisabled ? 'var(--hair-strong)' : 'var(--ink)',
-        color: isDisabled ? 'var(--ink-3)' : 'var(--bg)',
-      }
-    }
-    if (variant === 'secondary') {
-      return {
-        background: 'transparent',
-        color: isDisabled ? 'var(--ink-3)' : 'var(--ink)',
-        border: '1px solid var(--hair-strong)',
-      }
-    }
-    if (variant === 'danger') {
-      return {
-        background: isDisabled ? 'var(--hair-strong)' : 'oklch(0.55 0.2 25)',
-        color: isDisabled ? 'var(--ink-3)' : '#FFF',
-      }
-    }
-    return {
-      background: 'transparent',
-      color: isDisabled ? 'var(--ink-3)' : 'var(--ink)',
-    }
-  })()
-
+  const classes = [
+    variantClass[variant],
+    size === 'sm' && 'btn-sm',
+    block && 'btn-block',
+    className,
+  ]
+    .filter(Boolean)
+    .join(' ')
+  const iconSize = size === 'md' ? 20 : 17
   return (
-    <button
-      {...rest}
-      disabled={isDisabled}
-      className={`tap${rest.className ? ` ${rest.className}` : ''}`}
-      style={{ ...base, ...variantStyle, ...style }}
-    >
+    <button {...rest} disabled={disabled || loading} className={classes} style={style}>
       {leadingIcon && (
-        <span className="ms fill" style={{ fontSize: size === 'md' ? 18 : 16 }}>
+        <span className="ms fill" style={{ fontSize: iconSize }} aria-hidden="true">
           {leadingIcon}
         </span>
       )}
       {loading ? <span style={{ opacity: 0.8 }}>{children}…</span> : children}
       {trailingIcon && (
-        <span className="ms" style={{ fontSize: size === 'md' ? 18 : 16 }}>
+        <span className="ms" style={{ fontSize: iconSize }} aria-hidden="true">
           {trailingIcon}
         </span>
       )}

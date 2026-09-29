@@ -33,7 +33,6 @@ export function AppShell({ tabs, children }: AppShellProps) {
     <div
       style={{
         minHeight: '100vh',
-        background: 'var(--bg)',
         color: 'var(--ink)',
         paddingTop: fullscreen ? 0 : TOP_INSET,
       }}
@@ -42,7 +41,7 @@ export function AppShell({ tabs, children }: AppShellProps) {
         style={{
           maxWidth: 640,
           margin: '0 auto',
-          paddingBottom: fullscreen ? 0 : `calc(110px + ${BOTTOM_INSET})`,
+          paddingBottom: fullscreen ? 0 : `calc(104px + ${BOTTOM_INSET})`,
         }}
       >
         {children}

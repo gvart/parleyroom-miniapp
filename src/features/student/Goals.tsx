@@ -2,7 +2,7 @@ import { useEffect, useState, type FormEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/auth/AuthGate'
-import { Banner, Button, Card, Ring, Section, Sheet, TextField } from '@/ui'
+import { Banner, Button, Card, Ring, Section, Sheet, TextField, type Tone } from '@/ui'
 import { formatShortDate } from '@/lib/intl'
 import {
   useAbandonGoal,
@@ -14,7 +14,7 @@ import {
 } from '@/hooks/useGoals'
 import type { Goal } from '@/api/types'
 
-const HUES = [172, 290, 75, 25, 210, 145]
+const TONES: Tone[] = ['leaf', 'grape', 'sunny', 'coral', 'sky', 'accent']
 const PROGRESS_STEPS = [0, 25, 50, 75, 100] as const
 
 export function Goals() {
@@ -50,7 +50,7 @@ export function Goals() {
             {t('goals')}
           </div>
           <div
-            className="serif"
+            className="font-headline"
             style={{ fontSize: 34, lineHeight: 1.05, letterSpacing: '-0.02em' }}
           >
             {t('your_rhythm')}
@@ -84,7 +84,7 @@ export function Goals() {
       {isEmpty ? (
         <div style={{ padding: '40px 30px', textAlign: 'center' }}>
           <div style={{ fontSize: 40, marginBottom: 10 }}>◌</div>
-          <div className="serif" style={{ fontSize: 22, marginBottom: 4 }}>
+          <div className="font-headline" style={{ fontSize: 22, marginBottom: 4 }}>
             {t('empty_goals_title')}
           </div>
           <div style={{ fontSize: 13, color: 'var(--ink-2)', marginBottom: 16 }}>
@@ -97,7 +97,7 @@ export function Goals() {
       ) : (
         <Section eyebrow={t('this_week')}>
           {goals.map((g, i) => (
-            <GoalCard key={g.id} goal={g} hue={HUES[i % HUES.length]} />
+            <GoalCard key={g.id} goal={g} tone={TONES[i % TONES.length]} />
           ))}
         </Section>
       )}
@@ -114,7 +114,7 @@ export function Goals() {
   )
 }
 
-function GoalCard({ goal, hue }: { goal: Goal; hue: number }) {
+function GoalCard({ goal, tone }: { goal: Goal; tone: Tone }) {
   const { t } = useTranslation()
   const complete = useCompleteGoal()
   const abandon = useAbandonGoal()
@@ -133,7 +133,7 @@ function GoalCard({ goal, hue }: { goal: Goal; hue: number }) {
   return (
     <Card style={{ marginBottom: 10, position: 'relative' }}>
       <div style={{ display: 'flex', gap: 14, alignItems: 'center' }}>
-        <Ring value={goal.progress} size={58} stroke={5} hue={hue} label={`${goal.progress}%`} />
+        <Ring value={goal.progress} size={58} stroke={5} tone={tone} label={`${goal.progress}%`} />
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 3 }}>
             {goal.description}
@@ -331,7 +331,7 @@ function NewGoalSheet({ open, onClose, onCreated }: NewGoalProps) {
   return (
     <Sheet open={open} onClose={onClose}>
       <form onSubmit={submit} style={{ padding: '0 22px 10px' }}>
-        <div className="serif" style={{ fontSize: 26, letterSpacing: '-0.01em', marginBottom: 4 }}>
+        <div className="font-headline" style={{ fontSize: 26, letterSpacing: '-0.01em', marginBottom: 4 }}>
           {t('new_goal')}
         </div>
         <div style={{ fontSize: 13, color: 'var(--ink-2)', marginBottom: 18 }}>

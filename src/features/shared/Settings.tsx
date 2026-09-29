@@ -56,7 +56,7 @@ export function Settings() {
           {t('settings')}
         </div>
         <div
-          className="serif"
+          className="font-headline"
           style={{ fontSize: 30, lineHeight: 1.05, letterSpacing: '-0.02em' }}
         >
           {user.firstName}

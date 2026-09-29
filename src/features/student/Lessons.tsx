@@ -66,7 +66,7 @@ export function Lessons() {
           {t('lessons')}
         </div>
         <div
-          className="serif"
+          className="font-headline"
           style={{ fontSize: 34, lineHeight: 1.05, letterSpacing: '-0.02em' }}
         >
           {t('your_schedule')}
@@ -77,7 +77,7 @@ export function Lessons() {
       {isEmpty ? (
         <div style={{ padding: '40px 30px', textAlign: 'center' }}>
           <div style={{ fontSize: 40, marginBottom: 10 }}>✺</div>
-          <div className="serif" style={{ fontSize: 22, marginBottom: 4 }}>
+          <div className="font-headline" style={{ fontSize: 22, marginBottom: 4 }}>
             {t('empty_lessons_title')}
           </div>
           <div style={{ fontSize: 13, color: 'var(--ink-2)', marginBottom: 16 }}>
