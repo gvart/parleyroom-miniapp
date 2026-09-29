@@ -6,7 +6,7 @@ import { useLessons } from '@/hooks/useLessons'
 import { useUsers } from '@/hooks/useCreateLesson'
 import { useNotifications } from '@/hooks/useNotifications'
 import { useAcceptLesson, useCancelLesson } from '@/hooks/useLessonActions'
-import { Avatar, Button, Card, EmptyState, Pill, Section, StatChip } from '@/ui'
+import { Avatar, Button, Card, EmptyState, PageHeader, Pill, Section, StatChip } from '@/ui'
 import { isClub, lessonDate, lessonTime, todayISO } from '@/lib/lesson'
 import type { Lesson, UserProfile } from '@/api/types'
 
@@ -56,83 +56,41 @@ export function TeacherHome() {
 
   return (
     <div>
-      <div
-        style={{
-          padding: '12px 16px 18px',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'flex-end',
-        }}
-      >
-        <div>
-          <div
-            style={{
-              fontSize: 13,
-              color: 'var(--ink-3)',
-              letterSpacing: '0.04em',
-              textTransform: 'uppercase',
-              fontWeight: 700,
-              marginBottom: 6,
-            }}
-          >
-            {t('good_morning')}
-          </div>
-          <div
-            className="font-headline"
-            style={{ fontSize: 'var(--text-page-title)', lineHeight: 1.02 }}
-          >
-            {user.firstName}
-            
-          </div>
-          <div style={{ fontSize: 'var(--text-small)', color: 'var(--ink-2)', marginTop: 4 }}>
+      <PageHeader
+        eyebrow={t('good_morning')}
+        title={user.firstName}
+        sub={
+          <>
             {t('lessons_today', { count: todayLessons.length })}
             {requests.length > 0 && ` · ${t('requests_count', { count: requests.length })}`}
-          </div>
-        </div>
-        <button
-          type="button"
-          onClick={() => navigate('/notifications')}
-          className="ico-btn"
-          aria-label={t('notifications')}
-        >
-          <span className="ms" style={{ fontSize: 22 }}>
-            notifications
-          </span>
-          {unreadCount > 0 && (
-            <span
-              style={{
-                position: 'absolute',
-                top: 10,
-                right: 11,
-                width: 8,
-                height: 8,
-                borderRadius: 999,
-                background: 'oklch(0.68 0.19 25)',
-                border: '2px solid var(--card)',
-              }}
-            />
-          )}
-        </button>
-      </div>
+          </>
+        }
+        action={
+          <button
+            type="button"
+            onClick={() => navigate('/notifications')}
+            className="ico-btn"
+            aria-label={t('notifications')}
+          >
+            <span className="ms" style={{ fontSize: 22 }} aria-hidden="true">
+              notifications
+            </span>
+            {unreadCount > 0 && <span className="dot" />}
+          </button>
+        }
+      />
 
       {live && (
         <div style={{ padding: '0 16px 16px' }}>
           <Card
             padded={false}
             onClick={() => navigate(`/lessons/${live.id}/live`)}
-            style={{
-              background:
-                'linear-gradient(135deg, oklch(0.4 0.14 145) 0%, oklch(0.22 0.08 200) 100%)',
-              color: '#F2F1EC',
-              border: 0,
-              cursor: 'pointer',
-              overflow: 'hidden',
-              position: 'relative',
-            }}
+            className="lesson-live tap"
+            style={{ cursor: 'pointer' }}
           >
-            <div style={{ padding: '20px 22px', display: 'flex', alignItems: 'center', gap: 14 }}>
+            <div style={{ position: 'relative', padding: '20px', display: 'flex', alignItems: 'center', gap: 14 }}>
               <Avatar
-                hue={172}
+                hue={140}
                 initials={
                   live.students.find((s) => s.id !== live.teacherId)?.firstName?.[0]?.toUpperCase() ??
                   '??'
@@ -141,24 +99,16 @@ export function TeacherHome() {
                 live
               />
               <div style={{ flex: 1, minWidth: 0 }}>
-                <div
-                  style={{
-                    fontSize: 11,
-                    color: 'oklch(0.85 0.14 145)',
-                    fontWeight: 700,
-                    letterSpacing: '0.12em',
-                    textTransform: 'uppercase',
-                    marginBottom: 3,
-                  }}
-                >
-                  ● Live · {lessonTime(live.scheduledAt)}
-                </div>
-                <div className="section-title" style={{ lineHeight: 1.1 }}>
+                <span className="countdown-chip is-live" style={{ marginBottom: 6 }}>
+                  <span className="live-dot" aria-hidden="true" />
+                  {t('live')} · {lessonTime(live.scheduledAt)}
+                </span>
+                <div className="section-title" style={{ lineHeight: 1.2 }}>
                   {live.topic}
                 </div>
               </div>
-              <span className="ms" style={{ fontSize: 24, color: '#F2F1EC' }}>
-                arrow_forward
+              <span className="btn-primary join-live" style={{ width: 44, minHeight: 44, padding: 0 }} aria-hidden="true">
+                <span className="ms fill" style={{ fontSize: 22 }}>videocam</span>
               </span>
             </div>
           </Card>
@@ -167,9 +117,9 @@ export function TeacherHome() {
 
       <div
         style={{
-          padding: '0 16px 22px',
+          padding: '0 16px 24px',
           display: 'grid',
-          gridTemplateColumns: 'repeat(4, 1fr)',
+          gridTemplateColumns: 'repeat(2, 1fr)',
           gap: 8,
         }}
       >
@@ -192,29 +142,16 @@ export function TeacherHome() {
           eyebrow={t('today')}
           title={t('timeline_title')}
           action={
-            <button
-              type="button"
-              onClick={() => navigate('/calendar')}
-              className="tap"
-              style={{
-                border: 0,
-                background: 'transparent',
-                color: 'var(--ink)',
-                fontSize: 12,
-                fontWeight: 700,
-                cursor: 'pointer',
-              }}
-            >
+            <button type="button" onClick={() => navigate('/calendar')} className="link-action">
               {t('see_all')}
             </button>
           }
         >
-          <Card padded={false}>
-            {todayLessons.map((l, i) => (
+          <Card padded={false} className="row-list" style={{ overflow: 'hidden' }}>
+            {todayLessons.map((l) => (
               <TimelineRow
                 key={l.id}
                 lesson={l}
-                last={i === todayLessons.length - 1}
                 onClick={() => navigate(`/lessons/${l.id}/live`)}
               />
             ))}
@@ -227,19 +164,7 @@ export function TeacherHome() {
           eyebrow={t('students')}
           title={t('students_glance')}
           action={
-            <button
-              type="button"
-              onClick={() => navigate('/students')}
-              className="tap"
-              style={{
-                border: 0,
-                background: 'transparent',
-                color: 'var(--ink)',
-                fontSize: 12,
-                fontWeight: 700,
-                cursor: 'pointer',
-              }}
-            >
+            <button type="button" onClick={() => navigate('/students')} className="link-action">
               {t('see_all')}
             </button>
           }
@@ -250,9 +175,9 @@ export function TeacherHome() {
               gap: 10,
               overflowX: 'auto',
               padding: '4px 2px 10px',
-              margin: '0 -20px',
-              paddingLeft: 20,
-              paddingRight: 20,
+              margin: '0 -16px',
+              paddingLeft: 16,
+              paddingRight: 16,
             }}
             className="no-scrollbar"
           >
@@ -261,13 +186,14 @@ export function TeacherHome() {
                 key={s.id}
                 onClick={() => navigate(`/students/${s.id}`)}
                 padded={false}
-                style={{ minWidth: 140, padding: '14px 14px 16px', flexShrink: 0, cursor: 'pointer' }}
+                className="tap"
+                style={{ minWidth: 140, padding: '14px 14px 16px', flexShrink: 0, cursor: 'pointer', borderRadius: 24 }}
               >
                 <Avatar hue={hueFor(s.id)} initials={initialsOf(s)} size={38} />
                 <div
                   style={{
-                    fontSize: 13,
-                    fontWeight: 700,
+                    fontSize: 'var(--text-body)',
+                    fontWeight: 800,
                     marginTop: 10,
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
@@ -276,7 +202,7 @@ export function TeacherHome() {
                 >
                   {s.firstName} {s.lastName}
                 </div>
-                <div style={{ fontSize: 11, color: 'var(--ink-3)' }}>
+                <div style={{ fontSize: 'var(--text-caption)', fontWeight: 700, color: 'var(--ink-2)' }}>
                   {s.level ?? t('role_student')}
                 </div>
               </Card>
@@ -286,7 +212,7 @@ export function TeacherHome() {
       )}
 
       {todayLessons.length === 0 && requests.length === 0 && (
-        <EmptyState icon="inbox" title={t('quiet_day_title')} sub={t('quiet_day_sub')} />
+        <EmptyState icon="wb_sunny" title={t('quiet_day_title')} sub={t('quiet_day_sub')} />
       )}
     </div>
   )
@@ -307,7 +233,7 @@ function RequestCard({ lesson }: { lesson: Lesson }) {
       <div style={{ display: 'flex', gap: 12, alignItems: 'center', marginBottom: 12 }}>
         <Avatar hue={hueFor(student?.id ?? '')} initials={initials} />
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontSize: 14, fontWeight: 700 }}>
+          <div style={{ fontSize: 'var(--text-card-title)', fontWeight: 800 }}>
             {student?.firstName} {student?.lastName}
           </div>
           <div style={{ fontSize: 'var(--text-caption)', color: 'var(--ink-2)' }}>
@@ -342,11 +268,10 @@ function RequestCard({ lesson }: { lesson: Lesson }) {
 
 interface TimelineRowProps {
   lesson: Lesson
-  last: boolean
   onClick: () => void
 }
 
-function TimelineRow({ lesson, last, onClick }: TimelineRowProps) {
+function TimelineRow({ lesson, onClick }: TimelineRowProps) {
   const { t } = useTranslation()
   const club = isClub(lesson)
   const partner = lesson.students.find((s) => s.id !== lesson.teacherId)
@@ -361,42 +286,22 @@ function TimelineRow({ lesson, last, onClick }: TimelineRowProps) {
     <button
       type="button"
       onClick={onClick}
-      className="tap"
-      style={{
-        width: '100%',
-        border: 0,
-        background: 'transparent',
-        color: 'var(--ink)',
-        textAlign: 'left',
-        padding: '14px 18px',
-        borderBottom: last ? 0 : '1px solid var(--hair)',
-        display: 'flex',
-        gap: 12,
-        alignItems: 'center',
-        cursor: 'pointer',
-      }}
+      className="row-btn"
+      style={{ padding: '12px 16px', background: live ? 'var(--coral-soft)' : undefined }}
     >
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: 42 }}>
-        <div className="mono" style={{ fontSize: 16, fontWeight: 700, letterSpacing: '-0.03em' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: 48 }}>
+        <div className="font-headline" style={{ fontSize: 'var(--text-lead)', fontWeight: 900, fontVariantNumeric: 'tabular-nums' }}>
           {time}
         </div>
-        <div
-          style={{
-            fontSize: 9,
-            color: 'var(--ink-3)',
-            textTransform: 'uppercase',
-            letterSpacing: '0.08em',
-            marginTop: 2,
-          }}
-        >
+        <div style={{ fontSize: 'var(--text-label)', fontWeight: 700, color: 'var(--ink-3)', marginTop: 1 }}>
           {lesson.durationMinutes}m
         </div>
       </div>
       <div
         style={{
-          width: 2,
+          width: 3,
           height: 32,
-          background: live ? 'oklch(0.7 0.2 145)' : 'var(--hair-strong)',
+          background: live ? 'var(--coral-vivid)' : 'var(--hair-strong)',
           borderRadius: 999,
         }}
       />
@@ -405,15 +310,15 @@ function TimelineRow({ lesson, last, onClick }: TimelineRowProps) {
           style={{
             width: 36,
             height: 36,
-            borderRadius: 10,
-            background: 'oklch(0.94 0.04 290)',
-            color: 'oklch(0.4 0.12 290)',
+            borderRadius: 12,
+            background: 'var(--grape-soft)',
+            color: 'var(--grape-ink)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             flexShrink: 0,
-            fontSize: 10,
-            fontWeight: 700,
+            fontSize: 'var(--text-label)',
+            fontWeight: 900,
             letterSpacing: '0.05em',
           }}
         >
@@ -425,7 +330,7 @@ function TimelineRow({ lesson, last, onClick }: TimelineRowProps) {
       <div style={{ flex: 1, minWidth: 0 }}>
         <div
           style={{
-            fontSize: 14,
+            fontSize: 'var(--text-card-title)',
             fontWeight: 700,
             overflow: 'hidden',
             textOverflow: 'ellipsis',
@@ -438,7 +343,7 @@ function TimelineRow({ lesson, last, onClick }: TimelineRowProps) {
         </div>
         <div
           style={{
-            fontSize: 12,
+            fontSize: 'var(--text-small)',
             color: 'var(--ink-2)',
             overflow: 'hidden',
             textOverflow: 'ellipsis',

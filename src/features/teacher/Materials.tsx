@@ -146,7 +146,7 @@ export function Materials() {
 
       <Sheet open={!!openMaterial} onClose={() => setOpenMaterial(null)}>
         {openMaterial && (
-          <div style={{ padding: '0 22px' }}>
+          <div style={{ padding: '0 20px 4px' }}>
             <div className="section-title" style={{ marginBottom: 6 }}>
               {openMaterial.name}
             </div>
@@ -158,24 +158,9 @@ export function Materials() {
                 href={openMaterial.downloadUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="tap"
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: 8,
-                  width: '100%',
-                  border: 0,
-                  background: 'var(--ink)',
-                  color: 'var(--bg)',
-                  padding: '14px',
-                  borderRadius: 999,
-                  fontSize: 14,
-                  fontWeight: 700,
-                  textDecoration: 'none',
-                }}
+                className="btn-primary btn-block"
               >
-                <span className="ms" style={{ fontSize: 18 }}>
+                <span className="ms" style={{ fontSize: 20 }} aria-hidden="true">
                   open_in_new
                 </span>
                 {t('open_link')}

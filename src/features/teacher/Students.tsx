@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
-import { Avatar, Card } from '@/ui'
+import { Avatar, Card, EmptyState, PageHeader, Pill } from '@/ui'
 import { useUsers } from '@/hooks/useCreateLesson'
 import { hueFor, initialsOf } from './avatarHue'
 
@@ -25,93 +25,65 @@ export function TeacherStudents() {
 
   return (
     <div>
-      <div style={{ padding: '8px 16px 14px' }}>
-        <div className="eyebrow" style={{ marginBottom: 6 }}>
-          {t('students')}
-        </div>
-        <div
-          className="font-headline"
-          style={{ fontSize: 'var(--text-page-title)', lineHeight: 1.05 }}
-        >
-          {students.length === 1
+      <PageHeader
+        eyebrow={t('students')}
+        title={
+          students.length === 1
             ? t('students_count_singular')
-            : t('students_count', { count: students.length })}
-          
-        </div>
-      </div>
+            : t('students_count', { count: students.length })
+        }
+      />
 
-      <div style={{ padding: '0 16px 14px' }}>
-        <div
+      <div style={{ padding: '0 16px 16px', position: 'relative' }}>
+        <span
+          className="ms"
           style={{
-            display: 'flex',
-            gap: 10,
-            alignItems: 'center',
-            background: 'var(--card)',
-            border: '1px solid var(--hair)',
-            borderRadius: 999,
-            padding: '10px 16px',
+            position: 'absolute',
+            left: 32,
+            top: '50%',
+            transform: 'translateY(calc(-50% - 8px))',
+            fontSize: 20,
+            color: 'var(--ink-3)',
+            pointerEvents: 'none',
           }}
+          aria-hidden="true"
         >
-          <span className="ms" style={{ fontSize: 18, color: 'var(--ink-3)' }}>
-            search
-          </span>
-          <input
-            value={q}
-            onChange={(e) => setQ(e.target.value)}
-            placeholder={t('search_students')}
-            style={{
-              flex: 1,
-              border: 0,
-              outline: 0,
-              background: 'transparent',
-              fontSize: 14,
-              color: 'var(--ink)',
-              fontFamily: 'inherit',
-            }}
-          />
-        </div>
+          search
+        </span>
+        <input
+          type="search"
+          value={q}
+          onChange={(e) => setQ(e.target.value)}
+          placeholder={t('search_students')}
+          aria-label={t('search_students')}
+          className="glass-field"
+          style={{ borderRadius: 999, paddingLeft: 46 }}
+        />
       </div>
 
       {filtered.length === 0 ? (
-        <div style={{ padding: '40px 30px', textAlign: 'center' }}>
-          <div style={{ fontSize: 36, marginBottom: 10 }}>◌</div>
-          <div className="section-title" style={{ color: 'var(--ink-2)' }}>
-            {t('no_students_found')}
-          </div>
-        </div>
+        <EmptyState icon="person_search" title={t('no_students_found')} />
       ) : (
         <div style={{ padding: '0 16px' }}>
-          <Card padded={false}>
-            {filtered.map((s, i) => (
+          <Card padded={false} className="row-list" style={{ overflow: 'hidden' }}>
+            {filtered.map((s) => (
               <button
                 type="button"
                 key={s.id}
                 onClick={() => navigate(`/students/${s.id}`)}
-                className="tap"
-                style={{
-                  width: '100%',
-                  border: 0,
-                  background: 'transparent',
-                  color: 'var(--ink)',
-                  textAlign: 'left',
-                  padding: '14px 18px',
-                  borderBottom: i < filtered.length - 1 ? '1px solid var(--hair)' : 0,
-                  display: 'flex',
-                  gap: 12,
-                  alignItems: 'center',
-                  cursor: 'pointer',
-                }}
+                className="row-btn"
               >
-                <Avatar hue={hueFor(s.id)} initials={initialsOf(s)} size={40} />
+                <Avatar hue={hueFor(s.id)} initials={initialsOf(s)} size={42} />
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize: 14, fontWeight: 700 }}>
+                  <div style={{ fontSize: 'var(--text-card-title)', fontWeight: 800 }}>
                     {s.firstName} {s.lastName}
                   </div>
-                  <div style={{ fontSize: 'var(--text-caption)', color: 'var(--ink-2)' }}>
+                  <div style={{ fontSize: 'var(--text-small)', fontWeight: 600, color: 'var(--ink-2)' }}>
                     {s.level ?? t('role_student')}
                   </div>
                 </div>
-                <span className="ms" style={{ fontSize: 20, color: 'var(--ink-3)' }}>
+                {s.level && <Pill tone="accent">{s.level}</Pill>}
+                <span className="ms" style={{ fontSize: 20, color: 'var(--ink-3)' }} aria-hidden="true">
                   chevron_right
                 </span>
               </button>

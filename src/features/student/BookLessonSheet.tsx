@@ -121,7 +121,7 @@ export function BookLessonSheet({ open, onClose, defaultDate }: BookLessonSheetP
   return (
     <Sheet open={open} onClose={onClose}>
       {submitted ? (
-        <div style={{ textAlign: 'center', padding: '36px 22px' }}>
+        <div style={{ textAlign: 'center', padding: '28px 20px' }}>
           <div
             style={{
               width: 72,
@@ -149,7 +149,7 @@ export function BookLessonSheet({ open, onClose, defaultDate }: BookLessonSheetP
           </div>
         </div>
       ) : (
-        <form onSubmit={submit} style={{ padding: '0 22px 10px' }}>
+        <form onSubmit={submit} style={{ padding: '0 20px 4px' }}>
           <div className="section-title" style={{ marginBottom: 18 }}>
             {isTeacher ? t('create_lesson_title') : t('book_lesson_title')}
           </div>

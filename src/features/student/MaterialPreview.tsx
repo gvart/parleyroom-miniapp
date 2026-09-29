@@ -120,7 +120,7 @@ export function MaterialPreview({ material, onClose }: Props) {
         <img
           src={url}
           alt={material.name}
-          style={{ maxWidth: '100%', borderRadius: 12, border: '1px solid var(--hair)' }}
+          style={{ maxWidth: '100%', borderRadius: 18, border: '1px solid var(--hair)' }}
         />
       )}
       {!isLink && url && isPdf && (
@@ -131,7 +131,7 @@ export function MaterialPreview({ material, onClose }: Props) {
             width: '100%',
             height: '70vh',
             border: '1px solid var(--hair)',
-            borderRadius: 12,
+            borderRadius: 18,
           }}
         />
       )}
@@ -142,7 +142,7 @@ export function MaterialPreview({ material, onClose }: Props) {
         <video
           controls
           src={url}
-          style={{ width: '100%', maxHeight: '70vh', borderRadius: 12 }}
+          style={{ width: '100%', maxHeight: '70vh', borderRadius: 18 }}
         />
       )}
     </div>

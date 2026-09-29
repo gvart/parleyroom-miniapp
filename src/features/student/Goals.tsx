@@ -263,7 +263,7 @@ function NewGoalSheet({ open, onClose, onCreated }: NewGoalProps) {
 
   return (
     <Sheet open={open} onClose={onClose}>
-      <form onSubmit={submit} style={{ padding: '0 22px 10px' }}>
+      <form onSubmit={submit} style={{ padding: '0 20px 4px' }}>
         <div className="section-title" style={{ marginBottom: 4 }}>
           {t('new_goal')}
         </div>

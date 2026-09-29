@@ -64,7 +64,7 @@ export function LessonActionsSheet({ open, lesson, onClose }: Props) {
   return (
     <>
       <Sheet open={open} onClose={onClose}>
-        <div style={{ padding: '0 22px 10px' }}>
+        <div style={{ padding: '0 20px 4px' }}>
           <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 4 }}>
             {lesson.status === 'IN_PROGRESS' && (
               <Pill tone="live">

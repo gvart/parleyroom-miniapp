@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate, useParams } from 'react-router-dom'
-import { Avatar, Button, Card, Pill, Ring, Section } from '@/ui'
+import { Avatar, Button, Card, Pill, Ring, Section, StatChip } from '@/ui'
 import { useUsers } from '@/hooks/useCreateLesson'
 import { useLessons } from '@/hooks/useLessons'
 import { useHomework } from '@/hooks/useHomework'
@@ -72,7 +72,7 @@ export function StudentProfile() {
             arrow_back
           </span>
         </button>
-        <div className="section-title" style={{ color: 'var(--ink-2)' }}>
+        <div className="section-title">
           {t('student_not_found')}
         </div>
       </div>
@@ -106,10 +106,10 @@ export function StudentProfile() {
         <div style={{ display: 'inline-flex' }}>
           <Avatar hue={hueFor(student.id)} initials={initialsOf(student)} size={88} />
         </div>
-        <div className="font-headline" style={{ fontSize: 'var(--text-page-title)', marginTop: 12 }}>
+        <h1 className="page-h1" style={{ marginTop: 14 }}>
           {studentName}
-        </div>
-        <div style={{ fontSize: 'var(--text-small)', color: 'var(--ink-2)', marginTop: 2 }}>
+        </h1>
+        <div style={{ fontSize: 'var(--text-small)', fontWeight: 700, color: 'var(--ink-2)', marginTop: 4 }}>
           {student.level ?? t('role_student')} · {t('joined', { date: joinedDate })}
         </div>
       </div>
@@ -122,57 +122,14 @@ export function StudentProfile() {
           gap: 8,
         }}
       >
-        <Card padded={false} style={{ padding: 14, textAlign: 'center' }}>
-          <div style={{ fontSize: 22, fontWeight: 700, letterSpacing: '-0.02em' }}>
-            {allLessonsForStudent}
-          </div>
-          <div
-            style={{
-              fontSize: 10,
-              color: 'var(--ink-3)',
-              textTransform: 'uppercase',
-              letterSpacing: '0.06em',
-            }}
-          >
-            {t('lessons_count')}
-          </div>
-        </Card>
-        <Card padded={false} style={{ padding: 14, textAlign: 'center' }}>
-          <div style={{ fontSize: 22, fontWeight: 700, letterSpacing: '-0.02em' }}>
-            {student.level ?? '—'}
-          </div>
-          <div
-            style={{
-              fontSize: 10,
-              color: 'var(--ink-3)',
-              textTransform: 'uppercase',
-              letterSpacing: '0.06em',
-            }}
-          >
-            {t('level_short')}
-          </div>
-        </Card>
-        <Card padded={false} style={{ padding: 14, textAlign: 'center' }}>
-          <div style={{ fontSize: 22, fontWeight: 700, letterSpacing: '-0.02em' }}>
-            {student.locale.toUpperCase()}
-          </div>
-          <div
-            style={{
-              fontSize: 10,
-              color: 'var(--ink-3)',
-              textTransform: 'uppercase',
-              letterSpacing: '0.06em',
-            }}
-          >
-            {t('language')}
-          </div>
-        </Card>
+        <StatChip icon="event" value={allLessonsForStudent} label={t('lessons_count')} tone="sky" />
+        <StatChip icon="school" value={student.level ?? '—'} label={t('level_short')} tone="leaf" />
+        <StatChip icon="translate" value={student.locale.toUpperCase()} label={t('language')} tone="grape" />
       </div>
 
-      <div style={{ padding: '0 16px 18px', display: 'flex', gap: 8 }}>
+      <div style={{ padding: '0 16px 18px', display: 'flex', flexDirection: 'column', gap: 10 }}>
         <Button
           variant="primary"
-          size="sm"
           block
           leadingIcon="task_alt"
           onClick={() => setAssignHwOpen(true)}
@@ -181,7 +138,6 @@ export function StudentProfile() {
         </Button>
         <Button
           variant="secondary"
-          size="sm"
           block
           leadingIcon="flag"
           onClick={() => setAssignGoalOpen(true)}
@@ -221,12 +177,12 @@ export function StudentProfile() {
       <Section eyebrow={t('upcoming_eyebrow')} title={t('next_lessons')}>
         {studentLessons.length === 0 ? (
           <Card style={{ textAlign: 'center', padding: '20px' }}>
-            <div style={{ fontSize: 'var(--text-small)', color: 'var(--ink-2)' }}>{t('no_upcoming')}</div>
+            <div style={{ fontSize: 'var(--text-small)', fontWeight: 600, color: 'var(--ink-2)' }}>{t('no_upcoming')}</div>
           </Card>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             {studentLessons.map((l) => (
-              <Card key={l.id}>
+              <Card key={l.id} style={{ padding: '14px 16px', borderRadius: 24 }}>
                 <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
                   <div
                     style={{
@@ -236,22 +192,15 @@ export function StudentProfile() {
                       width: 48,
                     }}
                   >
-                    <div className="mono" style={{ fontSize: 16, fontWeight: 700 }}>
+                    <div className="font-headline" style={{ fontSize: 'var(--text-lead)', fontWeight: 900, fontVariantNumeric: 'tabular-nums' }}>
                       {lessonTime(l.scheduledAt)}
                     </div>
-                    <div
-                      style={{
-                        fontSize: 10,
-                        color: 'var(--ink-3)',
-                        textTransform: 'uppercase',
-                        letterSpacing: '0.06em',
-                      }}
-                    >
+                    <div className="eyebrow" style={{ fontSize: 10 }}>
                       {formatShortDate(l.scheduledAt)}
                     </div>
                   </div>
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: 14, fontWeight: 700 }}>{l.topic}</div>
+                    <div style={{ fontSize: 'var(--text-card-title)', fontWeight: 700 }}>{l.topic}</div>
                     <div style={{ fontSize: 'var(--text-caption)', color: 'var(--ink-2)' }}>
                       {l.durationMinutes}m · {l.level ?? '—'}
                     </div>
@@ -280,15 +229,15 @@ export function StudentProfile() {
                     tone={(['leaf', 'grape', 'sunny', 'sky', 'coral'] as const)[i % 5]}
                   />
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: 14, fontWeight: 700 }}>{g.description}</div>
+                    <div style={{ fontSize: 'var(--text-card-title)', fontWeight: 700 }}>{g.description}</div>
                     <div style={{ fontSize: 'var(--text-caption)', color: 'var(--ink-2)' }}>
                       {g.setBy === 'TEACHER' ? t('set_by_teacher') : t('set_by_you')}
                       {g.targetDate ? ` · ${formatShortDate(g.targetDate)}` : ''}
                     </div>
                   </div>
                   <div
-                    className="mono"
-                    style={{ fontSize: 13, color: 'var(--ink-3)', fontWeight: 700 }}
+                    className="font-headline"
+                    style={{ fontSize: 'var(--text-body)', color: 'var(--ink-2)', fontWeight: 900 }}
                   >
                     {g.progress}%
                   </div>
@@ -307,9 +256,9 @@ export function StudentProfile() {
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             {homework.slice(0, 6).map((h) => {
-              const tone = h.status === 'DONE' ? 'accent' : h.status === 'OPEN' ? 'warn' : 'violet'
+              const tone = h.status === 'DONE' ? 'moss' : h.status === 'OPEN' ? 'warn' : 'info'
               return (
-                <Card key={h.id}>
+                <Card key={h.id} style={{ padding: '14px 16px', borderRadius: 24 }}>
                   <div
                     style={{
                       display: 'flex',
@@ -321,7 +270,7 @@ export function StudentProfile() {
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div
                         style={{
-                          fontSize: 14,
+                          fontSize: 'var(--text-card-title)',
                           fontWeight: 700,
                           marginBottom: 2,
                           overflow: 'hidden',
@@ -344,8 +293,9 @@ export function StudentProfile() {
             {activeHomework.length > 0 && (
               <div
                 style={{
-                  fontSize: 11,
-                  color: 'var(--ink-3)',
+                  fontSize: 'var(--text-caption)',
+                  fontWeight: 700,
+                  color: 'var(--ink-2)',
                   textAlign: 'center',
                   marginTop: 4,
                 }}
