@@ -1,0 +1,63 @@
+src/features/shared/ChangePassword.tsx
+  s_81525541fb2fd4::t_520f69e0db50d8 4,17-20,69-70,77,79,82,90,92,104,107,112,121-122,130,132,138,142,152-153,159-160,170,172,175-177
+src/features/shared/Notifications.tsx
+  s_81525541fb2fd4::t_73d3bc4fe8d038 33,54,57-58,68,72-73,75-76,79,82,86-87,95,102-103,106
+src/features/shared/ProfileEdit.tsx
+  s_81525541fb2fd4::t_e5784c72780634 5,78,116,125-127,142,144,149,154,156,163,167,171,175,179-180,183,190-191,201,205,208,210,212-213,216
+src/features/shared/Settings.tsx
+  s_81525541fb2fd4::t_3e83885f0f29b1 58
+src/features/student/BookLessonSheet.tsx
+  s_81525541fb2fd4::t_2fc0f4a81cc744 136-137,144,147,153,168,177-178,189,193,205-206,245,252-254
+src/features/student/Calendar.tsx
+  s_81525541fb2fd4::t_b4c72c61d01c7f 3,77-86,88-93,95-96,105,110-114,123-124,126-127,143-144,146,153,157,175,196,198-204,206,221-222,231,237
+src/features/student/Goals.tsx
+  s_81525541fb2fd4::t_d2b4498e597bbd 5,31-40,42-47,50-59,101,104,109,111-112,114,132,135,144-145,209,213,267,270
+src/features/student/LessonActionsSheet.tsx
+  s_81525541fb2fd4::t_6a05bace4ec8b6 79,82,171
+src/features/student/LessonAttachmentsList.tsx
+  s_81525541fb2fd4::t_43c785f5cadf9d 20,30,37,49,51-54,63,68
+src/features/student/LessonLive.tsx
+  s_81525541fb2fd4::t_5318272dbe3d71 5,109,113,116-117,119-124,127-151,158,163-164,176,195,206,216-217,219,226,228,230,238,241,244-249,256,266,268-273,285,292-294,296-297,299-300,303-318,320,323,325,328-356,368-369,372,375,395-396,398-401,404
+src/features/student/LessonRow.tsx
+  s_81525541fb2fd4::t_4e5f78ae0e650d 86
+src/features/student/MaterialPreview.tsx
+  s_81525541fb2fd4::t_83c71b80fd6b4c 82,85,114
+src/features/student/Materials.tsx
+  s_81525541fb2fd4::t_1e7cb5cecfc97f 4,10-14,99,110-111,172-173,175-178,183-184,192,205-209,220,226-227,231-234,238-239,243-246,248-249,251,254-256,268-269,272
+src/features/student/RescheduleSheet.tsx
+  s_81525541fb2fd4::t_834ecb766505c4 76-77,84,87,93,96
+src/features/student/VocabReview.tsx
+  s_81525541fb2fd4::t_2b7c253ee7c6f8 156,174
+src/features/teacher/AssignGoalSheet.tsx
+  s_81525541fb2fd4::t_af4c2fb0d58cf8 69-70,77,80,86,90
+src/features/teacher/AssignHomeworkSheet.tsx
+  s_81525541fb2fd4::t_8276bd5db27c11 79-80,87,90,96,100
+src/features/teacher/LessonCompleteSheet.tsx
+  s_81525541fb2fd4::t_e364b5bbccde10 72-73,80,83,92,95
+src/features/teacher/Materials.tsx
+  s_81525541fb2fd4::t_738eb19741e020 3,8-12,47-56,58-63,67-71,83,89-90,94-97,101-102,106-109,111-112,114,117-119,131-132,135,150,153,174,184
+src/features/teacher/StudentProfile.tsx
+  s_81525541fb2fd4::t_5c6c449a5c4930 75,109,112,126,141,156,195,209-211,224,239,254-255,269,283-284,291,305,325,334
+src/features/teacher/Students.tsx
+  s_81525541fb2fd4::t_0399dcad4fae90 29,34,78,107,110
+src/features/teacher/TeacherHome.tsx
+  s_81525541fb2fd4::t_585d68b95a440e 74,82,87,156,204,239,270,310,313,380,429
+src/features/teacher/UploadMaterialSheet.tsx
+  s_81525541fb2fd4::t_bf88b5a621e09c 99,104,116-117,126,137,148,168,217
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "7575eb45bfe2d3db269e9ba506954495956804dd",
+  "prompts": {},
+  "sessions": {
+    "s_81525541fb2fd4": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "6f74100a-bf7e-4308-bddf-c605ea23cebe",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Vladlen Gladis <vladlen.gladis@deliveryhero.com>"
+    }
+  }
+}
