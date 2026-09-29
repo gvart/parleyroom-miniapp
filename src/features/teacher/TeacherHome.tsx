@@ -6,7 +6,7 @@ import { useLessons } from '@/hooks/useLessons'
 import { useUsers } from '@/hooks/useCreateLesson'
 import { useNotifications } from '@/hooks/useNotifications'
 import { useAcceptLesson, useCancelLesson } from '@/hooks/useLessonActions'
-import { Avatar, Button, Card, Pill, Section, StatChip } from '@/ui'
+import { Avatar, Button, Card, EmptyState, Pill, Section, StatChip } from '@/ui'
 import { isClub, lessonDate, lessonTime, todayISO } from '@/lib/lesson'
 import type { Lesson, UserProfile } from '@/api/types'
 
@@ -58,7 +58,7 @@ export function TeacherHome() {
     <div>
       <div
         style={{
-          padding: '8px 20px 18px',
+          padding: '12px 16px 18px',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'flex-end',
@@ -82,7 +82,7 @@ export function TeacherHome() {
             style={{ fontSize: 38, lineHeight: 1.02, letterSpacing: '-0.02em' }}
           >
             {user.firstName}
-            <span style={{ color: 'var(--accent)' }}>.</span>
+            
           </div>
           <div style={{ fontSize: 13, color: 'var(--ink-2)', marginTop: 4 }}>
             {t('lessons_today', { count: todayLessons.length })}
@@ -92,21 +92,8 @@ export function TeacherHome() {
         <button
           type="button"
           onClick={() => navigate('/notifications')}
-          className="tap"
+          className="ico-btn"
           aria-label={t('notifications')}
-          style={{
-            width: 44,
-            height: 44,
-            borderRadius: 999,
-            background: 'var(--card)',
-            border: '1px solid var(--hair)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            cursor: 'pointer',
-            position: 'relative',
-            color: 'var(--ink)',
-          }}
         >
           <span className="ms" style={{ fontSize: 22 }}>
             notifications
@@ -129,7 +116,7 @@ export function TeacherHome() {
       </div>
 
       {live && (
-        <div style={{ padding: '0 20px 16px' }}>
+        <div style={{ padding: '0 16px 16px' }}>
           <Card
             padded={false}
             onClick={() => navigate(`/lessons/${live.id}/live`)}
@@ -180,7 +167,7 @@ export function TeacherHome() {
 
       <div
         style={{
-          padding: '0 20px 22px',
+          padding: '0 16px 22px',
           display: 'grid',
           gridTemplateColumns: 'repeat(4, 1fr)',
           gap: 8,
@@ -299,13 +286,7 @@ export function TeacherHome() {
       )}
 
       {todayLessons.length === 0 && requests.length === 0 && (
-        <div style={{ padding: '40px 30px', textAlign: 'center' }}>
-          <div style={{ fontSize: 40, marginBottom: 10 }}>✺</div>
-          <div className="font-headline" style={{ fontSize: 22, marginBottom: 4 }}>
-            {t('quiet_day_title')}
-          </div>
-          <div style={{ fontSize: 13, color: 'var(--ink-2)' }}>{t('quiet_day_sub')}</div>
-        </div>
+        <EmptyState icon="inbox" title={t('quiet_day_title')} sub={t('quiet_day_sub')} />
       )}
     </div>
   )

@@ -53,7 +53,7 @@ export function ChangePassword() {
     return (
       <div>
         <ScreenHeader title={t('change_password_title')} />
-        <div style={{ padding: '0 20px' }}>
+        <div style={{ padding: '0 16px' }}>
           <div style={{ textAlign: 'center', padding: '30px 10px' }}>
             <div
               style={{
@@ -114,7 +114,7 @@ export function ChangePassword() {
     <div>
       <ScreenHeader title={t('change_password_title')} />
 
-      <form onSubmit={submit} style={{ padding: '0 20px' }}>
+      <form onSubmit={submit} style={{ padding: '0 16px' }}>
         <div className="font-headline" style={{ fontSize: 26, letterSpacing: '-0.02em', marginBottom: 6 }}>
           {t('new_password')}
         </div>
@@ -258,30 +258,18 @@ function ScreenHeader({ title }: { title: string }) {
   const { t } = useTranslation()
   const navigate = useNavigate()
   return (
-    <div style={{ padding: '8px 20px 18px', display: 'flex', alignItems: 'center', gap: 12 }}>
+    <div style={{ padding: '12px 16px 18px', display: 'flex', alignItems: 'center', gap: 12 }}>
       <button
         type="button"
         onClick={() => navigate('/settings')}
-        className="tap"
+        className="ico-btn"
         aria-label={t('back')}
-        style={{
-          width: 40,
-          height: 40,
-          borderRadius: 999,
-          background: 'var(--card)',
-          border: '1px solid var(--hair)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          cursor: 'pointer',
-          color: 'var(--ink)',
-        }}
       >
         <span className="ms" style={{ fontSize: 20 }}>
           arrow_back
         </span>
       </button>
-      <div className="font-headline" style={{ fontSize: 22, letterSpacing: '-0.01em' }}>
+      <div className="section-title">
         {title}
       </div>
     </div>

@@ -76,7 +76,7 @@ export function Calendar() {
     <div>
       <div
         style={{
-          padding: '8px 20px 14px',
+          padding: '8px 16px 14px',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'flex-end',
@@ -100,7 +100,7 @@ export function Calendar() {
             style={{ fontSize: 30, lineHeight: 1.05, letterSpacing: '-0.02em' }}
           >
             {monthLabel}
-            <span style={{ color: 'var(--accent)' }}>.</span>
+            
           </div>
         </div>
         <button
@@ -183,7 +183,7 @@ export function Calendar() {
         })}
       </div>
 
-      <div style={{ padding: '0 20px' }}>
+      <div style={{ padding: '0 16px' }}>
         {dayLessons.length === 0 ? (
           <div style={{ padding: '40px 30px', textAlign: 'center' }}>
             <div style={{ fontSize: 36, marginBottom: 10 }}>·</div>

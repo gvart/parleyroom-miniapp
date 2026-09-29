@@ -25,7 +25,7 @@ export function TeacherStudents() {
 
   return (
     <div>
-      <div style={{ padding: '8px 20px 14px' }}>
+      <div style={{ padding: '8px 16px 14px' }}>
         <div
           style={{
             fontSize: 11,
@@ -45,11 +45,11 @@ export function TeacherStudents() {
           {students.length === 1
             ? t('students_count_singular')
             : t('students_count', { count: students.length })}
-          <span style={{ color: 'var(--accent)' }}>.</span>
+          
         </div>
       </div>
 
-      <div style={{ padding: '0 20px 14px' }}>
+      <div style={{ padding: '0 16px 14px' }}>
         <div
           style={{
             display: 'flex',
@@ -89,7 +89,7 @@ export function TeacherStudents() {
           </div>
         </div>
       ) : (
-        <div style={{ padding: '0 20px' }}>
+        <div style={{ padding: '0 16px' }}>
           <Card padded={false}>
             {filtered.map((s, i) => (
               <button

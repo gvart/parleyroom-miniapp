@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
-import { Card, Pill, Ring, type PillTone } from '@/ui'
+import { Card, EmptyState, PageHeader, Pill, type PillTone, Ring } from '@/ui'
 import { useVocab } from '@/hooks/useVocab'
 import { vocabHeadword, vocabMeaning, wordTypeLabelKey } from '@/lib/vocab'
 import type { VocabStatus } from '@/api/types'
@@ -43,60 +43,41 @@ export function Vocab() {
 
   return (
     <div>
-      <div style={{ padding: '8px 20px 18px' }}>
-        <div
-          style={{
-            fontSize: 11,
-            color: 'var(--ink-3)',
-            letterSpacing: '0.12em',
-            textTransform: 'uppercase',
-            fontWeight: 600,
-            marginBottom: 6,
-          }}
-        >
-          {t('vocab')}
-        </div>
-        <div
-          className="font-headline"
-          style={{ fontSize: 34, lineHeight: 1.05, letterSpacing: '-0.02em' }}
-        >
-          {t('your_glossary')}
-          <span style={{ color: 'var(--accent)' }}>.</span>
-        </div>
-      </div>
+      <PageHeader eyebrow={t('vocab')} title={t('your_glossary')} />
 
       {reviewDueCount > 0 && (
-        <div style={{ padding: '0 20px 18px' }}>
+        <div style={{ padding: '0 16px 16px' }}>
           <Card
             onClick={() => navigate('/vocab/review')}
+            className="tap"
             style={{
               cursor: 'pointer',
-              background: 'linear-gradient(135deg, var(--accent-soft) 0%, var(--card) 65%)',
+              background: 'linear-gradient(135deg, var(--grape-soft) 0%, var(--glass-bg) 70%)',
             }}
           >
             <div style={{ display: 'flex', gap: 14, alignItems: 'center' }}>
-              <Ring value={100} size={54} label={reviewDueCount} />
+              <Ring value={100} size={56} tone="grape" label={reviewDueCount} />
               <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontSize: 'var(--fs-title)', fontWeight: 600, marginBottom: 2 }}>
+                <div style={{ fontSize: 'var(--text-card-title)', fontWeight: 800, marginBottom: 2 }}>
                   {reviewDueCount === 1
                     ? t('review_count_singular')
                     : t('review_count_plural', { count: reviewDueCount })}
                 </div>
-                <div style={{ fontSize: 13, color: 'var(--ink-2)' }}>
+                <div style={{ fontSize: 'var(--text-small)', color: 'var(--ink-2)' }}>
                   {t('review_minutes_estimate', { minutes: reviewMinutes })}
                 </div>
               </div>
-              <span className="ms" style={{ fontSize: 22, color: 'var(--ink-3)' }}>
-                chevron_right
+              <span className="btn-primary" style={{ minHeight: 40, width: 40, padding: 0 }} aria-hidden="true">
+                <span className="ms fill" style={{ fontSize: 22 }}>play_arrow</span>
               </span>
             </div>
           </Card>
         </div>
       )}
 
-      <div style={{ padding: '0 20px 14px' }}>
+      <div style={{ padding: '0 16px 14px' }}>
         <div
-          style={{ display: 'flex', gap: 6, overflowX: 'auto', paddingBottom: 2 }}
+          style={{ display: 'flex', gap: 6, overflowX: 'auto', padding: '2px 0' }}
           className="no-scrollbar"
         >
           {FILTERS.map((f) => (
@@ -104,18 +85,8 @@ export function Vocab() {
               type="button"
               key={f.key}
               onClick={() => setFilter(f.key)}
-              className="tap"
-              style={{
-                padding: '8px 14px',
-                borderRadius: 999,
-                border: '1px solid var(--hair)',
-                background: filter === f.key ? 'var(--ink)' : 'transparent',
-                color: filter === f.key ? 'var(--bg)' : 'var(--ink-2)',
-                fontSize: 12,
-                fontWeight: 600,
-                cursor: 'pointer',
-                whiteSpace: 'nowrap',
-              }}
+              aria-pressed={filter === f.key}
+              className={`chip${filter === f.key ? ' on' : ''}`}
             >
               {t(f.labelKey)}
             </button>
@@ -124,15 +95,13 @@ export function Vocab() {
       </div>
 
       {words.length > 0 ? (
-        <div style={{ padding: '0 20px' }}>
-          <Card padded={false}>
-            {words.map((w, i) => (
+        <div style={{ padding: '0 16px' }}>
+          <Card padded={false} className="row-list">
+            {words.map((w) => (
               <div
                 key={w.id}
                 style={{
                   padding: '14px 18px',
-                  borderBottom:
-                    i < words.length - 1 ? '1px solid var(--hair)' : 0,
                   display: 'flex',
                   gap: 12,
                   alignItems: 'flex-start',
@@ -142,19 +111,18 @@ export function Vocab() {
                   <div
                     className="font-headline"
                     style={{
-                      fontSize: 22,
-                      lineHeight: 1.1,
-                      letterSpacing: '-0.01em',
+                      fontSize: 'var(--text-section-title)',
+                      lineHeight: 1.2,
                       marginBottom: 2,
                     }}
                   >
                     {vocabHeadword(w)}
                   </div>
-                  <div style={{ fontSize: 13, color: 'var(--ink-2)' }}>{vocabMeaning(w)}</div>
+                  <div style={{ fontSize: 'var(--text-body)', color: 'var(--ink-2)' }}>{vocabMeaning(w)}</div>
                   {w.exampleSentence && (
                     <div
                       style={{
-                        fontSize: 12,
+                        fontSize: 'var(--text-caption)',
                         color: 'var(--ink-3)',
                         fontStyle: 'italic',
                         marginTop: 4,
@@ -175,7 +143,7 @@ export function Vocab() {
                   }}
                 >
                   <Pill tone={STATUS_TONE[w.status]}>{t(STATUS_LABEL_KEY[w.status])}</Pill>
-                  <div style={{ fontSize: 10, color: 'var(--ink-3)' }}>
+                  <div style={{ fontSize: 'var(--text-label)', fontWeight: 700, color: 'var(--ink-3)' }}>
                     {t(wordTypeLabelKey(w.wordType))} · {w.addedAt.slice(5, 10)}
                   </div>
                 </div>
@@ -185,13 +153,7 @@ export function Vocab() {
         </div>
       ) : (
         !vocabQuery.isLoading && (
-          <div style={{ padding: '40px 30px', textAlign: 'center' }}>
-            <div style={{ fontSize: 40, marginBottom: 10 }}>◌</div>
-            <div className="font-headline" style={{ fontSize: 22, marginBottom: 4 }}>
-              {t('empty_vocab_title')}
-            </div>
-            <div style={{ fontSize: 13, color: 'var(--ink-2)' }}>{t('empty_vocab_sub')}</div>
-          </div>
+          <EmptyState icon="menu_book" title={t('empty_vocab_title')} sub={t('empty_vocab_sub')} />
         )
       )}
     </div>

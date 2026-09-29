@@ -46,7 +46,7 @@ export function Materials() {
     <div>
       <div
         style={{
-          padding: '8px 20px 18px',
+          padding: '12px 16px 18px',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'flex-end',
@@ -70,7 +70,7 @@ export function Materials() {
             style={{ fontSize: 30, lineHeight: 1.05, letterSpacing: '-0.02em' }}
           >
             {t('library_title')}
-            <span style={{ color: 'var(--accent)' }}>.</span>
+            
           </div>
         </div>
         <button
@@ -112,7 +112,7 @@ export function Materials() {
       ) : (
         <div
           style={{
-            padding: '0 20px',
+            padding: '0 16px',
             display: 'grid',
             gridTemplateColumns: '1fr 1fr',
             gap: 10,

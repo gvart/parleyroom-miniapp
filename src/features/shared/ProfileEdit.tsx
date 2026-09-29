@@ -89,34 +89,22 @@ export function ProfileEdit() {
 
   return (
     <div>
-      <div style={{ padding: '8px 20px 18px', display: 'flex', alignItems: 'center', gap: 12 }}>
+      <div style={{ padding: '12px 16px 18px', display: 'flex', alignItems: 'center', gap: 12 }}>
         <button
           type="button"
-          className="tap"
+          className="ico-btn"
           onClick={() => navigate('/settings')}
-          style={{
-            width: 40,
-            height: 40,
-            borderRadius: 999,
-            background: 'var(--card)',
-            border: '1px solid var(--hair)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            cursor: 'pointer',
-            color: 'var(--ink)',
-          }}
         >
           <span className="ms" style={{ fontSize: 20 }}>arrow_back</span>
         </button>
-        <div className="font-headline" style={{ fontSize: 22, letterSpacing: '-0.01em' }}>
+        <div className="section-title">
           {t('edit_profile')}
         </div>
       </div>
 
       <div
         style={{
-          padding: '0 20px 22px',
+          padding: '0 16px 22px',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
@@ -205,7 +193,7 @@ export function ProfileEdit() {
         )}
       </div>
 
-      <form onSubmit={submit} style={{ padding: '0 20px' }}>
+      <form onSubmit={submit} style={{ padding: '0 16px' }}>
         <Card>
           <div style={{ marginBottom: 14 }}>
             <div style={labelStyle}>{t('first_name_label')}</div>

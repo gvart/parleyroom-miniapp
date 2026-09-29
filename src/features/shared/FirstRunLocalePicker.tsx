@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { api } from '@/api/endpoints'
 import type { UserProfile } from '@/api/types'
+import { Button } from '@/ui'
 import i18n, { normalizeLocale, DEFAULT_LOCALE, type SupportedLocale } from '@/i18n'
 
 const LANGS: Array<{ code: SupportedLocale; labelKey: string }> = [
@@ -47,79 +48,45 @@ export function FirstRunLocalePicker({ user, onConfirmed }: Props) {
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
-        gap: 22,
-        padding: '40px 24px',
-        background: 'var(--bg)',
+        padding: '40px 16px',
         color: 'var(--ink)',
       }}
     >
-      <div>
-        <div
-          className="font-headline"
-          style={{ fontSize: 30, letterSpacing: '-0.02em', lineHeight: 1.1, marginBottom: 8 }}
-        >
-          {t('choose_language_title')}
-          <span style={{ color: 'var(--accent)' }}>.</span>
+      <div className="card animate-in" style={{ padding: 24 }}>
+        <span className="icon-tile" style={{ width: 52, height: 52, borderRadius: 18, marginBottom: 16 }}>
+          <span className="ms fill" style={{ fontSize: 28 }} aria-hidden="true">
+            translate
+          </span>
+        </span>
+        <h1 className="page-h1">{t('choose_language_title')}</h1>
+        <p className="page-sub">{t('choose_language_sub')}</p>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8, margin: '22px 0' }}>
+          {LANGS.map((l) => {
+            const active = selected === l.code
+            return (
+              <button
+                type="button"
+                key={l.code}
+                onClick={() => pick(l.code)}
+                aria-pressed={active}
+                className={`mode-chip${active ? ' on' : ''}`}
+              >
+                <span style={{ flex: 1 }}>{t(l.labelKey)}</span>
+                {active && (
+                  <span className="ms fill" style={{ fontSize: 22 }} aria-hidden="true">
+                    check_circle
+                  </span>
+                )}
+              </button>
+            )
+          })}
         </div>
-        <div style={{ fontSize: 13, color: 'var(--ink-2)' }}>{t('choose_language_sub')}</div>
-      </div>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-        {LANGS.map((l) => {
-          const active = selected === l.code
-          return (
-            <button
-              type="button"
-              key={l.code}
-              onClick={() => pick(l.code)}
-              className="tap"
-              style={{
-                width: '100%',
-                border: '1px solid var(--hair)',
-                background: active ? 'var(--ink)' : 'var(--card)',
-                color: active ? 'var(--bg)' : 'var(--ink)',
-                padding: '16px 18px',
-                borderRadius: 16,
-                fontSize: 15,
-                fontWeight: 600,
-                cursor: 'pointer',
-                textAlign: 'left',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-              }}
-            >
-              {t(l.labelKey)}
-              {active && (
-                <span className="ms fill" style={{ fontSize: 20 }}>
-                  check_circle
-                </span>
-              )}
-            </button>
-          )
-        })}
+        <Button block loading={saving} onClick={() => void confirm()}>
+          {t('continue_cta')}
+        </Button>
       </div>
-
-      <button
-        type="button"
-        onClick={() => void confirm()}
-        disabled={saving}
-        className="tap"
-        style={{
-          width: '100%',
-          border: 0,
-          cursor: saving ? 'progress' : 'pointer',
-          background: 'var(--ink)',
-          color: 'var(--bg)',
-          padding: '14px',
-          borderRadius: 999,
-          fontSize: 14,
-          fontWeight: 600,
-          opacity: saving ? 0.7 : 1,
-        }}
-      >
-        {t('continue_cta')}
-      </button>
     </div>
   )
 }

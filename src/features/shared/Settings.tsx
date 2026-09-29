@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/auth/AuthGate'
-import { Avatar, Card, Section } from '@/ui'
+import { Avatar, Button, Card, PageHeader, Section } from '@/ui'
 
 interface SettingsItem {
   icon: string
@@ -42,39 +42,20 @@ export function Settings() {
 
   return (
     <div>
-      <div style={{ padding: '8px 20px 18px' }}>
-        <div
-          style={{
-            fontSize: 11,
-            color: 'var(--ink-3)',
-            letterSpacing: '0.12em',
-            textTransform: 'uppercase',
-            fontWeight: 600,
-            marginBottom: 6,
-          }}
-        >
-          {t('settings')}
-        </div>
-        <div
-          className="font-headline"
-          style={{ fontSize: 30, lineHeight: 1.05, letterSpacing: '-0.02em' }}
-        >
-          {user.firstName}
-          <span style={{ color: 'var(--accent)' }}>.</span>
-        </div>
-      </div>
+      <PageHeader eyebrow={t('settings')} title={user.firstName} />
 
-      <div style={{ padding: '0 20px 18px' }}>
+      <div style={{ padding: '0 16px 18px' }}>
         <Card
           onClick={() => navigate('/settings/profile')}
+          className="tap"
           style={{ display: 'flex', alignItems: 'center', gap: 14, cursor: 'pointer' }}
         >
-          <Avatar hue={172} initials={user.initials} size={56} src={user.avatarUrl} />
-          <div style={{ flex: 1 }}>
-            <div style={{ fontSize: 15, fontWeight: 600 }}>
+          <Avatar hue={150} initials={user.initials} size={56} src={user.avatarUrl} />
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontSize: 'var(--text-card-title)', fontWeight: 800 }}>
               {user.firstName} {user.lastName}
             </div>
-            <div style={{ fontSize: 12, color: 'var(--ink-2)' }}>{subtitle}</div>
+            <div style={{ fontSize: 'var(--text-small)', fontWeight: 600, color: 'var(--ink-2)' }}>{subtitle}</div>
           </div>
           <span className="ms" style={{ fontSize: 22, color: 'var(--ink-3)' }}>
             chevron_right
@@ -84,32 +65,20 @@ export function Settings() {
 
       {groups.map((grp) => (
         <Section key={grp.title} eyebrow={grp.title}>
-          <Card padded={false}>
-            {grp.items.map((it, i) => (
+          <Card padded={false} className="row-list" style={{ overflow: 'hidden' }}>
+            {grp.items.map((it) => (
               <button
                 key={it.label}
                 type="button"
-                className="tap"
+                className="row-btn"
                 onClick={() => navigate(it.to)}
-                style={{
-                  width: '100%',
-                  border: 0,
-                  background: 'transparent',
-                  textAlign: 'left',
-                  padding: '14px 18px',
-                  borderBottom:
-                    i < grp.items.length - 1 ? '1px solid var(--hair)' : 0,
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 12,
-                  cursor: 'pointer',
-                  color: 'var(--ink)',
-                }}
               >
-                <span className="ms" style={{ fontSize: 20, color: 'var(--ink-2)' }}>
-                  {it.icon}
+                <span className="icon-tile" style={{ width: 36, height: 36, borderRadius: 12 }}>
+                  <span className="ms fill" style={{ fontSize: 20 }} aria-hidden="true">
+                    {it.icon}
+                  </span>
                 </span>
-                <div style={{ flex: 1, fontSize: 14 }}>{it.label}</div>
+                <div style={{ flex: 1, fontSize: 'var(--text-body)', fontWeight: 700 }}>{it.label}</div>
                 <span className="ms" style={{ fontSize: 20, color: 'var(--ink-3)' }}>
                   chevron_right
                 </span>
@@ -119,25 +88,10 @@ export function Settings() {
         </Section>
       ))}
 
-      <div style={{ padding: '8px 20px 0' }}>
-        <button
-          type="button"
-          className="tap"
-          onClick={signOut}
-          style={{
-            width: '100%',
-            border: '1px solid var(--hair-strong)',
-            background: 'transparent',
-            color: 'var(--ink)',
-            padding: '12px',
-            borderRadius: 999,
-            fontSize: 14,
-            fontWeight: 600,
-            cursor: 'pointer',
-          }}
-        >
+      <div style={{ padding: '8px 16px 0' }}>
+        <Button variant="danger" block leadingIcon="logout" onClick={signOut}>
           {t('sign_out')}
-        </button>
+        </Button>
       </div>
 
     </div>

@@ -30,7 +30,7 @@ export function Goals() {
     <div>
       <div
         style={{
-          padding: '8px 20px 18px',
+          padding: '12px 16px 18px',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'flex-end',
@@ -54,7 +54,7 @@ export function Goals() {
             style={{ fontSize: 34, lineHeight: 1.05, letterSpacing: '-0.02em' }}
           >
             {t('your_rhythm')}
-            <span style={{ color: 'var(--accent)' }}>.</span>
+            
           </div>
         </div>
         <button

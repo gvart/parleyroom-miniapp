@@ -64,20 +64,9 @@ export function StudentProfile() {
         <button
           type="button"
           onClick={() => navigate(-1)}
-          className="tap"
-          style={{
-            width: 40,
-            height: 40,
-            borderRadius: 999,
-            background: 'var(--card)',
-            border: '1px solid var(--hair)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            cursor: 'pointer',
-            color: 'var(--ink)',
-            margin: '0 auto 18px',
-          }}
+          className="ico-btn"
+          aria-label={t('back')}
+          style={{ margin: '0 auto 18px' }}
         >
           <span className="ms" style={{ fontSize: 20 }}>
             arrow_back
@@ -100,24 +89,12 @@ export function StudentProfile() {
 
   return (
     <div>
-      <div style={{ padding: '8px 20px 0' }}>
+      <div style={{ padding: '8px 16px 0' }}>
         <button
           type="button"
           onClick={() => navigate(-1)}
-          className="tap"
+          className="ico-btn"
           aria-label={t('back')}
-          style={{
-            width: 40,
-            height: 40,
-            borderRadius: 999,
-            background: 'var(--card)',
-            border: '1px solid var(--hair)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            cursor: 'pointer',
-            color: 'var(--ink)',
-          }}
         >
           <span className="ms" style={{ fontSize: 20 }}>
             arrow_back
@@ -125,7 +102,7 @@ export function StudentProfile() {
         </button>
       </div>
 
-      <div style={{ padding: '16px 20px 20px', textAlign: 'center' }}>
+      <div style={{ padding: '16px 16px 20px', textAlign: 'center' }}>
         <div style={{ display: 'inline-flex' }}>
           <Avatar hue={hueFor(student.id)} initials={initialsOf(student)} size={88} />
         </div>
@@ -139,7 +116,7 @@ export function StudentProfile() {
 
       <div
         style={{
-          padding: '0 20px 16px',
+          padding: '0 16px 16px',
           display: 'grid',
           gridTemplateColumns: 'repeat(3, 1fr)',
           gap: 8,
@@ -192,7 +169,7 @@ export function StudentProfile() {
         </Card>
       </div>
 
-      <div style={{ padding: '0 20px 18px', display: 'flex', gap: 8 }}>
+      <div style={{ padding: '0 16px 18px', display: 'flex', gap: 8 }}>
         <Button
           variant="primary"
           size="sm"
@@ -213,7 +190,7 @@ export function StudentProfile() {
         </Button>
       </div>
 
-      <div style={{ padding: '0 20px 18px' }}>
+      <div style={{ padding: '0 16px 18px' }}>
         <Card>
           <div
             style={{

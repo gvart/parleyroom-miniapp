@@ -14,6 +14,7 @@ import { api } from '@/api/endpoints'
 import type { UserProfile } from '@/api/types'
 import i18n, { DEFAULT_LOCALE, normalizeLocale } from '@/i18n'
 import { FirstRunLocalePicker } from '@/features/shared/FirstRunLocalePicker'
+import { Button } from '@/ui'
 
 const TOKEN_KEY = 'parleyroom.access'
 
@@ -155,6 +156,19 @@ export function AuthGate({ children }: { children: ReactNode }) {
   )
 }
 
+function BrandLockup() {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+      <span className="brand-mark font-headline" aria-hidden="true">
+        P
+      </span>
+      <span className="font-headline" style={{ fontSize: 24 }}>
+        Parley<span style={{ color: 'var(--accent-ink)' }}>room</span>
+      </span>
+    </div>
+  )
+}
+
 function SplashScreen() {
   const { t } = useTranslation()
   return (
@@ -167,17 +181,13 @@ function SplashScreen() {
         justifyContent: 'center',
         gap: 18,
         padding: 24,
-        background: 'var(--bg)',
         color: 'var(--ink)',
       }}
     >
-      <div
-        className="font-headline"
-        style={{ fontSize: 38, letterSpacing: '-0.02em', lineHeight: 1 }}
-      >
-        Parleyroom<span style={{ color: 'var(--accent)' }}>.</span>
+      <BrandLockup />
+      <div style={{ fontSize: 'var(--text-small)', fontWeight: 700, color: 'var(--ink-2)' }}>
+        {t('signing_in')}
       </div>
-      <div style={{ fontSize: 13, color: 'var(--ink-2)' }}>{t('signing_in')}</div>
     </div>
   )
 }
@@ -195,33 +205,24 @@ function ErrorScreen({ message }: { message: string }) {
         gap: 12,
         padding: 30,
         textAlign: 'center',
-        background: 'var(--bg)',
         color: 'var(--ink)',
       }}
     >
-      <div style={{ fontSize: 40 }}>◌</div>
-      <div className="font-headline" style={{ fontSize: 24, letterSpacing: '-0.02em' }}>
-        {t('something_went_wrong')}
-      </div>
-      <div style={{ fontSize: 13, color: 'var(--ink-2)', maxWidth: 280 }}>{message}</div>
-      <button
-        type="button"
-        className="tap"
-        onClick={() => window.location.reload()}
-        style={{
-          marginTop: 14,
-          border: 0,
-          background: 'var(--ink)',
-          color: 'var(--bg)',
-          padding: '10px 18px',
-          borderRadius: 999,
-          fontSize: 13,
-          fontWeight: 600,
-          cursor: 'pointer',
-        }}
+      <span
+        className="icon-tile"
+        style={{ width: 64, height: 64, borderRadius: 22, background: 'var(--coral-soft)', color: 'var(--coral-ink)' }}
       >
+        <span className="ms fill" style={{ fontSize: 32 }} aria-hidden="true">
+          error
+        </span>
+      </span>
+      <h1 className="section-title" style={{ margin: 0 }}>
+        {t('something_went_wrong')}
+      </h1>
+      <div style={{ fontSize: 'var(--text-small)', color: 'var(--ink-2)', maxWidth: 280 }}>{message}</div>
+      <Button leadingIcon="refresh" onClick={() => window.location.reload()} style={{ marginTop: 10 }}>
         {t('try_again')}
-      </button>
+      </Button>
     </div>
   )
 }
@@ -253,116 +254,62 @@ function LinkForm({ rawInitData, isSubmitting, onStart, onError, onSuccess }: Li
     }
   }
 
-  const labelStyle = {
-    fontSize: 11,
-    color: 'var(--ink-3)',
-    textTransform: 'uppercase' as const,
-    letterSpacing: '0.08em',
-    fontWeight: 600,
-    marginBottom: 6,
-    display: 'block',
-  }
-  const inputStyle = {
-    width: '100%',
-    padding: '12px 14px',
-    background: 'var(--card)',
-    color: 'var(--ink)',
-    border: '1px solid var(--hair)',
-    borderRadius: 14,
-    fontSize: 15,
-    outline: 'none',
-  }
-
   return (
     <div
       style={{
         minHeight: '100vh',
         display: 'flex',
         flexDirection: 'column',
-        gap: 18,
-        padding: '40px 20px',
-        background: 'var(--bg)',
+        justifyContent: 'center',
+        gap: 24,
+        padding: '40px 16px',
         color: 'var(--ink)',
       }}
     >
-      <div>
-        <div
-          style={{
-            fontSize: 11,
-            color: 'var(--ink-3)',
-            letterSpacing: '0.12em',
-            textTransform: 'uppercase',
-            fontWeight: 600,
-            marginBottom: 6,
-          }}
-        >
-          Parleyroom
-        </div>
-        <div
-          className="font-headline"
-          style={{ fontSize: 32, letterSpacing: '-0.02em', lineHeight: 1.1 }}
-        >
-          {t('link_account_title')}
-          <span style={{ color: 'var(--accent)' }}>.</span>
-        </div>
-        <div style={{ fontSize: 13, color: 'var(--ink-2)', marginTop: 8 }}>
-          {t('link_account_sub')}
-        </div>
+      <div style={{ display: 'flex', justifyContent: 'center' }}>
+        <BrandLockup />
       </div>
+      <div className="card animate-in" style={{ padding: 24 }}>
+        <h1 className="page-h1">{t('link_account_title')}</h1>
+        <p className="page-sub">{t('link_account_sub')}</p>
 
-      <form
-        onSubmit={submit}
-        style={{ display: 'flex', flexDirection: 'column', gap: 14, marginTop: 6 }}
-      >
-        <div>
-          <label htmlFor="email" style={labelStyle}>
-            {t('email')}
-          </label>
-          <input
-            id="email"
-            type="email"
-            autoComplete="email"
-            required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            style={inputStyle}
-          />
-        </div>
-        <div>
-          <label htmlFor="password" style={labelStyle}>
-            {t('password')}
-          </label>
-          <input
-            id="password"
-            type="password"
-            autoComplete="current-password"
-            required
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            style={inputStyle}
-          />
-        </div>
-        <button
-          type="submit"
-          disabled={isSubmitting}
-          className="tap"
-          style={{
-            width: '100%',
-            marginTop: 6,
-            border: 0,
-            cursor: isSubmitting ? 'progress' : 'pointer',
-            background: 'var(--ink)',
-            color: 'var(--bg)',
-            padding: '14px',
-            borderRadius: 999,
-            fontSize: 14,
-            fontWeight: 600,
-            opacity: isSubmitting ? 0.7 : 1,
-          }}
+        <form
+          onSubmit={submit}
+          style={{ display: 'flex', flexDirection: 'column', gap: 16, marginTop: 22 }}
         >
-          {isSubmitting ? t('linking') : t('sign_in_link')}
-        </button>
-      </form>
+          <div>
+            <label htmlFor="email" className="eyebrow field-label">
+              {t('email')}
+            </label>
+            <input
+              id="email"
+              type="email"
+              autoComplete="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="glass-field"
+            />
+          </div>
+          <div>
+            <label htmlFor="password" className="eyebrow field-label">
+              {t('password')}
+            </label>
+            <input
+              id="password"
+              type="password"
+              autoComplete="current-password"
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="glass-field"
+            />
+          </div>
+          <Button type="submit" block disabled={isSubmitting} style={{ marginTop: 6 }}>
+            {isSubmitting ? t('linking') : t('sign_in_link')}
+          </Button>
+        </form>
+      </div>
     </div>
   )
 }

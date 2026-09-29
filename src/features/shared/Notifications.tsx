@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
-import { Card } from '@/ui'
+import { Card, EmptyState } from '@/ui'
 import { useMarkNotificationsViewed, useNotifications } from '@/hooks/useNotifications'
 import { notificationIcon, notificationText, relativeTime } from '@/lib/notifications'
 
@@ -27,7 +27,7 @@ export function Notifications() {
     <div>
       <div
         style={{
-          padding: '8px 20px 18px',
+          padding: '12px 16px 18px',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
@@ -36,41 +36,23 @@ export function Notifications() {
         <button
           type="button"
           onClick={() => navigate(-1)}
-          className="tap"
-          style={{
-            width: 40,
-            height: 40,
-            borderRadius: 999,
-            background: 'var(--card)',
-            border: '1px solid var(--hair)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            cursor: 'pointer',
-            color: 'var(--ink)',
-          }}
+          className="ico-btn"
           aria-label={t('back')}
         >
           <span className="ms" style={{ fontSize: 20 }}>
             arrow_back
           </span>
         </button>
-        <div className="font-headline" style={{ fontSize: 22, letterSpacing: '-0.01em' }}>
+        <div className="section-title">
           {t('notifications')}
         </div>
         <div style={{ width: 40 }} />
       </div>
 
-      <div style={{ padding: '0 20px' }}>
+      <div style={{ padding: '0 16px' }}>
         {items.length === 0 ? (
           !notificationsQuery.isLoading && (
-            <div style={{ padding: '40px 30px', textAlign: 'center' }}>
-              <div style={{ fontSize: 40, marginBottom: 10 }}>◌</div>
-              <div className="font-headline" style={{ fontSize: 22, marginBottom: 4 }}>
-                {t('all_caught_up')}
-              </div>
-              <div style={{ fontSize: 13, color: 'var(--ink-2)' }}>{t('no_new_notifications')}</div>
-            </div>
+            <EmptyState icon="inbox" title={t('all_caught_up')} sub={t('no_new_notifications')} />
           )
         ) : (
           <Card padded={false}>

@@ -3,19 +3,21 @@ import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { useReviewVocab, useVocab } from '@/hooks/useVocab'
 import { vocabHeadword, vocabMeaning, wordTypeLabelKey } from '@/lib/vocab'
+import { Button, TONE_VARS, type Tone } from '@/ui'
 
 type Grade = 'AGAIN' | 'GOOD' | 'EASY'
 
 interface GradeBtn {
   grade: Grade
   labelKey: string
-  bg: string
+  icon: string
+  tone: Tone
 }
 
 const GRADES: GradeBtn[] = [
-  { grade: 'AGAIN', labelKey: 'again', bg: 'oklch(0.55 0.18 25)' },
-  { grade: 'GOOD', labelKey: 'good', bg: 'oklch(0.5 0.14 75)' },
-  { grade: 'EASY', labelKey: 'easy', bg: 'oklch(0.5 0.12 172)' },
+  { grade: 'AGAIN', labelKey: 'again', icon: 'replay', tone: 'coral' },
+  { grade: 'GOOD', labelKey: 'good', icon: 'thumb_up', tone: 'sunny' },
+  { grade: 'EASY', labelKey: 'easy', icon: 'bolt', tone: 'leaf' },
 ]
 
 export function VocabReview() {
@@ -56,7 +58,6 @@ export function VocabReview() {
         position: 'fixed',
         inset: 0,
         zIndex: 100,
-        background: 'var(--bg)',
         color: 'var(--ink)',
         display: 'flex',
         flexDirection: 'column',
@@ -68,7 +69,7 @@ export function VocabReview() {
     >
       <div
         style={{
-          padding: '8px 20px 20px',
+          padding: '12px 16px 20px',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
@@ -78,49 +79,22 @@ export function VocabReview() {
         <button
           type="button"
           onClick={() => navigate('/vocab')}
-          className="tap"
-          style={{
-            width: 40,
-            height: 40,
-            borderRadius: 999,
-            background: 'var(--card)',
-            border: '1px solid var(--hair)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            cursor: 'pointer',
-            color: 'var(--ink)',
-            flexShrink: 0,
-          }}
+          className="ico-btn"
           aria-label={t('back')}
         >
-          <span className="ms" style={{ fontSize: 20 }}>
+          <span className="ms" style={{ fontSize: 22 }} aria-hidden="true">
             close
           </span>
         </button>
-        <div
-          style={{
-            flex: 1,
-            height: 4,
-            background: 'var(--hair)',
-            borderRadius: 999,
-            overflow: 'hidden',
-          }}
-        >
-          <div
-            style={{
-              width: `${progress}%`,
-              height: '100%',
-              background: 'var(--ink)',
-              borderRadius: 999,
-              transition: 'width .3s var(--ease)',
-            }}
-          />
+        <div className="progress-track" style={{ flex: 1 }}>
+          <div className="progress-fill" style={{ width: `${progress}%` }} />
         </div>
         <div
-          className="mono"
+          className="font-headline"
           style={{
-            fontSize: 12,
+            fontSize: 'var(--text-small)',
+            fontWeight: 800,
+            fontVariantNumeric: 'tabular-nums',
             color: 'var(--ink-2)',
             minWidth: 38,
             textAlign: 'right',
@@ -147,7 +121,7 @@ export function VocabReview() {
           <div
             style={{
               flex: 1,
-              padding: '20px',
+              padding: '8px 16px 20px',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -167,112 +141,46 @@ export function VocabReview() {
               style={{
                 position: 'relative',
                 width: '100%',
-                maxWidth: 360,
-                height: 360,
+                maxWidth: 400,
+                height: 'clamp(300px, 52vh, 440px)',
                 cursor: 'pointer',
               }}
             >
               <div
-                style={{
-                  position: 'absolute',
-                  inset: 0,
-                  borderRadius: 24,
-                  background: 'linear-gradient(160deg, var(--card) 0%, var(--accent-soft) 100%)',
-                  border: '1px solid var(--hair)',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  padding: 30,
-                  textAlign: 'center',
-                  boxShadow: '0 20px 60px rgba(15,15,14,0.08)',
-                  opacity: flipped ? 0 : 1,
-                  transition: 'opacity .25s var(--ease)',
-                  pointerEvents: flipped ? 'none' : 'auto',
-                }}
+                className="practice-face"
+                style={{ opacity: flipped ? 0 : 1, pointerEvents: flipped ? 'none' : 'auto' }}
               >
-                <div
-                  style={{
-                    fontSize: 10,
-                    color: 'var(--ink-3)',
-                    letterSpacing: '0.12em',
-                    textTransform: 'uppercase',
-                    fontWeight: 700,
-                    marginBottom: 16,
-                  }}
-                >
-                  {t(wordTypeLabelKey(currentWord.wordType))}
-                </div>
+                <span className="eyebrow">{t(wordTypeLabelKey(currentWord.wordType))}</span>
                 <div
                   className="font-headline"
-                  style={{
-                    fontSize: 44,
-                    lineHeight: 1.05,
-                    letterSpacing: '-0.02em',
-                    color: 'var(--ink)',
-                  }}
+                  style={{ fontSize: 40, lineHeight: 1.1, fontWeight: 900, color: 'var(--ink)' }}
                 >
                   {vocabHeadword(currentWord)}
                 </div>
-                <div
-                  style={{
-                    marginTop: 'auto',
-                    fontSize: 12,
-                    color: 'var(--ink-3)',
-                  }}
-                >
+                <div className="practice-hint">
+                  <span className="ms" style={{ fontSize: 16 }} aria-hidden="true">
+                    touch_app
+                  </span>
                   {t('tap_to_reveal')}
                 </div>
               </div>
               <div
-                style={{
-                  position: 'absolute',
-                  inset: 0,
-                  borderRadius: 24,
-                  background: 'var(--ink)',
-                  color: 'var(--bg)',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  padding: 30,
-                  textAlign: 'center',
-                  opacity: flipped ? 1 : 0,
-                  transition: 'opacity .25s var(--ease)',
-                  pointerEvents: flipped ? 'auto' : 'none',
-                }}
+                className="practice-face practice-back"
+                style={{ opacity: flipped ? 1 : 0, pointerEvents: flipped ? 'auto' : 'none' }}
               >
-                <div
-                  style={{
-                    fontSize: 10,
-                    color: 'var(--accent)',
-                    letterSpacing: '0.12em',
-                    textTransform: 'uppercase',
-                    fontWeight: 700,
-                    marginBottom: 16,
-                  }}
-                >
+                <span className="eyebrow" style={{ color: 'var(--grape-ink)' }}>
                   {t('meaning')}
-                </div>
-                <div
-                  className="font-headline"
-                  style={{
-                    fontSize: 32,
-                    lineHeight: 1.1,
-                    letterSpacing: '-0.01em',
-                  }}
-                >
+                </span>
+                <div className="font-headline" style={{ fontSize: 30, lineHeight: 1.15, fontWeight: 900 }}>
                   {vocabMeaning(currentWord)}
                 </div>
                 {currentWord.exampleSentence && (
                   <div
-                    className="font-headline"
                     style={{
-                      marginTop: 14,
-                      fontSize: 14,
-                      color: 'rgba(242,241,236,0.6)',
+                      fontSize: 'var(--text-lead)',
+                      color: 'var(--ink-2)',
                       fontStyle: 'italic',
-                      lineHeight: 1.4,
+                      lineHeight: 1.45,
                     }}
                   >
                     „{currentWord.exampleSentence}“
@@ -282,7 +190,7 @@ export function VocabReview() {
             </div>
           </div>
 
-          <div style={{ padding: '0 20px 24px' }}>
+          <div style={{ padding: '0 16px 20px' }}>
             <div style={{ display: 'flex', gap: 8 }}>
               {GRADES.map((g) => (
                 <button
@@ -290,21 +198,12 @@ export function VocabReview() {
                   key={g.grade}
                   onClick={() => advance(g.grade)}
                   disabled={!flipped}
-                  className="tap"
-                  style={{
-                    flex: 1,
-                    border: 0,
-                    background: g.bg,
-                    color: '#fff',
-                    padding: '14px',
-                    borderRadius: 16,
-                    fontSize: 13,
-                    fontWeight: 600,
-                    cursor: flipped ? 'pointer' : 'not-allowed',
-                    opacity: flipped ? 1 : 0.4,
-                    transition: 'opacity .2s var(--ease)',
-                  }}
+                  className="rate-btn"
+                  style={{ background: TONE_VARS[g.tone].soft, color: TONE_VARS[g.tone].ink }}
                 >
+                  <span className="ms fill" style={{ fontSize: 22 }} aria-hidden="true">
+                    {g.icon}
+                  </span>
                   {t(g.labelKey)}
                 </button>
               ))}
@@ -340,38 +239,22 @@ function DoneScreen({ title, sub, onBack }: { title: string; sub: string; onBack
           borderRadius: 999,
           background: 'var(--accent-soft)',
           color: 'var(--accent-ink)',
+          boxShadow: 'var(--glass-highlight), 0 0 0 10px color-mix(in srgb, var(--accent) 10%, transparent)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          animation: 'scale-in .5s var(--spring)',
+          animation: 'scale-in var(--spring-bouncy-ms) var(--spring-bouncy)',
         }}
       >
         <span className="ms fill" style={{ fontSize: 42 }}>
           check
         </span>
       </div>
-      <div className="font-headline" style={{ fontSize: 30, letterSpacing: '-0.02em' }}>
-        {title}
-      </div>
-      <div style={{ fontSize: 14, color: 'var(--ink-2)', maxWidth: 280 }}>{sub}</div>
-      <button
-        type="button"
-        onClick={onBack}
-        className="tap"
-        style={{
-          marginTop: 14,
-          border: 0,
-          background: 'var(--ink)',
-          color: 'var(--bg)',
-          padding: '12px 24px',
-          borderRadius: 999,
-          fontSize: 14,
-          fontWeight: 600,
-          cursor: 'pointer',
-        }}
-      >
+      <h2 className="page-h1">{title}</h2>
+      <div style={{ fontSize: 'var(--text-lead)', color: 'var(--ink-2)', maxWidth: 280 }}>{sub}</div>
+      <Button onClick={onBack} style={{ marginTop: 10 }}>
         {t('back')}
-      </button>
+      </Button>
     </div>
   )
 }

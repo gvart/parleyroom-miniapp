@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Section } from '@/ui'
+import { Button, EmptyState, PageHeader, Section } from '@/ui'
 import { useLessons } from '@/hooks/useLessons'
 import { lessonDate, lessonTime, todayISO, tomorrowISO } from '@/lib/lesson'
 import type { Lesson } from '@/api/types'
@@ -52,55 +52,19 @@ export function Lessons() {
 
   return (
     <div style={{ position: 'relative' }}>
-      <div style={{ padding: '8px 20px 18px' }}>
-        <div
-          style={{
-            fontSize: 11,
-            color: 'var(--ink-3)',
-            letterSpacing: '0.12em',
-            textTransform: 'uppercase',
-            fontWeight: 600,
-            marginBottom: 6,
-          }}
-        >
-          {t('lessons')}
-        </div>
-        <div
-          className="font-headline"
-          style={{ fontSize: 34, lineHeight: 1.05, letterSpacing: '-0.02em' }}
-        >
-          {t('your_schedule')}
-          <span style={{ color: 'var(--accent)' }}>.</span>
-        </div>
-      </div>
+      <PageHeader eyebrow={t('lessons')} title={t('your_schedule')} />
 
       {isEmpty ? (
-        <div style={{ padding: '40px 30px', textAlign: 'center' }}>
-          <div style={{ fontSize: 40, marginBottom: 10 }}>✺</div>
-          <div className="font-headline" style={{ fontSize: 22, marginBottom: 4 }}>
-            {t('empty_lessons_title')}
-          </div>
-          <div style={{ fontSize: 13, color: 'var(--ink-2)', marginBottom: 16 }}>
-            {t('empty_lessons_sub')}
-          </div>
-          <button
-            type="button"
-            onClick={() => setShowBookSheet(true)}
-            className="tap"
-            style={{
-              border: 0,
-              background: 'var(--ink)',
-              color: 'var(--bg)',
-              padding: '10px 18px',
-              borderRadius: 999,
-              fontSize: 13,
-              fontWeight: 600,
-              cursor: 'pointer',
-            }}
-          >
-            {t('book')}
-          </button>
-        </div>
+        <EmptyState
+          icon="event_available"
+          title={t('empty_lessons_title')}
+          sub={t('empty_lessons_sub')}
+          action={
+            <Button leadingIcon="add" onClick={() => setShowBookSheet(true)}>
+              {t('book')}
+            </Button>
+          }
+        />
       ) : (
         <>
           {groups.map((g) =>
@@ -115,37 +79,29 @@ export function Lessons() {
             ) : null,
           )}
 
-          <div style={{ padding: '6px 20px 0' }}>
+          <div style={{ padding: '4px 16px 0' }}>
             <button
               onClick={() => setShowBookSheet(true)}
               type="button"
-              className="tap"
+              className="row-btn tap"
               style={{
-                width: '100%',
-                border: '1px dashed var(--hair-strong)',
-                background: 'transparent',
-                borderRadius: 20,
-                padding: '18px 16px',
-                color: 'var(--ink-2)',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 12,
-                textAlign: 'left',
+                border: '1.5px dashed var(--hair-strong)',
+                borderRadius: 22,
+                padding: '14px 16px',
               }}
             >
-              <span className="ms" style={{ fontSize: 22, color: 'var(--accent)' }}>
-                add_circle
+              <span className="icon-tile">
+                <span className="ms" style={{ fontSize: 22 }} aria-hidden="true">
+                  add
+                </span>
               </span>
               <div style={{ flex: 1 }}>
-                <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--ink)' }}>
-                  {t('book')}
-                </div>
-                <div style={{ fontSize: 12, color: 'var(--ink-3)', marginTop: 2 }}>
+                <div style={{ fontSize: 'var(--text-card-title)', fontWeight: 800 }}>{t('book')}</div>
+                <div style={{ fontSize: 'var(--text-caption)', color: 'var(--ink-2)', marginTop: 2 }}>
                   {t('book_lesson_title')}
                 </div>
               </div>
-              <span className="ms" style={{ fontSize: 18, color: 'var(--ink-3)' }}>
+              <span className="ms" style={{ fontSize: 20, color: 'var(--ink-3)' }} aria-hidden="true">
                 chevron_right
               </span>
             </button>

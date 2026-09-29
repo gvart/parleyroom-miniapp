@@ -98,7 +98,7 @@ export function StudentMaterials() {
     <div>
       <div
         style={{
-          padding: '8px 20px 14px',
+          padding: '8px 16px 14px',
         }}
       >
         <div
@@ -118,7 +118,7 @@ export function StudentMaterials() {
           style={{ fontSize: 30, lineHeight: 1.05, letterSpacing: '-0.02em' }}
         >
           {t('library_title')}
-          <span style={{ color: 'var(--accent)' }}>.</span>
+          
         </div>
       </div>
 
@@ -126,7 +126,7 @@ export function StudentMaterials() {
       {(folderId !== null || breadcrumb.length > 0) && (
         <div
           style={{
-            padding: '0 20px 10px',
+            padding: '0 16px 10px',
             display: 'flex',
             flexWrap: 'wrap',
             gap: 4,
@@ -180,7 +180,7 @@ export function StudentMaterials() {
       {visibleFolders.length > 0 && (
         <div
           style={{
-            padding: '0 20px',
+            padding: '0 16px',
             display: 'grid',
             gridTemplateColumns: '1fr 1fr',
             gap: 10,
@@ -234,7 +234,7 @@ export function StudentMaterials() {
       ) : (
         <div
           style={{
-            padding: '0 20px',
+            padding: '0 16px',
             display: 'grid',
             gridTemplateColumns: '1fr 1fr',
             gap: 10,
