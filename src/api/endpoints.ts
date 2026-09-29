@@ -1,11 +1,12 @@
 import { apiFetch } from './client'
 import type {
+  AnswersSavedResponse,
   AuthResponse,
   FolderTreeNode,
   Goal,
   GoalPage,
   GoalStatus,
-  Homework,
+  HomeworkDetail,
   HomeworkPage,
   HomeworkStatus,
   Lesson,
@@ -63,9 +64,15 @@ export interface HomeworkQuery {
   pageSize?: number
 }
 
-export interface SubmitHomeworkRequest {
-  submissionText?: string | null
-  submissionUrl?: string | null
+export interface HomeworkAnswerInput {
+  assignmentItemId: string
+  blockId?: string | null
+  itemId?: string | null
+  answer: { text?: string | null; uploadIds?: string[] } | null
+}
+
+export interface SaveHomeworkAnswersRequest {
+  answers: HomeworkAnswerInput[]
 }
 
 export type AssignmentItemKind = 'DOCUMENT' | 'MATERIAL' | 'TASK'
@@ -149,11 +156,16 @@ export const api = {
   homework: (query: HomeworkQuery = {}) =>
     apiFetch<HomeworkPage>(`/api/v1/homework${qs({ ...query })}`),
 
-  submitHomework: (id: string, body: SubmitHomeworkRequest) =>
-    apiFetch<Homework>(`/api/v1/homework/${id}/submit`, {
-      method: 'POST',
+  getHomework: (id: string) => apiFetch<HomeworkDetail>(`/api/v1/homework/${id}`),
+
+  saveHomeworkAnswers: (id: string, body: SaveHomeworkAnswersRequest) =>
+    apiFetch<AnswersSavedResponse>(`/api/v1/homework/${id}/answers`, {
+      method: 'PUT',
       body,
     }),
+
+  submitHomework: (id: string) =>
+    apiFetch<HomeworkDetail>(`/api/v1/homework/${id}/submit`, { method: 'POST' }),
 
   createAssignment: (body: CreateAssignmentRequest) =>
     apiFetch<unknown>('/api/v1/assignments', { method: 'POST', body }),

@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { useReviewVocab, useVocab } from '@/hooks/useVocab'
+import { vocabHeadword, vocabMeaning, wordTypeLabelKey } from '@/lib/vocab'
 
 type Grade = 'AGAIN' | 'GOOD' | 'EASY'
 
@@ -200,7 +201,7 @@ export function VocabReview() {
                     marginBottom: 16,
                   }}
                 >
-                  {currentWord.category.toLowerCase()}
+                  {t(wordTypeLabelKey(currentWord.wordType))}
                 </div>
                 <div
                   className="serif"
@@ -211,7 +212,7 @@ export function VocabReview() {
                     color: 'var(--ink)',
                   }}
                 >
-                  {currentWord.german}
+                  {vocabHeadword(currentWord)}
                 </div>
                 <div
                   style={{
@@ -261,7 +262,7 @@ export function VocabReview() {
                     letterSpacing: '-0.01em',
                   }}
                 >
-                  {currentWord.english}
+                  {vocabMeaning(currentWord)}
                 </div>
                 {currentWord.exampleSentence && (
                   <div

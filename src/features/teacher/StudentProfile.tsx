@@ -81,7 +81,7 @@ export function StudentProfile() {
 
   const studentName = `${student.firstName} ${student.lastName}`.trim()
   const homework = homeworkQuery.data?.homework ?? []
-  const activeHomework = homework.filter((h) => h.status !== 'DONE' && h.status !== 'REJECTED')
+  const activeHomework = homework.filter((h) => h.status !== 'DONE')
   const goals = goalsQuery.data?.goals ?? []
   const activeGoals = goals.filter((g) => g.status === 'ACTIVE')
 
@@ -289,14 +289,7 @@ export function StudentProfile() {
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             {homework.slice(0, 6).map((h) => {
-              const tone =
-                h.status === 'DONE'
-                  ? 'accent'
-                  : h.status === 'REJECTED'
-                    ? 'live'
-                    : h.status === 'SUBMITTED' || h.status === 'IN_REVIEW'
-                      ? 'violet'
-                      : 'warn'
+              const tone = h.status === 'DONE' ? 'accent' : h.status === 'OPEN' ? 'warn' : 'violet'
               return (
                 <Card key={h.id}>
                   <div
@@ -321,53 +314,12 @@ export function StudentProfile() {
                         {h.title}
                       </div>
                       <div style={{ fontSize: 12, color: 'var(--ink-2)' }}>
-                        {h.category.toLowerCase()}
+                        {t('units_answered', { done: h.answeredUnits, total: h.totalUnits })}
                         {h.dueDate ? ` · ${h.dueDate.slice(0, 10)}` : ''}
                       </div>
                     </div>
-                    <Pill tone={tone}>{h.status.toLowerCase().replace('_', ' ')}</Pill>
+                    <Pill tone={tone}>{h.status.toLowerCase()}</Pill>
                   </div>
-                  {h.submissionText && (
-                    <div
-                      style={{
-                        marginTop: 10,
-                        padding: '8px 10px',
-                        background: 'var(--bg-2)',
-                        borderRadius: 10,
-                        fontSize: 12,
-                        color: 'var(--ink-2)',
-                        lineHeight: 1.4,
-                      }}
-                    >
-                      {h.submissionText}
-                    </div>
-                  )}
-                  {h.submissionUrl && (
-                    <div
-                      style={{
-                        marginTop: 10,
-                        fontSize: 12,
-                      }}
-                    >
-                      <a
-                        href={h.submissionUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        style={{
-                          color: 'var(--accent-deep)',
-                          textDecoration: 'none',
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          gap: 4,
-                        }}
-                      >
-                        <span className="ms" style={{ fontSize: 14 }}>
-                          open_in_new
-                        </span>
-                        {h.submissionUrl}
-                      </a>
-                    </div>
-                  )}
                 </Card>
               )
             })}

@@ -250,105 +250,106 @@ function notificationsBody() {
   }
 }
 
+const MOCK_STUDENT = { id: 'u-mock', firstName: 'Lina', lastName: 'Weber' }
+const MOCK_TEACHER = { id: 't1', firstName: 'Helena', lastName: 'König' }
+
+interface MockHomeworkSummary {
+  id: string
+  assignmentId: string
+  title: string
+  dueDate: string | null
+  lessonId: string | null
+  status: string
+  lastOutcome: string | null
+  attempt: number
+  itemCount: number
+  student: typeof MOCK_STUDENT
+  teacher: typeof MOCK_TEACHER
+  answeredUnits: number
+  totalUnits: number
+  lastSavedAt: string | null
+  summary: unknown
+  submittedAt: string | null
+  reviewedAt: string | null
+  returnedAt: string | null
+  doneAt: string | null
+  createdAt: string
+  updatedAt: string
+}
+
+function homeworkSummary(over: Partial<MockHomeworkSummary> & { id: string }): MockHomeworkSummary {
+  return {
+    assignmentId: `a-${over.id}`,
+    title: 'Homework',
+    dueDate: null,
+    lessonId: null,
+    status: 'OPEN',
+    lastOutcome: null,
+    attempt: 0,
+    itemCount: 1,
+    student: MOCK_STUDENT,
+    teacher: MOCK_TEACHER,
+    answeredUnits: 0,
+    totalUnits: 1,
+    lastSavedAt: null,
+    summary: null,
+    submittedAt: null,
+    reviewedAt: null,
+    returnedAt: null,
+    doneAt: null,
+    createdAt: '2026-03-10T00:00:00Z',
+    updatedAt: '2026-03-10T00:00:00Z',
+    ...over,
+  }
+}
+
 function homeworkBody() {
   const today = todayISO()
   return {
     homework: [
-      {
+      homeworkSummary({
         id: 'h1',
-        studentId: 'u-mock',
-        teacherId: 't1',
-        lessonId: 'l1',
         title: 'Write: A day in Berlin',
-        description: 'Write 150–200 words using at least 4 Perfekt verbs.',
-        category: 'WRITING',
-        status: 'OPEN',
         dueDate: today,
-        submissionText: null,
-        submissionUrl: null,
-        teacherFeedback: null,
-        attachmentType: null,
-        attachmentUrl: null,
-        attachmentName: null,
-        createdAt: '2026-03-10T00:00:00Z',
-        updatedAt: '2026-03-10T00:00:00Z',
-      },
-      {
+      }),
+      homeworkSummary({
         id: 'h2',
-        studentId: 'u-mock',
-        teacherId: 't1',
-        lessonId: 'l1',
         title: 'Grammar: Trennbare Verben',
-        description: 'Complete exercises 1–12 in the workbook.',
-        category: 'GRAMMAR',
-        status: 'OPEN',
         dueDate: '2026-04-25',
-        submissionText: null,
-        submissionUrl: null,
-        teacherFeedback: null,
-        attachmentType: null,
-        attachmentUrl: null,
-        attachmentName: null,
-        createdAt: '2026-03-10T00:00:00Z',
         updatedAt: '2026-03-12T00:00:00Z',
-      },
-      {
+      }),
+      homeworkSummary({
         id: 'h3',
-        studentId: 'u-mock',
-        teacherId: 't1',
-        lessonId: null,
         title: 'Reading: Der Prozess, Ch.1',
-        description: 'Read chapter 1 and note 5 new words.',
-        category: 'READING',
-        status: 'OPEN',
         dueDate: '2026-04-12',
-        submissionText: null,
-        submissionUrl: null,
-        teacherFeedback: null,
-        attachmentType: null,
-        attachmentUrl: null,
-        attachmentName: null,
         createdAt: '2026-03-05T00:00:00Z',
         updatedAt: '2026-03-05T00:00:00Z',
-      },
-      {
+      }),
+      homeworkSummary({
         id: 'h4',
-        studentId: 'u-mock',
-        teacherId: 't1',
-        lessonId: 'l2',
         title: 'Vocab: Essen & Trinken',
-        description: 'Create 10 example sentences.',
-        category: 'VOCABULARY',
-        status: 'IN_REVIEW',
+        status: 'SUBMITTED',
         dueDate: '2026-04-18',
-        submissionText: 'Alle 10 Sätze im Anhang.',
-        submissionUrl: null,
-        teacherFeedback: null,
-        attachmentType: null,
-        attachmentUrl: null,
-        attachmentName: null,
+        answeredUnits: 1,
+        attempt: 1,
         createdAt: '2026-03-09T00:00:00Z',
         updatedAt: '2026-03-15T00:00:00Z',
-      },
-      {
+        submittedAt: '2026-03-15T00:00:00Z',
+      }),
+      homeworkSummary({
         id: 'h5',
-        studentId: 'u-mock',
-        teacherId: 't1',
-        lessonId: 'l2',
         title: 'Listening: DW Tagesschau',
-        description: 'Listen and transcribe the first 2 minutes.',
-        category: 'LISTENING',
         status: 'DONE',
         dueDate: '2026-03-13',
-        submissionText: 'Eingereicht.',
-        submissionUrl: null,
-        teacherFeedback: 'Very good! Small note on Umlaute.',
-        attachmentType: null,
-        attachmentUrl: null,
-        attachmentName: null,
+        answeredUnits: 1,
+        attempt: 1,
+        lastOutcome: 'DONE',
         createdAt: '2026-03-04T00:00:00Z',
         updatedAt: '2026-03-13T00:00:00Z',
-      },
+        submittedAt: '2026-03-12T00:00:00Z',
+        reviewedAt: '2026-03-13T00:00:00Z',
+        doneAt: '2026-03-13T00:00:00Z',
+      }),
     ],
     total: 5,
     page: 1,
@@ -356,51 +357,126 @@ function homeworkBody() {
   }
 }
 
+const MOCK_HOMEWORK_ANSWERS = new Map<string, string>([['h4', 'Alle 10 Sätze im Anhang.']])
+
+function homeworkDetail(id: string) {
+  const summary = homeworkBody().homework.find((h) => h.id === id) ?? homeworkSummary({ id })
+  const answer = MOCK_HOMEWORK_ANSWERS.get(id) ?? null
+  return {
+    ...summary,
+    instructions: 'Write 150–200 words using at least 4 Perfekt verbs.',
+    feedback: id === 'h5' ? 'Very good! Small note on Umlaute.' : null,
+    items: [
+      {
+        id: `ai-${id}`,
+        kind: 'TASK',
+        title: summary.title,
+        task: 'Write 150–200 words using at least 4 Perfekt verbs.',
+        responseType: 'TEXT',
+      },
+    ],
+    units: [
+      {
+        assignmentItemId: `ai-${id}`,
+        blockId: null,
+        itemId: null,
+        answer: answer ? { text: answer } : null,
+      },
+    ],
+  }
+}
+
+interface MockVocabWord {
+  id: string
+  studentId: string
+  entryId: string
+  lemma: string
+  article: string | null
+  plural: string | null
+  wordType: string
+  forms: string | null
+  government: string | null
+  exampleSentence: string | null
+  level: string | null
+  topicIds: string[]
+  synonyms: string[]
+  lessonId: string | null
+  status: string
+  due: string | null
+  reps: number
+  lapses: number
+  lastReview: string | null
+  addedAt: string
+  display: { fields: string[]; allowTranslationToggle: boolean }
+  translations: Record<string, string>
+  explanationDe: string | null
+  revealTranslations: Record<string, string> | null
+}
+
+function vocabWord(over: Partial<MockVocabWord> & { id: string }): MockVocabWord {
+  return {
+    studentId: 'u-mock',
+    entryId: `e-${over.id}`,
+    lemma: 'Wort',
+    article: null,
+    plural: null,
+    wordType: 'NOUN',
+    forms: null,
+    government: null,
+    exampleSentence: null,
+    level: 'B1',
+    topicIds: [],
+    synonyms: [],
+    lessonId: null,
+    status: 'NEW',
+    due: null,
+    reps: 0,
+    lapses: 0,
+    lastReview: null,
+    addedAt: '2026-03-01T00:00:00Z',
+    display: { fields: ['en'], allowTranslationToggle: false },
+    translations: {},
+    explanationDe: null,
+    revealTranslations: null,
+    ...over,
+  }
+}
+
 function vocabBody() {
   return {
     words: [
-      {
+      vocabWord({
         id: 'v1',
-        studentId: 'u-mock',
-        lessonId: null,
-        german: 'die Gemütlichkeit',
-        english: 'coziness',
+        lemma: 'Gemütlichkeit',
+        article: 'DIE',
         exampleSentence: 'In dieser Kneipe herrscht eine echte Gemütlichkeit.',
-        exampleTranslation: 'This pub has real coziness.',
-        category: 'NOUN',
         status: 'NEW',
-        nextReviewAt: null,
-        reviewCount: 0,
+        translations: { en: 'coziness' },
         addedAt: '2026-03-14T00:00:00Z',
-      },
-      {
+      }),
+      vocabWord({
         id: 'v2',
-        studentId: 'u-mock',
+        lemma: 'beiläufig',
+        wordType: 'ADJECTIVE',
         lessonId: 'l1',
-        german: 'beiläufig',
-        english: 'casual, in passing',
         exampleSentence: 'Er erwähnte es beiläufig.',
-        exampleTranslation: 'He mentioned it in passing.',
-        category: 'ADJECTIVE',
         status: 'REVIEW',
-        nextReviewAt: '2026-03-16T00:00:00Z',
-        reviewCount: 2,
+        due: '2026-03-16T00:00:00Z',
+        reps: 2,
+        translations: { en: 'casual, in passing' },
         addedAt: '2026-03-11T00:00:00Z',
-      },
-      {
+      }),
+      vocabWord({
         id: 'v3',
-        studentId: 'u-mock',
+        lemma: 'Augenblick',
+        article: 'DER',
         lessonId: 'l1',
-        german: 'der Augenblick',
-        english: 'the moment',
         exampleSentence: 'Einen Augenblick, bitte.',
-        exampleTranslation: 'One moment, please.',
-        category: 'NOUN',
         status: 'LEARNED',
-        nextReviewAt: null,
-        reviewCount: 5,
+        reps: 5,
+        translations: { en: 'the moment' },
         addedAt: '2026-03-02T00:00:00Z',
-      },
+      }),
     ],
     total: 3,
     page: 1,
@@ -626,19 +702,12 @@ export function installMockBackend(): void {
       const body = init?.body
         ? (JSON.parse(init.body as string) as { rating?: string })
         : {}
+      const match = vocabBody().words.find((w) => w.id === reviewMatch[1])
       return json({
-        id: reviewMatch[1],
-        studentId: 'u-mock',
-        lessonId: null,
-        german: '—',
-        english: '—',
-        exampleSentence: null,
-        exampleTranslation: null,
-        category: 'NOUN',
+        ...vocabWord({ id: reviewMatch[1] }),
+        ...match,
         status: body.rating === 'AGAIN' ? 'REVIEW' : 'LEARNED',
-        nextReviewAt: null,
-        reviewCount: 1,
-        addedAt: '2026-01-01T00:00:00Z',
+        reps: (match?.reps ?? 0) + 1,
       })
     }
     if (url.includes('/api/v1/vocabulary')) {
@@ -692,43 +761,45 @@ export function installMockBackend(): void {
             materialId: it.materialId ?? null,
             material: null,
           })),
-          homework: (body.studentIds ?? []).map((studentId, i) => ({
-            id: `h-${Date.now()}-${i}`,
-            assignmentId: `a-${Date.now()}`,
-            title: body.title,
-            dueDate: body.dueDate ?? null,
-            lessonId: body.lessonId ?? null,
-            status: 'OPEN',
-            student: { id: studentId, firstName: 'Student', lastName: '' },
-          })),
+          homework: (body.studentIds ?? []).map((studentId, i) =>
+            homeworkSummary({
+              id: `h-${Date.now()}-${i}`,
+              title: body.title,
+              dueDate: body.dueDate ?? null,
+              lessonId: body.lessonId ?? null,
+              student: { id: studentId, firstName: 'Student', lastName: '' },
+            }),
+          ),
         },
         201,
       )
     }
+    const answersMatch = url.match(/\/api\/v1\/homework\/([^/]+)\/answers$/)
+    if (answersMatch && method === 'PUT') {
+      const body = init?.body
+        ? (JSON.parse(init.body as string) as {
+            answers: Array<{ assignmentItemId: string; answer?: { text?: string | null } | null }>
+          })
+        : { answers: [] }
+      const text = body.answers[0]?.answer?.text
+      if (text !== undefined) {
+        if (text) MOCK_HOMEWORK_ANSWERS.set(answersMatch[1], text)
+        else MOCK_HOMEWORK_ANSWERS.delete(answersMatch[1])
+      }
+      return json({
+        updatedAt: new Date().toISOString(),
+        lastSavedAt: new Date().toISOString(),
+        answeredUnits: MOCK_HOMEWORK_ANSWERS.has(answersMatch[1]) ? 1 : 0,
+        totalUnits: 1,
+      })
+    }
     const submitMatch = url.match(/\/api\/v1\/homework\/([^/]+)\/submit$/)
     if (submitMatch && method === 'POST') {
-      const body = init?.body
-        ? (JSON.parse(init.body as string) as { submissionText?: string })
-        : {}
-      return json({
-        id: submitMatch[1],
-        studentId: 'u-mock',
-        teacherId: 't1',
-        lessonId: null,
-        title: 'Submitted',
-        description: null,
-        category: 'WRITING',
-        status: 'SUBMITTED',
-        dueDate: null,
-        submissionText: body.submissionText ?? '',
-        submissionUrl: null,
-        teacherFeedback: null,
-        attachmentType: null,
-        attachmentUrl: null,
-        attachmentName: null,
-        createdAt: '2026-03-01T00:00:00Z',
-        updatedAt: new Date().toISOString(),
-      })
+      return json({ ...homeworkDetail(submitMatch[1]), status: 'SUBMITTED' })
+    }
+    const homeworkDetailMatch = url.match(/\/api\/v1\/homework\/([^/]+)$/)
+    if (homeworkDetailMatch && method === 'GET') {
+      return json(homeworkDetail(homeworkDetailMatch[1]))
     }
     if (url.includes('/api/v1/homework')) {
       return json(homeworkBody())

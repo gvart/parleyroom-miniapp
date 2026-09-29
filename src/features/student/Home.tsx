@@ -5,9 +5,9 @@ import { useLessons } from '@/hooks/useLessons'
 import { useHomework } from '@/hooks/useHomework'
 import { useNotifications } from '@/hooks/useNotifications'
 import { useGoals } from '@/hooks/useGoals'
-import { Card, CategoryDot, Pill, Ring, Section, type PillTone } from '@/ui'
+import { Card, Pill, Ring, Section, type PillTone } from '@/ui'
 import { lessonTime } from '@/lib/lesson'
-import { categorySlug, computeDue, isDoneStatus } from '@/lib/homework'
+import { computeDue, isDoneStatus } from '@/lib/homework'
 
 const GOAL_HUES = [172, 290, 75]
 
@@ -25,7 +25,7 @@ export function Home() {
     notificationsQuery.data?.notifications.filter((n) => !n.viewed).length ?? 0
   const topGoals = (goalsQuery.data?.goals ?? []).slice(0, 3)
   const dueHomework = (homeworkQuery.data?.homework ?? [])
-    .filter((h) => !isDoneStatus(h.status) && h.status !== 'REJECTED')
+    .filter((h) => !isDoneStatus(h.status))
     .slice(0, 3)
   const nextLesson = lessons.find(
     (l) => l.status === 'CONFIRMED' || l.status === 'IN_PROGRESS',
@@ -345,7 +345,6 @@ export function Home() {
                     cursor: 'pointer',
                   }}
                 >
-                  <CategoryDot cat={categorySlug(h.category)} />
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div
                       style={{
@@ -361,15 +360,6 @@ export function Home() {
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                       <Pill tone={tone}>{dueText}</Pill>
-                      <div
-                        style={{
-                          fontSize: 11,
-                          color: 'var(--ink-3)',
-                          textTransform: 'capitalize',
-                        }}
-                      >
-                        {h.category.toLowerCase()}
-                      </div>
                     </div>
                   </div>
                 </button>
