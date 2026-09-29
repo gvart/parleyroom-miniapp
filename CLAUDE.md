@@ -11,7 +11,7 @@ Production: Cloudflare Pages, project `parleyroom-miniapp`, served at `https://m
 - `react-router-dom` v7 — `BrowserRouter` + `<Routes>` per role
 - `@tanstack/react-query` v5 — server state, no manual caches
 - `react-i18next` — `en` + `de` resources in `src/i18n.ts` (no async loading; keep small)
-- No CSS framework. Design tokens live in `src/styles.css` as CSS custom properties; screens use inline styles + those tokens (intentional — see "Design system" below).
+- No CSS framework. Design tokens + Liquid Glass classes live in `src/styles.css`; screens use those classes plus inline styles with tokens (see "Design system" below).
 
 ## Layout
 
@@ -31,12 +31,14 @@ src/
     AppShell.tsx    — viewport container + bottom TabBar, safe-area aware
     ErrorBoundary.tsx
     RoleRouter.tsx  — switches on user.role between student routes and TeacherStub
-    ThemeProvider.tsx — toggles `:root.theme-dark` from prefers-color-scheme
+    ThemeProvider.tsx — toggles `html.dark` from prefers-color-scheme (same as the portal)
+    BlobBackground.tsx — L0 drifting mesh behind every screen
     tabs.ts         — STUDENT_TABS / TEACHER_TABS definitions
-  ui/               — design primitives ported from the design handoff
+  ui/               — Liquid Glass primitives ported from parley-room-portal
     Avatar.tsx, Banner.tsx, Button.tsx, Card.tsx, CategoryDot.tsx,
-    Pill.tsx, Ring.tsx, Section.tsx, Sheet.tsx, StatChip.tsx,
-    TabBar.tsx, TextField.tsx (+ TextArea, FieldLabel)
+    EmptyState.tsx, PageHeader.tsx, Pill.tsx, Ring.tsx, Section.tsx,
+    Segmented.tsx, Sheet.tsx, StatChip.tsx, TabBar.tsx,
+    TextField.tsx (+ TextArea, FieldLabel), tones.ts
   features/
     student/        — Home, Lessons, LessonRow, LessonLive, LessonActionsSheet,
                       RescheduleSheet, LessonReflectSheet, BookLessonSheet,
@@ -68,16 +70,16 @@ design-reference/   — the Claude Design handoff bundle (read-only spec)
 
 ## Design system
 
-The visual language is the design handoff's, **not Telegram's theme**:
+The miniapp uses the web portal's **Liquid Glass** design system (`parley-room-portal/src/index.css`, `docs/design-system.md`). The portal is the source of truth; when it changes, port the change here. Tokens and components are copied, not shared.
 
-- Fonts: **Instrument Serif** (display, `.serif`), **Geist** (body), **JetBrains Mono** (`.mono`), **Material Symbols Rounded** (`.ms` / `.ms.fill`). Loaded from Google Fonts in `index.html`.
-- Palette tokens: `--bg`, `--card`, `--ink/ink-2/ink-3`, `--hair/hair-strong`, `--accent` (oklch via `--accent-h/c/l`). Dark mode = `:root.theme-dark`. Density compact = `:root.density-compact`.
-- Components are **inline-styled** intentionally — keep that pattern when porting more screens. The design uses inline styles + tokens; converting to a CSS-in-JS or utility-class layer would lose 1:1 fidelity. Do not refactor `ui/` into Tailwind / CSS modules.
-- Telegram theme vars are not used for body styling; only safe-area insets matter (`env(safe-area-inset-*)`).
+- Fonts: **Nunito** everywhere (headings = `.font-headline` / `.page-h1` / `.section-title`), **JetBrains Mono** (`.mono`), **Material Symbols Rounded** (`.ms` / `.ms.fill`). Loaded in `index.html`.
+- Tokens: `--bg`, `--ink/ink-2/ink-3`, `--hair/hair-strong`, `--accent` (vivid, non-text), `--accent-face`/`--on-accent` (buttons), `--accent-ink` (text), `--accent-soft`, semantic hues `--{leaf,sky,sunny,grape,coral}-{vivid,ink,soft}`, glass layers, shadows, radii, spring motion. Never write raw hex/oklch in screens.
+- Dark mode: `.dark` on `<html>` (or any subtree, e.g. the live call and `Sheet dark`). Telegram chrome colours are set in BotFather, not in code.
+- Glass budget: cards are `.card` / `.glass` (no backdrop blur); only the tab bar and an open sheet use `.glass-chrome` (blur). Keep it at ≤ 2 overlapping blur layers.
+- Classes: `.btn-primary` / `.btn-ghost` / `.btn-danger` (3D squish), `.ico-btn`, `.seg`, `.chip`, `.mode-chip`, `.glass-field`, `.row-list` + `.row-btn`, `.icon-tile`, `.eyebrow`, `.countdown-chip`, `.live-dot`, `.lesson-live`.
+- Telegram theme vars are not used for body styling; only safe-area insets matter (`--tg-viewport-*` with `env(safe-area-inset-*)` fallback).
 
-## Design reference
-
-`design-reference/` is the verbatim Claude Design handoff (HTML/JSX prototypes). When adding any new screen, port the corresponding `pr-screens-*.jsx` 1:1 — read it top to bottom before writing TSX. The data model in `pr-data.jsx` mirrors the real backend types but uses lowercase enums (e.g. `'one-on-one'`); the real API is uppercase (`'ONE_ON_ONE'`). Translate at the edges.
+`design-reference/` is the April handoff and is superseded by the portal design; keep it only for layout / IA reference.
 
 ## Backend contract
 
@@ -103,10 +105,11 @@ When building a new screen or sheet, compose from `src/ui/`:
 
 - **Button** — variants `primary` | `secondary` | `danger` | `ghost`, sizes `md` | `sm`, `block`, `leadingIcon`, `loading`, `disabled`. Don't hand-roll pill buttons.
 - **TextField / TextArea** — already include the uppercase label + error/hint slot. Don't redeclare the input styles.
-- **Banner** — tones `info` | `warn` | `error` | `success`. Don't paste `oklch(0.96 0.05 25)` banners inline.
+- **Banner** — tones `info` | `warn` | `error` | `success`. Don't paste coloured banners inline.
+- **PageHeader / Section / EmptyState / Segmented / StatChip** — page opener, section heading, empty state, segmented tabs and metric tiles.
 - **Sheet** — every modal is a bottom sheet. Use `dark` prop only for video-context sheets.
 
-The inline-styles-with-tokens pattern still applies **inside** these primitives; don't refactor them to Tailwind or CSS modules (intentional per the Claude Design handoff).
+Primitives combine the global glass classes from `styles.css` with inline token styles; no Tailwind or CSS modules.
 
 ## Backend contract (selected)
 
