@@ -1,0 +1,24 @@
+src/dev/mockBackend.ts
+  s_81525541fb2fd4::t_77b01e0db500e3 572
+  s_81525541fb2fd4::t_1806ea6a756cd6 651-706
+  s_81525541fb2fd4::t_0ee26a84919a15 15-20,34,42,55,63,76,84,105,125
+  s_81525541fb2fd4::t_106cdb6fdc70e9 626-628,638
+  s_81525541fb2fd4::t_a33629d75e4ad1 512,523-546,551,707
+  s_81525541fb2fd4::t_19f1fcf25dd3cf 547-550
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "42f46c67c2f0deef1a9c1487296c8c93b5cb6de9",
+  "prompts": {},
+  "sessions": {
+    "s_81525541fb2fd4": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "6f74100a-bf7e-4308-bddf-c605ea23cebe",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Vladlen Gladis <vladlen.gladis@deliveryhero.com>"
+    }
+  }
+}
