@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from 'react'
 import { api } from '@/api/endpoints'
 import { ApiError } from '@/api/client'
 import type {
-  LocalAudioTrack,
   LocalVideoTrack,
   RemoteParticipant,
   RemoteTrack,
@@ -15,6 +14,7 @@ export type LiveKitStatus =
   | 'fetching-token'
   | 'connecting'
   | 'connected'
+  | 'disconnected'
   | 'lesson-not-started'
   | 'permission-denied'
   | 'unavailable'
@@ -34,6 +34,8 @@ export interface UseLiveKitResult {
   disconnect: () => Promise<void>
 }
 
+const RETRY_DELAY_MS = 4000
+
 function isMockUrl(url: string): boolean {
   return !url || url.startsWith('mock://') || url.includes('mock')
 }
@@ -47,26 +49,48 @@ export function useLiveKit(lessonId: string | undefined): UseLiveKitResult {
   const [micEnabled, setMicEnabled] = useState(true)
   const [cameraEnabled, setCameraEnabled] = useState(true)
   const roomRef = useRef<Room | null>(null)
+  // Remote audio elements, keyed by publication trackSid so a republish (new
+  // sid) never leaves a stale element attached (see research bug: audio keyed
+  // by participant identity only goes stale on republish).
+  const audioElsRef = useRef<Map<string, HTMLMediaElement>>(new Map())
 
   useEffect(() => {
     if (!lessonId) return
     let cancelled = false
+    let retryTimer: ReturnType<typeof setTimeout> | undefined
+
+    function detachAllAudio() {
+      for (const el of audioElsRef.current.values()) el.remove()
+      audioElsRef.current.clear()
+    }
 
     async function bootstrap() {
       setStatus('fetching-token')
       setErrorMessage(null)
+
+      const lk = await import('livekit-client')
+      if (cancelled) return
+
       let access
-      try {
-        access = await api.videoToken(lessonId!)
-      } catch (err) {
-        if (cancelled) return
-        if (err instanceof ApiError && err.status === 400) {
-          setStatus('lesson-not-started')
+      // Poll while the teacher hasn't started the lesson yet.
+      for (;;) {
+        try {
+          access = await api.videoToken(lessonId!)
+          break
+        } catch (err) {
+          if (cancelled) return
+          if (err instanceof ApiError && err.status === 400) {
+            setStatus('lesson-not-started')
+            await new Promise<void>((resolve) => {
+              retryTimer = setTimeout(resolve, RETRY_DELAY_MS)
+            })
+            if (cancelled) return
+            continue
+          }
+          setStatus('error')
+          setErrorMessage(err instanceof Error ? err.message : 'Token request failed')
           return
         }
-        setStatus('error')
-        setErrorMessage(err instanceof Error ? err.message : 'Token request failed')
-        return
       }
       if (cancelled) return
 
@@ -78,29 +102,45 @@ export function useLiveKit(lessonId: string | undefined): UseLiveKitResult {
         return
       }
 
-      const lk = await import('livekit-client')
-      if (cancelled) return
-
       const room = new lk.Room({ adaptiveStream: true, dynacast: true })
       roomRef.current = room
 
-      room.on(lk.RoomEvent.TrackSubscribed, (track: RemoteTrack, _pub: RemoteTrackPublication, p: RemoteParticipant) => {
+      room.on(lk.RoomEvent.TrackSubscribed, (track: RemoteTrack, pub: RemoteTrackPublication, p: RemoteParticipant) => {
         if (track.kind === lk.Track.Kind.Video) {
           setRemoteVideoTrack(track)
           setRemoteParticipant(p)
+        } else if (track.kind === lk.Track.Kind.Audio) {
+          const el = track.attach()
+          el.autoplay = true
+          audioElsRef.current.set(pub.trackSid, el)
+          document.body.appendChild(el)
         }
       })
-      room.on(lk.RoomEvent.TrackUnsubscribed, (track: RemoteTrack) => {
+      room.on(lk.RoomEvent.TrackUnsubscribed, (track: RemoteTrack, pub: RemoteTrackPublication) => {
         if (track.kind === lk.Track.Kind.Video) {
           setRemoteVideoTrack(null)
+        } else if (track.kind === lk.Track.Kind.Audio) {
+          const el = audioElsRef.current.get(pub.trackSid)
+          if (el) {
+            track.detach(el)
+            el.remove()
+            audioElsRef.current.delete(pub.trackSid)
+          }
         }
       })
       room.on(lk.RoomEvent.ParticipantDisconnected, () => {
         setRemoteVideoTrack(null)
         setRemoteParticipant(null)
       })
-      room.on(lk.RoomEvent.Disconnected, () => {
-        setStatus('idle')
+      room.on(lk.RoomEvent.Disconnected, (reason) => {
+        detachAllAudio()
+        setRemoteVideoTrack(null)
+        setRemoteParticipant(null)
+        setLocalVideoTrack(null)
+        // CLIENT_INITIATED = we called room.disconnect() ourselves (End lesson /
+        // Leave call); the caller already knows and navigates. Any other reason
+        // (room deleted, kicked, server restart, …) is server-initiated.
+        setStatus(reason === lk.DisconnectReason.CLIENT_INITIATED ? 'idle' : 'disconnected')
       })
 
       try {
@@ -117,13 +157,18 @@ export function useLiveKit(lessonId: string | undefined): UseLiveKitResult {
         if (camTrack && camTrack.kind === lk.Track.Kind.Video) {
           setLocalVideoTrack(camTrack as LocalVideoTrack)
         }
-        // Pick up any participants that joined before us.
+        // Pick up any participants (and their audio) that joined before us.
         for (const p of room.remoteParticipants.values()) {
           for (const pub of p.trackPublications.values()) {
-            if (pub.track && pub.kind === lk.Track.Kind.Video) {
+            if (!pub.track) continue
+            if (pub.kind === lk.Track.Kind.Video) {
               setRemoteVideoTrack(pub.track)
               setRemoteParticipant(p)
-              break
+            } else if (pub.kind === lk.Track.Kind.Audio) {
+              const el = pub.track.attach()
+              el.autoplay = true
+              audioElsRef.current.set(pub.trackSid, el)
+              document.body.appendChild(el)
             }
           }
         }
@@ -144,11 +189,13 @@ export function useLiveKit(lessonId: string | undefined): UseLiveKitResult {
 
     return () => {
       cancelled = true
+      if (retryTimer) clearTimeout(retryTimer)
       const room = roomRef.current
       if (room) {
         roomRef.current = null
         void room.disconnect()
       }
+      detachAllAudio()
       setRemoteVideoTrack(null)
       setRemoteParticipant(null)
       setLocalVideoTrack(null)
@@ -191,9 +238,6 @@ export function useLiveKit(lessonId: string | undefined): UseLiveKitResult {
     roomRef.current = null
     await room.disconnect()
   }
-
-  // unused param suppression
-  void Object.assign({}, { _: null as LocalAudioTrack | null })
 
   return {
     status,

@@ -10,7 +10,6 @@ import {
 import { isClub, lessonDate, lessonTime } from '@/lib/lesson'
 import type { Lesson } from '@/api/types'
 import { RescheduleSheet } from './RescheduleSheet'
-import { LessonReflectSheet } from './LessonReflectSheet'
 
 interface Props {
   open: boolean
@@ -25,7 +24,6 @@ export function LessonActionsSheet({ open, lesson, onClose }: Props) {
   const join = useJoinLesson()
   const cancel = useCancelLesson()
   const [rescheduleOpen, setRescheduleOpen] = useState(false)
-  const [reflectOpen, setReflectOpen] = useState(false)
   const [confirmCancel, setConfirmCancel] = useState(false)
 
   if (!lesson) return null
@@ -40,8 +38,6 @@ export function LessonActionsSheet({ open, lesson, onClose }: Props) {
     !lesson.pendingReschedule
   const canCancel =
     lesson.status !== 'CANCELLED' && lesson.status !== 'COMPLETED'
-  const canReflect =
-    lesson.status === 'COMPLETED' || lesson.status === 'IN_PROGRESS'
   const canJoinLive = lesson.status === 'IN_PROGRESS'
 
   async function handleJoin() {
@@ -136,17 +132,6 @@ export function LessonActionsSheet({ open, lesson, onClose }: Props) {
               </Button>
             )}
 
-            {canReflect && (
-              <Button
-                variant="secondary"
-                block
-                leadingIcon="edit_note"
-                onClick={() => setReflectOpen(true)}
-              >
-                {t('add_reflection')}
-              </Button>
-            )}
-
             {canReschedule && (
               <Button
                 variant="secondary"
@@ -200,12 +185,6 @@ export function LessonActionsSheet({ open, lesson, onClose }: Props) {
         open={rescheduleOpen}
         lesson={lesson}
         onClose={() => setRescheduleOpen(false)}
-        onDone={onClose}
-      />
-      <LessonReflectSheet
-        open={reflectOpen}
-        lesson={lesson}
-        onClose={() => setReflectOpen(false)}
         onDone={onClose}
       />
     </>

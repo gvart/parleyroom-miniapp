@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useAuth } from '@/auth/AuthGate'
@@ -8,8 +8,10 @@ import { useLiveKit, type LiveKitStatus } from '@/hooks/useLiveKit'
 import { useStartLesson } from '@/hooks/useLessonActions'
 import { VideoTile } from './VideoTile'
 import { LessonAttachmentsList } from './LessonAttachmentsList'
-import { LessonReflectSheet } from './LessonReflectSheet'
 import { LessonCompleteSheet } from '../teacher/LessonCompleteSheet'
+
+const AUTO_REDIRECT_MS = 5000
+const LIVE_STATUSES: LiveKitStatus[] = ['fetching-token', 'connecting', 'connected', 'lesson-not-started']
 
 function fmtElapsed(seconds: number): string {
   const m = Math.floor(seconds / 60)
@@ -26,13 +28,15 @@ function statusMessage(status: LiveKitStatus): string | null {
     case 'connected':
       return null
     case 'lesson-not-started':
-      return 'Lesson hasn’t been started yet. Wait for your teacher to start it.'
+      return 'Lesson hasn’t been started yet. Waiting for your teacher to start it.'
     case 'permission-denied':
       return 'Camera or microphone access blocked. Update your browser permissions.'
     case 'unavailable':
       return 'Live video unavailable in preview mode. Open from a real lesson to connect.'
     case 'error':
       return 'Could not connect to the lesson room.'
+    case 'disconnected':
+      return 'Call ended.'
     default:
       return null
   }
@@ -48,48 +52,106 @@ export function LessonLive() {
   const live = useLiveKit(id)
 
   const [showRecap, setShowRecap] = useState(false)
-  const [reflectOpen, setReflectOpen] = useState(false)
   const [completeOpen, setCompleteOpen] = useState(false)
-  const [elapsed, setElapsed] = useState(0)
+  const [now, setNow] = useState(() => Date.now())
   const startLesson = useStartLesson()
+  const startedRef = useRef(false)
   const isTeacher = user.role === 'TEACHER' || user.role === 'ADMIN'
   const canStart =
     isTeacher && lesson?.status === 'CONFIRMED' && !lesson.startedAt
 
   useEffect(() => {
-    if (canStart && lesson && !startLesson.isPending && !startLesson.isSuccess) {
-      startLesson.mutate(lesson.id)
+    if (canStart && !startedRef.current) {
+      startedRef.current = true
+      startLesson.mutate(id!)
     }
-  }, [canStart, lesson, startLesson])
+    // startLesson is a mutation object recreated every render — intentionally
+    // left out of deps (guarded by startedRef instead) so this only fires once.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [canStart, id])
 
   useEffect(() => {
-    const t = setInterval(() => setElapsed((e) => e + 1), 1000)
-    return () => clearInterval(t)
+    const timer = setInterval(() => setNow(Date.now()), 1000)
+    return () => clearInterval(timer)
   }, [])
 
-  const teacher = lesson?.students.find((s) => s.id === lesson.teacherId)
-  const teacherName = teacher
-    ? `${teacher.firstName} ${teacher.lastName}`
-    : 'Helena König'
+  const elapsed = lesson?.startedAt
+    ? Math.max(0, Math.floor((now - new Date(lesson.startedAt).getTime()) / 1000))
+    : 0
+
+  const teacher = lesson?.teacher
+  const teacherName = teacher ? `${teacher.firstName} ${teacher.lastName}` : ''
   const teacherInitials = teacher
     ? `${teacher.firstName[0] ?? ''}${teacher.lastName[0] ?? ''}`.toUpperCase()
-    : 'HK'
+    : ''
   const userInitials = `${user.firstName[0] ?? ''}${user.lastName[0] ?? ''}`.toUpperCase()
   const banner = statusMessage(live.status)
+  const showLivePill = LIVE_STATUSES.includes(live.status)
+
+  // Server-initiated end (teacher completed the lesson / room deleted) — the
+  // student never pressed end-call themselves.
+  const showFinishedCard = !isTeacher && live.status === 'disconnected'
+
+  useEffect(() => {
+    if (!showFinishedCard) return
+    const timeout = setTimeout(() => navigate('/'), AUTO_REDIRECT_MS)
+    return () => clearTimeout(timeout)
+  }, [showFinishedCard, navigate])
 
   async function endCall() {
     await live.disconnect()
-    if (!lesson) {
-      navigate(-1)
-      return
-    }
     if (isTeacher) {
       setCompleteOpen(true)
-    } else if (lesson.status === 'IN_PROGRESS' || lesson.status === 'COMPLETED') {
-      setReflectOpen(true)
     } else {
       navigate(-1)
     }
+  }
+
+  if (showFinishedCard) {
+    return (
+      <div
+        style={{
+          position: 'fixed',
+          inset: 0,
+          zIndex: 100,
+          background: '#0A0A09',
+          color: '#F2F1EC',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          textAlign: 'center',
+          padding: 30,
+          gap: 14,
+        }}
+      >
+        <div style={{ fontSize: 48 }}>🎉</div>
+        <div className="serif" style={{ fontSize: 28, letterSpacing: '-0.02em' }}>
+          {t('lesson_finished_title')}
+        </div>
+        <div style={{ fontSize: 14, color: 'rgba(242,241,236,0.7)', maxWidth: 280 }}>
+          {t('lesson_finished_sub')}
+        </div>
+        <button
+          type="button"
+          onClick={() => navigate('/')}
+          className="tap"
+          style={{
+            marginTop: 14,
+            border: 0,
+            background: '#F2F1EC',
+            color: '#0A0A09',
+            padding: '12px 24px',
+            borderRadius: 999,
+            fontSize: 14,
+            fontWeight: 600,
+            cursor: 'pointer',
+          }}
+        >
+          {t('go_to_dashboard')}
+        </button>
+      </div>
+    )
   }
 
   return (
@@ -131,7 +193,7 @@ export function LessonLive() {
           >
             <Avatar
               hue={172}
-              initials={teacherInitials}
+              initials={teacherInitials || '··'}
               size={120}
               live={live.status === 'connected'}
             />
@@ -150,18 +212,22 @@ export function LessonLive() {
             gap: 10,
           }}
         >
-          <Pill
-            tone="live"
-            style={{
-              background: 'rgba(0,0,0,0.4)',
-              color: '#fff',
-              backdropFilter: 'blur(12px)',
-              WebkitBackdropFilter: 'blur(12px)',
-            }}
-          >
-            <span className="live-dot" />
-            {live.status === 'connected' ? `Live · ${fmtElapsed(elapsed)}` : 'Live'}
-          </Pill>
+          {showLivePill ? (
+            <Pill
+              tone="live"
+              style={{
+                background: 'rgba(0,0,0,0.4)',
+                color: '#fff',
+                backdropFilter: 'blur(12px)',
+                WebkitBackdropFilter: 'blur(12px)',
+              }}
+            >
+              <span className="live-dot" />
+              {live.status === 'connected' ? `Live · ${fmtElapsed(elapsed)}` : 'Live'}
+            </Pill>
+          ) : (
+            <div />
+          )}
           <button
             type="button"
             onClick={() => navigate(-1)}
@@ -309,8 +375,6 @@ export function LessonLive() {
             active={live.cameraEnabled}
             onClick={() => void live.setCamera(!live.cameraEnabled)}
           />
-          <CallBtn icon="screen_share" active />
-          <CallBtn icon="translate" active />
           <button
             type="button"
             onClick={() => void endCall()}
@@ -337,12 +401,6 @@ export function LessonLive() {
         </div>
       </div>
 
-      <LessonReflectSheet
-        open={reflectOpen}
-        lesson={lesson ?? null}
-        onClose={() => setReflectOpen(false)}
-        onDone={() => navigate(-1)}
-      />
       <LessonCompleteSheet
         open={completeOpen}
         lesson={lesson ?? null}

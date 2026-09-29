@@ -12,6 +12,12 @@ function todayISO(): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
 }
 
+// A lesson's `teacher` is a separate field from `students` on the real backend
+// (LessonResponse.teacher / LessonResponse.students) — the teacher is never a
+// member of `students`. Keep mocks matching that shape.
+const TEACHER_MOCK = { id: 'u-mock', firstName: 'Helena', lastName: 'König' }
+const TEACHER_REAL = { id: 't1', firstName: 'Helena', lastName: 'König' }
+
 function lessonsBody(role: MockUser['role']) {
   const today = todayISO()
   if (role === 'TEACHER') {
@@ -25,14 +31,15 @@ function lessonsBody(role: MockUser['role']) {
           scheduledAt: `${today}T09:30:00Z`,
           durationMinutes: 60,
           teacherId: 'u-mock',
+          teacher: TEACHER_MOCK,
           status: 'CONFIRMED',
           level: 'B1',
           maxParticipants: null,
           students: [
-            { id: 'u-mock', firstName: 'Helena', lastName: 'König', status: 'CONFIRMED' },
             { id: 's1', firstName: 'Lina', lastName: 'Weber', status: 'CONFIRMED' },
           ],
           startedAt: null,
+          rawNotes: null,
           createdBy: 'u-mock',
           createdAt: '2026-03-10T00:00:00Z',
           updatedAt: '2026-03-10T00:00:00Z',
@@ -45,14 +52,15 @@ function lessonsBody(role: MockUser['role']) {
           scheduledAt: `${today}T11:00:00Z`,
           durationMinutes: 45,
           teacherId: 'u-mock',
+          teacher: TEACHER_MOCK,
           status: 'CONFIRMED',
           level: 'A2',
           maxParticipants: null,
           students: [
-            { id: 'u-mock', firstName: 'Helena', lastName: 'König', status: 'CONFIRMED' },
             { id: 's2', firstName: 'Mateo', lastName: 'Alves', status: 'CONFIRMED' },
           ],
           startedAt: null,
+          rawNotes: null,
           createdBy: 'u-mock',
           createdAt: '2026-03-10T00:00:00Z',
           updatedAt: '2026-03-10T00:00:00Z',
@@ -65,14 +73,15 @@ function lessonsBody(role: MockUser['role']) {
           scheduledAt: `${today}T16:30:00Z`,
           durationMinutes: 45,
           teacherId: 'u-mock',
+          teacher: TEACHER_MOCK,
           status: 'REQUEST',
           level: 'A1',
           maxParticipants: null,
           students: [
-            { id: 'u-mock', firstName: 'Helena', lastName: 'König', status: 'CONFIRMED' },
             { id: 's4', firstName: 'Yuki', lastName: 'Tanaka', status: 'REQUESTED' },
           ],
           startedAt: null,
+          rawNotes: null,
           createdBy: 's4',
           createdAt: '2026-03-10T00:00:00Z',
           updatedAt: '2026-03-10T00:00:00Z',
@@ -93,11 +102,11 @@ function lessonsBody(role: MockUser['role']) {
         scheduledAt: `${today}T09:30:00Z`,
         durationMinutes: 60,
         teacherId: 't1',
+        teacher: TEACHER_REAL,
         status: 'CONFIRMED',
         level: 'B1',
         maxParticipants: null,
         students: [
-          { id: 't1', firstName: 'Helena', lastName: 'König', status: 'CONFIRMED' },
           { id: 'u-mock', firstName: 'Lina', lastName: 'Weber', status: 'CONFIRMED' },
         ],
         startedAt: null,
@@ -113,11 +122,11 @@ function lessonsBody(role: MockUser['role']) {
         scheduledAt: `${today}T11:00:00Z`,
         durationMinutes: 45,
         teacherId: 't1',
+        teacher: TEACHER_REAL,
         status: 'CONFIRMED',
         level: 'A2',
         maxParticipants: null,
         students: [
-          { id: 't1', firstName: 'Helena', lastName: 'König', status: 'CONFIRMED' },
           { id: 'u-mock', firstName: 'Lina', lastName: 'Weber', status: 'CONFIRMED' },
         ],
         startedAt: null,
@@ -500,11 +509,41 @@ export function installMockBackend(): void {
         scheduledAt: new Date().toISOString(),
         durationMinutes: 60,
         teacherId: 'u-mock',
+        teacher: TEACHER_MOCK,
         status: action === 'accept' ? 'CONFIRMED' : 'CANCELLED',
         level: 'B1',
         maxParticipants: null,
         students: [],
         startedAt: null,
+        createdBy: 'u-mock',
+        createdAt: '2026-03-10T00:00:00Z',
+        updatedAt: new Date().toISOString(),
+      })
+    }
+    const completeMatch = url.match(/\/api\/v1\/lessons\/([^/]+)\/complete$/)
+    if (completeMatch && method === 'POST') {
+      return new Response(null, { status: 204 })
+    }
+    const contentMatch = url.match(/\/api\/v1\/lessons\/([^/]+)\/content$/)
+    if (contentMatch && method === 'PATCH') {
+      const body = init?.body
+        ? (JSON.parse(init.body as string) as { rawNotes?: string | null })
+        : {}
+      return json({
+        id: contentMatch[1],
+        title: 'Lesson',
+        topic: 'Lesson',
+        type: 'ONE_ON_ONE',
+        scheduledAt: new Date().toISOString(),
+        durationMinutes: 60,
+        teacherId: 'u-mock',
+        teacher: TEACHER_MOCK,
+        status: 'IN_PROGRESS',
+        level: null,
+        maxParticipants: null,
+        students: [],
+        startedAt: new Date().toISOString(),
+        rawNotes: body.rawNotes ?? null,
         createdBy: 'u-mock',
         createdAt: '2026-03-10T00:00:00Z',
         updatedAt: new Date().toISOString(),
@@ -530,11 +569,11 @@ export function installMockBackend(): void {
         scheduledAt: body?.scheduledAt ?? new Date().toISOString(),
         durationMinutes: body?.durationMinutes ?? 60,
         teacherId: body?.teacherId ?? 't1',
+        teacher: TEACHER_REAL,
         status: 'REQUEST',
         level: null,
         maxParticipants: null,
         students: [
-          { id: body?.teacherId ?? 't1', firstName: 'Helena', lastName: 'König', status: 'CONFIRMED' },
           { id: 'u-mock', firstName: 'Lina', lastName: 'Weber', status: 'REQUESTED' },
         ],
         startedAt: null,
@@ -584,6 +623,9 @@ export function installMockBackend(): void {
     }
     const reviewMatch = url.match(/\/api\/v1\/vocabulary\/([^/]+)\/review$/)
     if (reviewMatch && method === 'POST') {
+      const body = init?.body
+        ? (JSON.parse(init.body as string) as { rating?: string })
+        : {}
       return json({
         id: reviewMatch[1],
         studentId: 'u-mock',
@@ -593,7 +635,7 @@ export function installMockBackend(): void {
         exampleSentence: null,
         exampleTranslation: null,
         category: 'NOUN',
-        status: 'LEARNED',
+        status: body.rating === 'AGAIN' ? 'REVIEW' : 'LEARNED',
         nextReviewAt: null,
         reviewCount: 1,
         addedAt: '2026-01-01T00:00:00Z',
@@ -605,6 +647,63 @@ export function installMockBackend(): void {
       const all = vocabBody().words
       const filtered = status ? all.filter((w) => w.status === status) : all
       return json({ words: filtered, total: filtered.length, page: 1, pageSize: 20 })
+    }
+    if (url.endsWith('/api/v1/assignments') && method === 'POST') {
+      const body = init?.body
+        ? (JSON.parse(init.body as string) as {
+            title: string
+            instructions?: string | null
+            dueDate?: string | null
+            lessonId?: string | null
+            studentIds?: string[]
+            groupIds?: string[]
+            items: Array<{
+              kind: string
+              documentId?: string | null
+              materialId?: string | null
+              title?: string | null
+              task?: string | null
+              responseType?: string | null
+            }>
+          })
+        : { title: 'Homework', items: [] }
+      return json(
+        {
+          id: `a-${Date.now()}`,
+          teacherId: 'u-mock',
+          title: body.title,
+          instructions: body.instructions ?? null,
+          dueDate: body.dueDate ?? null,
+          lessonId: body.lessonId ?? null,
+          groupIds: body.groupIds ?? [],
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          items: body.items.map((it, i) => ({
+            id: `ai-${i}`,
+            position: i,
+            kind: it.kind,
+            title: it.title ?? '',
+            task: it.task ?? null,
+            responseType: it.responseType ?? null,
+            documentId: it.documentId ?? null,
+            documentRevision: null,
+            blocks: null,
+            vocab: null,
+            materialId: it.materialId ?? null,
+            material: null,
+          })),
+          homework: (body.studentIds ?? []).map((studentId, i) => ({
+            id: `h-${Date.now()}-${i}`,
+            assignmentId: `a-${Date.now()}`,
+            title: body.title,
+            dueDate: body.dueDate ?? null,
+            lessonId: body.lessonId ?? null,
+            status: 'OPEN',
+            student: { id: studentId, firstName: 'Student', lastName: '' },
+          })),
+        },
+        201,
+      )
     }
     const submitMatch = url.match(/\/api\/v1\/homework\/([^/]+)\/submit$/)
     if (submitMatch && method === 'POST') {

@@ -1,7 +1,7 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Banner, Button, Sheet, TextField, TextArea } from '@/ui'
-import { useCreateHomework } from '@/hooks/useHomework'
+import { useCreateAssignment } from '@/hooks/useHomework'
 import type { HomeworkCategory } from '@/api/types'
 
 interface Props {
@@ -22,7 +22,7 @@ const CATEGORIES: Array<{ key: HomeworkCategory; labelKey: string }> = [
 
 export function AssignHomeworkSheet({ open, studentId, studentName, onClose, onDone }: Props) {
   const { t } = useTranslation()
-  const create = useCreateHomework()
+  const create = useCreateAssignment()
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [category, setCategory] = useState<HomeworkCategory>('WRITING')
@@ -50,11 +50,17 @@ export function AssignHomeworkSheet({ open, studentId, studentName, onClose, onD
     if (!canSubmit || !studentId) return
     try {
       await create.mutateAsync({
-        studentId,
         title: title.trim(),
-        description: description.trim() || null,
-        category,
+        studentIds: [studentId],
         dueDate: dueDate || null,
+        items: [
+          {
+            kind: 'TASK',
+            title: title.trim(),
+            task: description.trim() || title.trim(),
+            responseType: 'TEXT',
+          },
+        ],
       })
       setSubmitted(true)
       setTimeout(() => {

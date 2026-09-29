@@ -45,6 +45,12 @@ export interface LessonStudent {
   status: string
 }
 
+export interface LessonTeacher {
+  id: string
+  firstName: string
+  lastName: string
+}
+
 export interface PendingReschedule {
   newScheduledAt: string
   note: string | null
@@ -59,17 +65,15 @@ export interface Lesson {
   scheduledAt: string
   durationMinutes: number
   teacherId: string
+  teacher: LessonTeacher
   status: LessonStatus
   level: Level | null
   maxParticipants: number | null
   students: LessonStudent[]
   startedAt: string | null
   pendingReschedule?: PendingReschedule | null
-  studentReflection?: string | null
-  studentHardToday?: string | null
-  teacherNotes?: string | null
-  teacherWentWell?: string | null
-  teacherWorkingOn?: string | null
+  /** Teacher-only; null for students. */
+  rawNotes?: string | null
   createdBy: string
   createdAt: string
   updatedAt: string

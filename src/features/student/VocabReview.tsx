@@ -40,10 +40,10 @@ export function VocabReview() {
     setQueue(allDue.map((w) => w.id))
   }
 
-  const advance = (_grade: Grade) => {
+  const advance = (grade: Grade) => {
     if (!currentWord) return
     setFlipped(false)
-    review.mutate(currentWord.id)
+    review.mutate({ id: currentWord.id, rating: grade })
     setTimeout(() => setIndex((i) => i + 1), 180)
   }
 
