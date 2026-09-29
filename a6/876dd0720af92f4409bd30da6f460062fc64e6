@@ -1,0 +1,20 @@
+src/dev/mockBackend.ts
+  s_81525541fb2fd4::t_c49022c068b106 592-603,605-608,620-622,624-631
+  s_81525541fb2fd4::t_695eb598579ba0 10-12
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "a6876dd0720af92f4409bd30da6f460062fc64e6",
+  "prompts": {},
+  "sessions": {
+    "s_81525541fb2fd4": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "6f74100a-bf7e-4308-bddf-c605ea23cebe",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Vladlen Gladis <vladlen.gladis@deliveryhero.com>"
+    }
+  }
+}
