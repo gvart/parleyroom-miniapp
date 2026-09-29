@@ -7,6 +7,9 @@ interface MockUser {
   role: 'STUDENT' | 'TEACHER'
 }
 
+const SUPPORTED_LOCALES = ['ru', 'de', 'en']
+const SUPPORTED_NATIVE_LANGUAGES = ['ru', 'uk', 'en']
+
 function todayISO(): string {
   const d = new Date()
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
@@ -586,8 +589,23 @@ export function installMockBackend(): void {
     if (url.endsWith('/api/v1/users/me')) {
       if (method === 'PATCH') {
         const patch = init?.body ? (JSON.parse(init.body as string) as Record<string, unknown>) : {}
-        const { confirmLocale, ...rest } = patch
+        const { confirmLocale, locale, nativeLanguage, ...rest } = patch
+        if (locale !== undefined && !SUPPORTED_LOCALES.includes(locale as string)) {
+          return json({ detail: 'UNSUPPORTED_LOCALE' }, 400)
+        }
+        if (nativeLanguage !== undefined) {
+          if (me.role !== 'STUDENT') {
+            return json({ detail: 'NATIVE_LANGUAGE_STUDENTS_ONLY' }, 400)
+          }
+          if (!SUPPORTED_NATIVE_LANGUAGES.includes(nativeLanguage as string)) {
+            return json({ detail: 'UNSUPPORTED_NATIVE_LANGUAGE' }, 400)
+          }
+        }
         Object.assign(me, rest)
+        if (locale !== undefined) (me as { locale: string }).locale = locale as string
+        if (nativeLanguage !== undefined) {
+          ;(me as { nativeLanguage?: string | null }).nativeLanguage = nativeLanguage as string
+        }
         if (confirmLocale) {
           ;(me as { localeConfirmedAt?: string | null }).localeConfirmedAt = new Date().toISOString()
         }
@@ -599,9 +617,18 @@ export function installMockBackend(): void {
       const body = init?.body
         ? (JSON.parse(init.body as string) as { nativeLanguage?: string })
         : {}
+      if (!body.nativeLanguage || !SUPPORTED_NATIVE_LANGUAGES.includes(body.nativeLanguage)) {
+        return json({ detail: 'UNSUPPORTED_NATIVE_LANGUAGE' }, 400)
+      }
       const student = sampleStudentsList.find((s) => s.id === nativeLanguageMatch[1])
-      if (student) student.nativeLanguage = body.nativeLanguage ?? 'ru'
-      return json({ nativeLanguage: body.nativeLanguage ?? 'ru' })
+      if (student) student.nativeLanguage = body.nativeLanguage
+      // Mirrors the real VocabSettingsResponse shape loosely — the miniapp
+      // only reads `nativeLanguage` off it (via query invalidation, not the body).
+      return json({
+        fields: ['en'],
+        allowTranslationToggle: false,
+        nativeLanguage: body.nativeLanguage,
+      })
     }
     const videoTokenMatch = url.match(/\/api\/v1\/lessons\/([^/]+)\/video-token$/)
     if (videoTokenMatch && method === 'POST') {
