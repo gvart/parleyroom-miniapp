@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { api, type CompleteLessonRequest, type ReflectLessonRequest, type RescheduleRequest } from '@/api/endpoints'
+import { api, type RescheduleRequest, type UpdateLessonContentRequest } from '@/api/endpoints'
 
 function useLessonMutation<TVars, TResult>(
   mutationFn: (vars: TVars) => Promise<TResult>,
@@ -29,16 +29,13 @@ export function useStartLesson() {
 }
 
 export function useCompleteLesson() {
-  return useLessonMutation(
-    ({ id, body }: { id: string; body?: CompleteLessonRequest }) =>
-      api.completeLesson(id, body ?? {}),
-  )
+  return useLessonMutation((id: string) => api.completeLesson(id))
 }
 
-export function useReflectOnLesson() {
+export function useUpdateLessonContent() {
   return useLessonMutation(
-    ({ id, body }: { id: string; body: ReflectLessonRequest }) =>
-      api.reflectOnLesson(id, body),
+    ({ id, body }: { id: string; body: UpdateLessonContentRequest }) =>
+      api.updateLessonContent(id, body),
   )
 }
 

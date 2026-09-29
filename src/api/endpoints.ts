@@ -6,7 +6,6 @@ import type {
   GoalPage,
   GoalStatus,
   Homework,
-  HomeworkCategory,
   HomeworkPage,
   HomeworkStatus,
   Lesson,
@@ -25,7 +24,6 @@ import type {
   UserList,
   VideoAccess,
   VocabularyPage,
-  VocabularyWord,
   VocabStatus,
 } from './types'
 
@@ -49,6 +47,15 @@ export interface VocabularyQuery {
   pageSize?: number
 }
 
+export type PracticeRating = 'AGAIN' | 'HARD' | 'GOOD' | 'EASY'
+export type PracticeMode = 'DE_TO_MEANING' | 'MEANING_TO_DE' | 'ARTICLE'
+
+export interface ReviewVocabularyWordRequest {
+  rating: PracticeRating
+  mode: PracticeMode
+  responseMs?: number | null
+}
+
 export interface HomeworkQuery {
   studentId?: string
   status?: HomeworkStatus
@@ -61,13 +68,26 @@ export interface SubmitHomeworkRequest {
   submissionUrl?: string | null
 }
 
-export interface CreateHomeworkRequest {
-  studentId: string
+export type AssignmentItemKind = 'DOCUMENT' | 'MATERIAL' | 'TASK'
+export type HomeworkResponseType = 'TEXT' | 'AUDIO' | 'VIDEO' | 'FILE'
+
+export interface AssignmentItemInput {
+  kind: AssignmentItemKind
+  documentId?: string | null
+  materialId?: string | null
+  title?: string | null
+  task?: string | null
+  responseType?: HomeworkResponseType | null
+}
+
+export interface CreateAssignmentRequest {
   title: string
-  category: HomeworkCategory
-  description?: string | null
-  lessonId?: string | null
+  instructions?: string | null
   dueDate?: string | null
+  lessonId?: string | null
+  studentIds?: string[]
+  groupIds?: string[]
+  items: AssignmentItemInput[]
 }
 
 export interface RescheduleRequest {
@@ -75,15 +95,8 @@ export interface RescheduleRequest {
   note?: string | null
 }
 
-export interface CompleteLessonRequest {
-  teacherNotes?: string | null
-  teacherWentWell?: string | null
-  teacherWorkingOn?: string | null
-}
-
-export interface ReflectLessonRequest {
-  studentReflection?: string | null
-  studentHardToday?: string | null
+export interface UpdateLessonContentRequest {
+  rawNotes?: string | null
 }
 
 function qs(params: Record<string, unknown>): string {
@@ -130,8 +143,8 @@ export const api = {
   vocabulary: (query: VocabularyQuery = {}) =>
     apiFetch<VocabularyPage>(`/api/v1/vocabulary${qs({ ...query })}`),
 
-  reviewVocabularyWord: (id: string) =>
-    apiFetch<VocabularyWord>(`/api/v1/vocabulary/${id}/review`, { method: 'POST' }),
+  reviewVocabularyWord: (id: string, body: ReviewVocabularyWordRequest) =>
+    apiFetch<unknown>(`/api/v1/vocabulary/${id}/review`, { method: 'POST', body }),
 
   homework: (query: HomeworkQuery = {}) =>
     apiFetch<HomeworkPage>(`/api/v1/homework${qs({ ...query })}`),
@@ -142,8 +155,8 @@ export const api = {
       body,
     }),
 
-  createHomework: (body: CreateHomeworkRequest) =>
-    apiFetch<Homework>('/api/v1/homework', { method: 'POST', body }),
+  createAssignment: (body: CreateAssignmentRequest) =>
+    apiFetch<unknown>('/api/v1/assignments', { method: 'POST', body }),
 
   notifications: (page = 1, pageSize = 20) =>
     apiFetch<NotificationPage>(`/api/v1/notifications${qs({ page, pageSize })}`),
@@ -196,11 +209,11 @@ export const api = {
   startLesson: (id: string) =>
     apiFetch<StartLessonResponse>(`/api/v1/lessons/${id}/start`, { method: 'POST' }),
 
-  completeLesson: (id: string, body: CompleteLessonRequest = {}) =>
-    apiFetch<unknown>(`/api/v1/lessons/${id}/complete`, { method: 'POST', body }),
+  completeLesson: (id: string) =>
+    apiFetch<unknown>(`/api/v1/lessons/${id}/complete`, { method: 'POST' }),
 
-  reflectOnLesson: (id: string, body: ReflectLessonRequest) =>
-    apiFetch<unknown>(`/api/v1/lessons/${id}/reflect`, { method: 'POST', body }),
+  updateLessonContent: (id: string, body: UpdateLessonContentRequest) =>
+    apiFetch<Lesson>(`/api/v1/lessons/${id}/content`, { method: 'PATCH', body }),
 
   joinLesson: (id: string) =>
     apiFetch<void>(`/api/v1/lessons/${id}/join`, { method: 'POST' }),

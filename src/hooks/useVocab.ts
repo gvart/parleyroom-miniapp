@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { api, type VocabularyQuery } from '@/api/endpoints'
+import { api, type PracticeRating, type VocabularyQuery } from '@/api/endpoints'
 
 export function useVocab(query: VocabularyQuery = {}) {
   return useQuery({
@@ -11,7 +11,8 @@ export function useVocab(query: VocabularyQuery = {}) {
 export function useReviewVocab() {
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: (id: string) => api.reviewVocabularyWord(id),
+    mutationFn: ({ id, rating }: { id: string; rating: PracticeRating }) =>
+      api.reviewVocabularyWord(id, { rating, mode: 'DE_TO_MEANING' }),
     onSuccess: () => {
       void qc.invalidateQueries({ queryKey: ['vocabulary'] })
     },
