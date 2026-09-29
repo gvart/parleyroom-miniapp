@@ -2,7 +2,6 @@ import { useEffect, useState, type FormEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Banner, Button, Sheet, TextField, TextArea } from '@/ui'
 import { useCreateAssignment } from '@/hooks/useHomework'
-import type { HomeworkCategory } from '@/api/types'
 
 interface Props {
   open: boolean
@@ -12,20 +11,11 @@ interface Props {
   onDone?: () => void
 }
 
-const CATEGORIES: Array<{ key: HomeworkCategory; labelKey: string }> = [
-  { key: 'WRITING', labelKey: 'writing' },
-  { key: 'READING', labelKey: 'reading' },
-  { key: 'GRAMMAR', labelKey: 'grammar' },
-  { key: 'VOCABULARY', labelKey: 'vocab' },
-  { key: 'LISTENING', labelKey: 'listening' },
-]
-
 export function AssignHomeworkSheet({ open, studentId, studentName, onClose, onDone }: Props) {
   const { t } = useTranslation()
   const create = useCreateAssignment()
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
-  const [category, setCategory] = useState<HomeworkCategory>('WRITING')
   const [dueDate, setDueDate] = useState('')
   const [submitted, setSubmitted] = useState(false)
 
@@ -33,7 +23,6 @@ export function AssignHomeworkSheet({ open, studentId, studentName, onClose, onD
     if (open) {
       setTitle('')
       setDescription('')
-      setCategory('WRITING')
       setDueDate('')
       setSubmitted(false)
       create.reset()
@@ -120,46 +109,6 @@ export function AssignHomeworkSheet({ open, studentId, studentName, onClose, onD
               onChange={(e) => setTitle(e.target.value)}
               autoFocus
             />
-          </div>
-
-          <div style={{ marginBottom: 14 }}>
-            <div
-              style={{
-                fontSize: 11,
-                color: 'var(--ink-3)',
-                textTransform: 'uppercase',
-                letterSpacing: '0.08em',
-                fontWeight: 600,
-                marginBottom: 8,
-              }}
-            >
-              {t('homework_category_label')}
-            </div>
-            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-              {CATEGORIES.map((c) => {
-                const active = category === c.key
-                return (
-                  <button
-                    type="button"
-                    key={c.key}
-                    onClick={() => setCategory(c.key)}
-                    className="tap"
-                    style={{
-                      padding: '8px 14px',
-                      borderRadius: 999,
-                      fontSize: 13,
-                      fontWeight: 600,
-                      cursor: 'pointer',
-                      border: '1px solid var(--hair)',
-                      background: active ? 'var(--ink)' : 'transparent',
-                      color: active ? 'var(--bg)' : 'var(--ink)',
-                    }}
-                  >
-                    {t(c.labelKey)}
-                  </button>
-                )
-              })}
-            </div>
           </div>
 
           <div style={{ marginBottom: 14 }}>

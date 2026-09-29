@@ -91,22 +91,54 @@ export interface LessonPage {
   pageSize: number
 }
 
-export type VocabStatus = 'NEW' | 'REVIEW' | 'LEARNED'
-export type VocabCategory = 'NOUN' | 'VERB' | 'ADJECTIVE' | 'ADVERB' | 'GRAMMAR'
+export type VocabStatus = 'NEW' | 'LEARNING' | 'REVIEW' | 'LEARNED'
+export type NounArticle = 'DER' | 'DIE' | 'DAS'
+export type WordType =
+  | 'NOUN'
+  | 'VERB'
+  | 'ADJECTIVE'
+  | 'ADVERB'
+  | 'PREPOSITION'
+  | 'CONJUNCTION'
+  | 'PRONOUN'
+  | 'PHRASE'
+  | 'OTHER'
 
+/** Which fields a student sees: any of "ru", "en", "de_explanation". */
+export interface VocabDisplaySetting {
+  fields: string[]
+  allowTranslationToggle: boolean
+}
+
+/**
+ * A word in a student's vocabulary. [translations]/[explanationDe] already reflect
+ * [display]; hidden translations (when the toggle is allowed) are in [revealTranslations].
+ */
 export interface VocabularyWord {
   id: string
   studentId: string
-  lessonId: string | null
-  german: string
-  english: string
+  entryId: string
+  lemma: string
+  article: NounArticle | null
+  plural: string | null
+  wordType: WordType
+  forms: string | null
+  government: string | null
   exampleSentence: string | null
-  exampleTranslation: string | null
-  category: VocabCategory
+  level: Level | null
+  topicIds: string[]
+  synonyms: string[]
+  lessonId: string | null
   status: VocabStatus
-  nextReviewAt: string | null
-  reviewCount: number
+  due: string | null
+  reps: number
+  lapses: number
+  lastReview: string | null
   addedAt: string
+  display: VocabDisplaySetting
+  translations: Record<string, string>
+  explanationDe: string | null
+  revealTranslations: Record<string, string> | null
 }
 
 export interface VocabularyPage {
@@ -116,47 +148,86 @@ export interface VocabularyPage {
   pageSize: number
 }
 
-export type HomeworkCategory =
-  | 'WRITING'
-  | 'READING'
-  | 'GRAMMAR'
-  | 'VOCABULARY'
-  | 'LISTENING'
+export type HomeworkStatus = 'OPEN' | 'SUBMITTED' | 'REVIEWED' | 'DONE'
+export type HomeworkOutcome = 'REVIEWED' | 'RETURNED' | 'DONE'
+export type AssignmentItemKind = 'DOCUMENT' | 'MATERIAL' | 'TASK'
+export type HomeworkResponseType = 'TEXT' | 'AUDIO' | 'VIDEO' | 'FILE'
 
-export type HomeworkStatus =
-  | 'OPEN'
-  | 'SUBMITTED'
-  | 'IN_REVIEW'
-  | 'DONE'
-  | 'REJECTED'
-
-export type HomeworkAttachmentType = 'FILE' | 'LINK'
-
-export interface Homework {
+export interface PersonRef {
   id: string
-  studentId: string
-  teacherId: string
-  lessonId: string | null
+  firstName: string
+  lastName: string
+}
+
+export interface HomeworkScore {
+  closedCorrect: number
+  closedTotal: number
+  pendingReview: number
+  unanswered: number
+}
+
+/** One row of `GET /homework` — a student's homework for one assignment. */
+export interface HomeworkSummary {
+  id: string
+  assignmentId: string
   title: string
-  description: string | null
-  category: HomeworkCategory
-  status: HomeworkStatus
   dueDate: string | null
-  submissionText: string | null
-  submissionUrl: string | null
-  teacherFeedback: string | null
-  attachmentType: HomeworkAttachmentType | null
-  attachmentUrl: string | null
-  attachmentName: string | null
+  lessonId: string | null
+  status: HomeworkStatus
+  lastOutcome: HomeworkOutcome | null
+  attempt: number
+  itemCount: number
+  student: PersonRef
+  teacher: PersonRef
+  answeredUnits: number
+  totalUnits: number
+  lastSavedAt: string | null
+  summary: HomeworkScore | null
+  submittedAt: string | null
+  reviewedAt: string | null
+  returnedAt: string | null
+  doneAt: string | null
   createdAt: string
   updatedAt: string
 }
 
 export interface HomeworkPage {
-  homework: Homework[]
+  homework: HomeworkSummary[]
   total: number
   page: number
   pageSize: number
+}
+
+export interface AssignmentItem {
+  id: string
+  kind: AssignmentItemKind
+  title: string
+  task: string | null
+  responseType: HomeworkResponseType | null
+}
+
+export interface HomeworkUnitAnswer {
+  assignmentItemId: string
+  blockId: string | null
+  itemId: string | null
+  answer: { text?: string | null; uploadIds?: string[] } | null
+}
+
+/** `GET /homework/{id}` — full homework: [HomeworkSummary] fields plus content and answers. */
+export interface HomeworkDetail {
+  id: string
+  status: HomeworkStatus
+  instructions: string | null
+  feedback: string | null
+  items: AssignmentItem[]
+  units: HomeworkUnitAnswer[]
+}
+
+export interface AnswersSavedResponse {
+  updatedAt: string
+  lastSavedAt: string | null
+  answeredUnits: number
+  totalUnits: number
 }
 
 export type NotificationType =

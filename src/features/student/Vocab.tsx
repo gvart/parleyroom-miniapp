@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
-import { Card, Pill, Ring } from '@/ui'
+import { Card, Pill, Ring, type PillTone } from '@/ui'
 import { useVocab } from '@/hooks/useVocab'
+import { vocabHeadword, vocabMeaning, wordTypeLabelKey } from '@/lib/vocab'
 import type { VocabStatus } from '@/api/types'
 
 type Filter = 'all' | VocabStatus
@@ -10,9 +11,24 @@ type Filter = 'all' | VocabStatus
 const FILTERS: Array<{ key: Filter; labelKey: string }> = [
   { key: 'all', labelKey: 'all' },
   { key: 'NEW', labelKey: 'new' },
+  { key: 'LEARNING', labelKey: 'learning' },
   { key: 'REVIEW', labelKey: 'review' },
   { key: 'LEARNED', labelKey: 'learned' },
 ]
+
+const STATUS_TONE: Record<VocabStatus, PillTone> = {
+  NEW: 'accent',
+  LEARNING: 'violet',
+  REVIEW: 'warn',
+  LEARNED: 'neutral',
+}
+
+const STATUS_LABEL_KEY: Record<VocabStatus, string> = {
+  NEW: 'new',
+  LEARNING: 'learning',
+  REVIEW: 'review',
+  LEARNED: 'learned',
+}
 
 export function Vocab() {
   const { t } = useTranslation()
@@ -132,9 +148,9 @@ export function Vocab() {
                       marginBottom: 2,
                     }}
                   >
-                    {w.german}
+                    {vocabHeadword(w)}
                   </div>
-                  <div style={{ fontSize: 13, color: 'var(--ink-2)' }}>{w.english}</div>
+                  <div style={{ fontSize: 13, color: 'var(--ink-2)' }}>{vocabMeaning(w)}</div>
                   {w.exampleSentence && (
                     <div
                       style={{
@@ -158,13 +174,9 @@ export function Vocab() {
                     flexShrink: 0,
                   }}
                 >
-                  <Pill
-                    tone={w.status === 'NEW' ? 'accent' : w.status === 'REVIEW' ? 'warn' : 'neutral'}
-                  >
-                    {t(w.status === 'NEW' ? 'new' : w.status === 'REVIEW' ? 'review' : 'learned')}
-                  </Pill>
+                  <Pill tone={STATUS_TONE[w.status]}>{t(STATUS_LABEL_KEY[w.status])}</Pill>
                   <div style={{ fontSize: 10, color: 'var(--ink-3)' }}>
-                    {w.category.toLowerCase()} · {w.addedAt.slice(5, 10)}
+                    {t(wordTypeLabelKey(w.wordType))} · {w.addedAt.slice(5, 10)}
                   </div>
                 </div>
               </div>

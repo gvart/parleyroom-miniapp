@@ -1,16 +1,14 @@
 import { useEffect, useMemo, useState, type FormEvent } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Card, CategoryDot, Pill, Sheet, StatChip, type PillTone } from '@/ui'
-import { useHomework, useSubmitHomework } from '@/hooks/useHomework'
+import { Banner, Card, Pill, Sheet, StatChip, type PillTone } from '@/ui'
 import {
-  categorySlug,
-  computeDue,
-  isDoneStatus,
-  isOpenStatus,
-  isReviewStatus,
-  type DueInfo,
-} from '@/lib/homework'
-import type { Homework as HomeworkItem, HomeworkStatus } from '@/api/types'
+  useHomework,
+  useHomeworkDetail,
+  useSaveHomeworkAnswers,
+  useSubmitHomework,
+} from '@/hooks/useHomework'
+import { computeDue, isDoneStatus, isOpenStatus, isReviewStatus, type DueInfo } from '@/lib/homework'
+import type { HomeworkSummary, HomeworkStatus } from '@/api/types'
 
 type Tab = 'open' | 'review' | 'done'
 
@@ -38,10 +36,8 @@ function statusLabel(status: HomeworkStatus, t: ReturnType<typeof useTranslation
   switch (status) {
     case 'SUBMITTED':
       return t('submitted')
-    case 'IN_REVIEW':
-      return t('in_review')
-    case 'REJECTED':
-      return t('rejected')
+    case 'REVIEWED':
+      return t('reviewed')
     case 'DONE':
       return t('done')
     case 'OPEN':
@@ -53,7 +49,7 @@ export function Homework() {
   const { t } = useTranslation()
   const homeworkQuery = useHomework()
   const [tab, setTab] = useState<Tab>('open')
-  const [openTask, setOpenTask] = useState<HomeworkItem | null>(null)
+  const [openTask, setOpenTask] = useState<HomeworkSummary | null>(null)
 
   const groups = useMemo(() => {
     const all = homeworkQuery.data?.homework ?? []
@@ -168,7 +164,6 @@ export function Homework() {
                     cursor: 'pointer',
                   }}
                 >
-                  <CategoryDot cat={categorySlug(h.category)} />
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ fontSize: 14, fontWeight: 500, marginBottom: 4 }}>{h.title}</div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -212,22 +207,32 @@ export function Homework() {
 }
 
 interface SheetProps {
-  task: HomeworkItem | null
+  task: HomeworkSummary | null
   onClose: () => void
 }
 
 function HomeworkSubmitSheet({ task, onClose }: SheetProps) {
   const { t } = useTranslation()
+  const detailQuery = useHomeworkDetail(task?.id ?? null)
+  const saveAnswers = useSaveHomeworkAnswers()
   const submit = useSubmitHomework()
   const [text, setText] = useState('')
   const [submittedOk, setSubmittedOk] = useState(false)
 
+  const detail = detailQuery.data
+  const item = detail?.items.find((i) => i.kind === 'TASK' && i.responseType === 'TEXT') ?? null
+
   useEffect(() => {
-    if (task) {
-      setText(task.submissionText ?? '')
-      setSubmittedOk(false)
-    }
-  }, [task])
+    if (task) setSubmittedOk(false)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [task?.id])
+
+  useEffect(() => {
+    if (!item) return
+    const existing = detail?.units.find((u) => u.assignmentItemId === item.id)
+    setText(existing?.answer?.text ?? '')
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [item?.id, detail?.units])
 
   if (!task) return null
 
@@ -243,17 +248,23 @@ function HomeworkSubmitSheet({ task, onClose }: SheetProps) {
             ? `${t('due')} ${due.label}`
             : ''
   const wordCount = text.trim().split(/\s+/).filter(Boolean).length
-  const canSubmit = text.trim().length > 0 && !submit.isPending
+  const isPending = saveAnswers.isPending || submit.isPending
+  const canSubmit = !!item && text.trim().length > 0 && !isPending
+  const submitError = saveAnswers.error ?? submit.error
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    if (!task || !canSubmit) return
+    if (!task || !item || !canSubmit) return
     try {
-      await submit.mutateAsync({ id: task.id, body: { submissionText: text.trim() } })
+      await saveAnswers.mutateAsync({
+        id: task.id,
+        body: { answers: [{ assignmentItemId: item.id, answer: { text: text.trim() } }] },
+      })
+      await submit.mutateAsync(task.id)
       setSubmittedOk(true)
       setTimeout(onClose, 1200)
     } catch {
-      /* error surfaces via submit.error */
+      /* error surfaces via submitError */
     }
   }
 
@@ -287,32 +298,28 @@ function HomeworkSubmitSheet({ task, onClose }: SheetProps) {
           </div>
         ) : (
           <form onSubmit={onSubmit}>
-            <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start', marginBottom: 18 }}>
-              <CategoryDot cat={categorySlug(task.category)} />
-              <div style={{ flex: 1 }}>
-                <div
-                  style={{
-                    fontSize: 11,
-                    color: 'var(--ink-3)',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.1em',
-                    fontWeight: 600,
-                    marginBottom: 3,
-                  }}
-                >
-                  {task.category.toLowerCase()}
-                  {dueText && ` · ${dueText}`}
-                </div>
-                <div
-                  className="serif"
-                  style={{ fontSize: 24, lineHeight: 1.15, letterSpacing: '-0.01em' }}
-                >
-                  {task.title}
-                </div>
+            <div style={{ marginBottom: 18 }}>
+              <div
+                style={{
+                  fontSize: 11,
+                  color: 'var(--ink-3)',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.1em',
+                  fontWeight: 600,
+                  marginBottom: 3,
+                }}
+              >
+                {dueText}
+              </div>
+              <div
+                className="serif"
+                style={{ fontSize: 24, lineHeight: 1.15, letterSpacing: '-0.01em' }}
+              >
+                {task.title}
               </div>
             </div>
 
-            {task.description && (
+            {detail?.instructions && (
               <div
                 style={{
                   fontSize: 13,
@@ -324,19 +331,19 @@ function HomeworkSubmitSheet({ task, onClose }: SheetProps) {
                   borderRadius: 12,
                 }}
               >
-                {task.description}
+                {detail.instructions}
               </div>
             )}
 
-            {task.teacherFeedback && task.status === 'REJECTED' && (
+            {detail?.feedback && (
               <div
                 style={{
                   fontSize: 13,
-                  color: 'oklch(0.5 0.18 25)',
+                  color: 'var(--ink-2)',
                   lineHeight: 1.5,
                   marginBottom: 16,
                   padding: '12px 14px',
-                  background: 'oklch(0.96 0.05 25)',
+                  background: 'var(--bg-2)',
                   borderRadius: 12,
                 }}
               >
@@ -351,54 +358,65 @@ function HomeworkSubmitSheet({ task, onClose }: SheetProps) {
                 >
                   {t('teacher_feedback')}
                 </div>
-                {task.teacherFeedback}
+                {detail.feedback}
               </div>
             )}
 
-            <div
-              style={{
-                fontSize: 11,
-                color: 'var(--ink-3)',
-                textTransform: 'uppercase',
-                letterSpacing: '0.08em',
-                fontWeight: 600,
-                marginBottom: 8,
-              }}
-            >
-              {t('notes')}
-            </div>
-            <textarea
-              value={text}
-              onChange={(e) => setText(e.target.value)}
-              placeholder={t('submission_placeholder')}
-              style={{
-                width: '100%',
-                minHeight: 110,
-                padding: '12px 14px',
-                background: 'var(--card)',
-                color: 'var(--ink)',
-                border: '1px solid var(--hair)',
-                borderRadius: 14,
-                fontSize: 14,
-                lineHeight: 1.5,
-                fontFamily: 'inherit',
-                resize: 'vertical',
-                outline: 'none',
-                marginBottom: 10,
-              }}
-            />
-            <div
-              style={{
-                fontSize: 11,
-                color: 'var(--ink-3)',
-                textAlign: 'right',
-                marginBottom: 18,
-              }}
-            >
-              {wordCount} / 200 words
-            </div>
+            {item ? (
+              <>
+                <div
+                  style={{
+                    fontSize: 11,
+                    color: 'var(--ink-3)',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.08em',
+                    fontWeight: 600,
+                    marginBottom: 8,
+                  }}
+                >
+                  {t('notes')}
+                </div>
+                <textarea
+                  value={text}
+                  onChange={(e) => setText(e.target.value)}
+                  placeholder={t('submission_placeholder')}
+                  disabled={!isOpenStatus(task.status)}
+                  style={{
+                    width: '100%',
+                    minHeight: 110,
+                    padding: '12px 14px',
+                    background: 'var(--card)',
+                    color: 'var(--ink)',
+                    border: '1px solid var(--hair)',
+                    borderRadius: 14,
+                    fontSize: 14,
+                    lineHeight: 1.5,
+                    fontFamily: 'inherit',
+                    resize: 'vertical',
+                    outline: 'none',
+                    marginBottom: 10,
+                  }}
+                />
+                <div
+                  style={{
+                    fontSize: 11,
+                    color: 'var(--ink-3)',
+                    textAlign: 'right',
+                    marginBottom: 18,
+                  }}
+                >
+                  {wordCount} / 200 words
+                </div>
+              </>
+            ) : (
+              !detailQuery.isLoading && (
+                <div style={{ marginBottom: 18 }}>
+                  <Banner tone="info">{t('homework_unsupported')}</Banner>
+                </div>
+              )
+            )}
 
-            {submit.error && (
+            {submitError && (
               <div
                 style={{
                   marginBottom: 12,
@@ -409,35 +427,37 @@ function HomeworkSubmitSheet({ task, onClose }: SheetProps) {
                   fontSize: 13,
                 }}
               >
-                {submit.error instanceof Error ? submit.error.message : 'Submit failed'}
+                {submitError instanceof Error ? submitError.message : 'Submit failed'}
               </div>
             )}
 
-            <button
-              type="submit"
-              disabled={!canSubmit}
-              className="tap"
-              style={{
-                width: '100%',
-                border: 0,
-                cursor: canSubmit ? 'pointer' : 'not-allowed',
-                background: canSubmit ? 'var(--ink)' : 'var(--hair-strong)',
-                color: canSubmit ? 'var(--bg)' : 'var(--ink-3)',
-                padding: '14px',
-                borderRadius: 999,
-                fontSize: 14,
-                fontWeight: 600,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: 6,
-              }}
-            >
-              <span className="ms fill" style={{ fontSize: 18 }}>
-                send
-              </span>
-              {submit.isPending ? `${t('ok_submit')}…` : t('ok_submit')}
-            </button>
+            {item && isOpenStatus(task.status) && (
+              <button
+                type="submit"
+                disabled={!canSubmit}
+                className="tap"
+                style={{
+                  width: '100%',
+                  border: 0,
+                  cursor: canSubmit ? 'pointer' : 'not-allowed',
+                  background: canSubmit ? 'var(--ink)' : 'var(--hair-strong)',
+                  color: canSubmit ? 'var(--bg)' : 'var(--ink-3)',
+                  padding: '14px',
+                  borderRadius: 999,
+                  fontSize: 14,
+                  fontWeight: 600,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: 6,
+                }}
+              >
+                <span className="ms fill" style={{ fontSize: 18 }}>
+                  send
+                </span>
+                {isPending ? `${t('ok_submit')}…` : t('ok_submit')}
+              </button>
+            )}
           </form>
         )}
       </div>

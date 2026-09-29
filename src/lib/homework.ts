@@ -1,4 +1,4 @@
-import type { HomeworkCategory, HomeworkStatus } from '@/api/types'
+import type { HomeworkStatus } from '@/api/types'
 import { todayISO, tomorrowISO } from './lesson'
 
 export type DueKind = 'overdue' | 'today' | 'tomorrow' | 'date' | 'none'
@@ -18,24 +18,12 @@ export function computeDue(dueDate: string | null): DueInfo {
   return { kind: 'date', label: dueDate.slice(5) }
 }
 
-const CATEGORY_TO_DESIGN: Record<HomeworkCategory, string> = {
-  WRITING: 'writing',
-  READING: 'reading',
-  GRAMMAR: 'grammar',
-  VOCABULARY: 'vocabulary',
-  LISTENING: 'listening',
-}
-
-export function categorySlug(c: HomeworkCategory): string {
-  return CATEGORY_TO_DESIGN[c]
-}
-
 export function isOpenStatus(s: HomeworkStatus): boolean {
   return s === 'OPEN'
 }
 
 export function isReviewStatus(s: HomeworkStatus): boolean {
-  return s === 'SUBMITTED' || s === 'IN_REVIEW' || s === 'REJECTED'
+  return s === 'SUBMITTED' || s === 'REVIEWED'
 }
 
 export function isDoneStatus(s: HomeworkStatus): boolean {
