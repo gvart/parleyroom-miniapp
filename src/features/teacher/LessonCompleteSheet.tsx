@@ -1,7 +1,7 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Banner, Button, Sheet, TextArea } from '@/ui'
-import { useCompleteLesson } from '@/hooks/useLessonActions'
+import { useCompleteLesson, useUpdateLessonContent } from '@/hooks/useLessonActions'
 import type { Lesson } from '@/api/types'
 
 interface Props {
@@ -13,46 +13,44 @@ interface Props {
 
 export function LessonCompleteSheet({ open, lesson, onClose, onDone }: Props) {
   const { t } = useTranslation()
+  const updateContent = useUpdateLessonContent()
   const complete = useCompleteLesson()
   const [notes, setNotes] = useState('')
-  const [wentWell, setWentWell] = useState('')
-  const [workingOn, setWorkingOn] = useState('')
   const [submitted, setSubmitted] = useState(false)
 
   useEffect(() => {
-    if (open && lesson) {
-      setNotes(lesson.teacherNotes ?? '')
-      setWentWell(lesson.teacherWentWell ?? '')
-      setWorkingOn(lesson.teacherWorkingOn ?? '')
+    if (open) {
+      setNotes('')
       setSubmitted(false)
+      updateContent.reset()
       complete.reset()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open, lesson])
+  }, [open])
 
   if (!lesson) return null
 
-  const canSubmit = !complete.isPending
+  const isPending = updateContent.isPending || complete.isPending
+  const canSubmit = !isPending
+  const error = updateContent.error ?? complete.error
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     if (!canSubmit || !lesson) return
     try {
-      await complete.mutateAsync({
-        id: lesson.id,
-        body: {
-          teacherNotes: notes.trim() || null,
-          teacherWentWell: wentWell.trim() || null,
-          teacherWorkingOn: workingOn.trim() || null,
-        },
-      })
+      const entered = notes.trim()
+      if (entered) {
+        const appended = lesson.rawNotes ? `${lesson.rawNotes}\n${entered}` : entered
+        await updateContent.mutateAsync({ id: lesson.id, body: { rawNotes: appended } })
+      }
+      await complete.mutateAsync(lesson.id)
       setSubmitted(true)
       setTimeout(() => {
         onDone?.()
         onClose()
-      }, 1200)
+      }, 1800)
     } catch {
-      /* surfaced via complete.error */
+      /* surfaced via error */
     }
   }
 
@@ -84,6 +82,9 @@ export function LessonCompleteSheet({ open, lesson, onClose, onDone }: Props) {
           <div style={{ fontSize: 13, color: 'var(--ink-2)' }}>
             {t('lesson_completed_sub')}
           </div>
+          <div style={{ fontSize: 12, color: 'var(--ink-3)', marginTop: 10 }}>
+            {t('lesson_completed_portal_hint')}
+          </div>
         </div>
       ) : (
         <form onSubmit={submit} style={{ padding: '0 22px 10px' }}>
@@ -94,40 +95,20 @@ export function LessonCompleteSheet({ open, lesson, onClose, onDone }: Props) {
             {lesson.topic}
           </div>
 
-          <div style={{ marginBottom: 14 }}>
+          <div style={{ marginBottom: 18 }}>
             <TextArea
               label={t('teacher_notes_label')}
               placeholder={t('teacher_notes_placeholder')}
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              rows={3}
-            />
-          </div>
-          <div style={{ marginBottom: 14 }}>
-            <TextArea
-              label={t('went_well_label')}
-              placeholder={t('went_well_placeholder')}
-              value={wentWell}
-              onChange={(e) => setWentWell(e.target.value)}
-              rows={2}
-            />
-          </div>
-          <div style={{ marginBottom: 18 }}>
-            <TextArea
-              label={t('working_on_label')}
-              placeholder={t('working_on_placeholder')}
-              value={workingOn}
-              onChange={(e) => setWorkingOn(e.target.value)}
-              rows={2}
+              rows={4}
             />
           </div>
 
-          {complete.error && (
+          {error && (
             <div style={{ marginBottom: 12 }}>
               <Banner tone="error">
-                {complete.error instanceof Error
-                  ? complete.error.message
-                  : t('complete_failed')}
+                {error instanceof Error ? error.message : t('complete_failed')}
               </Banner>
             </div>
           )}
@@ -137,7 +118,7 @@ export function LessonCompleteSheet({ open, lesson, onClose, onDone }: Props) {
             variant="primary"
             block
             disabled={!canSubmit}
-            loading={complete.isPending}
+            loading={isPending}
             leadingIcon="check"
           >
             {t('complete_lesson_cta')}
