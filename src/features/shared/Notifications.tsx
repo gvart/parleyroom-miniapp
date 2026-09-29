@@ -29,8 +29,8 @@ export function Notifications() {
         style={{
           padding: '12px 16px 18px',
           display: 'flex',
-          justifyContent: 'space-between',
           alignItems: 'center',
+          gap: 12,
         }}
       >
         <button
@@ -46,52 +46,45 @@ export function Notifications() {
         <div className="section-title">
           {t('notifications')}
         </div>
-        <div style={{ width: 40 }} />
       </div>
 
       <div style={{ padding: '0 16px' }}>
         {items.length === 0 ? (
           !notificationsQuery.isLoading && (
-            <EmptyState icon="inbox" title={t('all_caught_up')} sub={t('no_new_notifications')} />
+            <EmptyState icon="notifications_off" title={t('all_caught_up')} sub={t('no_new_notifications')} />
           )
         ) : (
-          <Card padded={false}>
-            {items.map((n, i) => {
+          <Card padded={false} className="row-list" style={{ overflow: 'hidden' }}>
+            {items.map((n) => {
               const unread = !n.viewed
               return (
                 <div
                   key={n.id}
                   style={{
                     padding: '16px 18px',
-                    borderBottom: i < items.length - 1 ? '1px solid var(--hair)' : 0,
                     display: 'flex',
                     gap: 12,
                     alignItems: 'flex-start',
-                    background: unread ? 'var(--accent-soft)' : 'transparent',
+                    background: unread ? 'color-mix(in srgb, var(--accent) 8%, transparent)' : 'transparent',
                     position: 'relative',
                   }}
                 >
-                  <div
+                  <span
+                    className="icon-tile"
                     style={{
-                      width: 36,
-                      height: 36,
-                      borderRadius: 999,
-                      background: unread ? 'var(--accent)' : 'var(--bg-2)',
-                      color: unread ? '#fff' : 'var(--ink-2)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      flexShrink: 0,
+                      background: unread ? 'var(--accent-soft)' : 'var(--bg-2)',
+                      color: unread ? 'var(--accent-ink)' : 'var(--ink-2)',
                     }}
                   >
-                    <span className="ms" style={{ fontSize: 18 }}>
+                    <span className="ms fill" style={{ fontSize: 20 }} aria-hidden="true">
                       {notificationIcon(n.type)}
                     </span>
-                  </div>
+                  </span>
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div
                       style={{
-                        fontSize: 14,
+                        fontSize: 'var(--text-body)',
+                        fontWeight: unread ? 700 : 600,
                         lineHeight: 1.4,
                         marginBottom: 2,
                         color: 'var(--ink)',
@@ -99,17 +92,18 @@ export function Notifications() {
                     >
                       {notificationText(n, t)}
                     </div>
-                    <div style={{ fontSize: 11, color: 'var(--ink-3)' }}>
+                    <div style={{ fontSize: 'var(--text-caption)', fontWeight: 600, color: 'var(--ink-3)' }}>
                       {relativeTime(n.createdAt, t)}
                     </div>
                   </div>
                   {unread && (
                     <span
                       style={{
-                        width: 7,
-                        height: 7,
+                        width: 9,
+                        height: 9,
                         borderRadius: 999,
                         background: 'var(--accent)',
+                        boxShadow: '0 0 0 3px var(--accent-soft)',
                         marginTop: 6,
                         flexShrink: 0,
                       }}

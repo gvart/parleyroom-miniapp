@@ -2,7 +2,7 @@ import { useRef, useState, type ChangeEvent, type FormEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/auth/AuthGate'
-import { Avatar, Card } from '@/ui'
+import { Avatar, Banner, Button, Card } from '@/ui'
 import { useUpdateProfile } from '@/hooks/useUpdateProfile'
 import { useDeleteAvatar, useUploadAvatar } from '@/hooks/useAvatar'
 import type { Level } from '@/api/types'
@@ -68,25 +68,6 @@ export function ProfileEdit() {
     }
   }
 
-  const labelStyle = {
-    fontSize: 11,
-    color: 'var(--ink-3)',
-    textTransform: 'uppercase' as const,
-    letterSpacing: '0.08em',
-    fontWeight: 600,
-    marginBottom: 6,
-  }
-  const inputStyle = {
-    width: '100%',
-    padding: '12px 14px',
-    background: 'var(--card)',
-    color: 'var(--ink)',
-    border: '1px solid var(--hair)',
-    borderRadius: 14,
-    fontSize: 14,
-    outline: 'none',
-  }
-
   return (
     <div>
       <div style={{ padding: '12px 16px 18px', display: 'flex', alignItems: 'center', gap: 12 }}>
@@ -94,6 +75,7 @@ export function ProfileEdit() {
           type="button"
           className="ico-btn"
           onClick={() => navigate('/settings')}
+          aria-label={t('back')}
         >
           <span className="ms" style={{ fontSize: 20 }}>arrow_back</span>
         </button>
@@ -131,7 +113,7 @@ export function ProfileEdit() {
             padding: 0,
           }}
         >
-          <Avatar hue={172} initials={user.initials} size={96} src={user.avatarUrl} />
+          <Avatar hue={150} initials={user.initials} size={96} src={user.avatarUrl} />
           <span
             style={{
               position: 'absolute',
@@ -140,9 +122,9 @@ export function ProfileEdit() {
               width: 32,
               height: 32,
               borderRadius: 999,
-              background: 'var(--ink)',
-              color: 'var(--bg)',
-              border: '3px solid var(--bg)',
+              background: 'var(--accent-face)',
+              color: 'var(--on-accent)',
+              border: '3px solid var(--glass-fallback)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -157,83 +139,56 @@ export function ProfileEdit() {
           <button
             type="button"
             onClick={onAvatarRemove}
-            className="tap"
+            className="link-action"
             disabled={deleteAvatar.isPending}
-            style={{
-              marginTop: 12,
-              border: 0,
-              background: 'transparent',
-              color: 'var(--ink-2)',
-              fontSize: 12,
-              fontWeight: 600,
-              cursor: 'pointer',
-              textDecoration: 'underline',
-            }}
+            style={{ marginTop: 10, color: 'var(--coral-ink)' }}
           >
             {deleteAvatar.isPending ? t('removing_ellipsis') : t('remove_photo')}
           </button>
         ) : (
-          <div style={{ fontSize: 12, color: 'var(--ink-3)', marginTop: 10 }}>
+          <div style={{ fontSize: 'var(--text-caption)', fontWeight: 700, color: 'var(--ink-2)', marginTop: 10 }}>
             {t('tap_to_add_photo')}
           </div>
         )}
         {avatarError && (
-          <div
-            style={{
-              marginTop: 10,
-              padding: '8px 14px',
-              borderRadius: 12,
-              background: 'oklch(0.96 0.05 25)',
-              color: 'oklch(0.5 0.18 25)',
-              fontSize: 12,
-            }}
-          >
+          <Banner tone="error" style={{ marginTop: 10 }}>
             {avatarError}
-          </div>
+          </Banner>
         )}
       </div>
 
       <form onSubmit={submit} style={{ padding: '0 16px' }}>
         <Card>
           <div style={{ marginBottom: 14 }}>
-            <div style={labelStyle}>{t('first_name_label')}</div>
+            <div className="eyebrow field-label">{t('first_name_label')}</div>
             <input
               value={firstName}
               onChange={(e) => setFirstName(e.target.value)}
-              style={inputStyle}
+              className="glass-field"
             />
           </div>
           <div style={{ marginBottom: 14 }}>
-            <div style={labelStyle}>{t('last_name_label')}</div>
+            <div className="eyebrow field-label">{t('last_name_label')}</div>
             <input
               value={lastName}
               onChange={(e) => setLastName(e.target.value)}
-              style={inputStyle}
+              className="glass-field"
             />
           </div>
           <div style={{ marginBottom: 14 }}>
-            <div style={labelStyle}>{t('email')}</div>
-            <input value={user.email} readOnly style={{ ...inputStyle, opacity: 0.6 }} />
+            <div className="eyebrow field-label">{t('email')}</div>
+            <input value={user.email} readOnly className="glass-field" style={{ opacity: 0.6 }} />
           </div>
           <div style={{ marginBottom: 4 }}>
-            <div style={{ ...labelStyle, marginBottom: 8 }}>{t('level')}</div>
+            <div className="eyebrow field-label">{t('level')}</div>
             <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
               {LEVELS.map((lv) => (
                 <button
                   type="button"
                   key={lv}
                   onClick={() => setLevel(lv)}
-                  className="tap"
-                  style={{
-                    padding: '8px 14px',
-                    borderRadius: 999,
-                    fontSize: 13,
-                    fontWeight: 600,
-                    cursor: 'pointer',
-                    border: '1px solid var(--hair)',
-                    background: level === lv ? 'var(--ink)' : 'transparent',
-                    color: level === lv ? 'var(--bg)' : 'var(--ink)',
-                  }}
+                  aria-pressed={level === lv}
+                  className={`chip${level === lv ? ' on' : ''}`}
                 >
                   {lv}
                 </button>
@@ -243,50 +198,22 @@ export function ProfileEdit() {
         </Card>
 
         {updateProfile.error && (
-          <div
-            style={{
-              marginTop: 12,
-              padding: '10px 14px',
-              borderRadius: 12,
-              background: 'oklch(0.96 0.05 25)',
-              color: 'oklch(0.5 0.18 25)',
-              fontSize: 13,
-            }}
-          >
+          <Banner tone="error" style={{ marginTop: 12 }}>
             {updateProfile.error instanceof Error
               ? updateProfile.error.message
               : t('save_failed')}
-          </div>
+          </Banner>
         )}
 
-        <button
+        <Button
           type="submit"
+          block
           disabled={updateProfile.isPending}
-          className="tap"
-          style={{
-            width: '100%',
-            marginTop: 16,
-            border: 0,
-            cursor: updateProfile.isPending ? 'progress' : 'pointer',
-            background: saved ? 'oklch(0.55 0.14 172)' : 'var(--ink)',
-            color: saved ? '#fff' : 'var(--bg)',
-            padding: '14px',
-            borderRadius: 999,
-            fontSize: 14,
-            fontWeight: 600,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 6,
-            transition: 'all .2s var(--ease)',
-            opacity: updateProfile.isPending ? 0.7 : 1,
-          }}
+          leadingIcon={saved ? 'check' : 'save'}
+          style={{ marginTop: 16 }}
         >
-          <span className="ms fill" style={{ fontSize: 18 }}>
-            {saved ? 'check' : 'save'}
-          </span>
           {saved ? t('saved') : updateProfile.isPending ? t('saving_ellipsis') : t('save_changes')}
-        </button>
+        </Button>
       </form>
     </div>
   )

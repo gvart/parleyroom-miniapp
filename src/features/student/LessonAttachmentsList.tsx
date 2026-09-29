@@ -15,10 +15,9 @@ const TYPE_ICON: Record<MaterialType, string> = {
 
 interface Props {
   lessonId: string
-  dark?: boolean
 }
 
-export function LessonAttachmentsList({ lessonId, dark = false }: Props) {
+export function LessonAttachmentsList({ lessonId }: Props) {
   const { t } = useTranslation()
   const { data } = useLessonMaterials(lessonId)
   const items = data?.items ?? []
@@ -26,29 +25,16 @@ export function LessonAttachmentsList({ lessonId, dark = false }: Props) {
 
   if (items.length === 0) return null
 
-  const inkFaint = dark ? '#A7A69C' : 'var(--ink-3)'
-  const ink = dark ? '#F2F1EC' : 'var(--ink)'
-  const bg = dark ? 'rgba(255,255,255,0.04)' : 'var(--card)'
-
   return (
     <div style={{ marginBottom: 16 }}>
-      <div
-        style={{
-          fontSize: 11,
-          color: inkFaint,
-          textTransform: 'uppercase',
-          letterSpacing: '0.08em',
-          fontWeight: 600,
-          marginBottom: 8,
-        }}
-      >
+      <div className="eyebrow" style={{ marginBottom: 8 }}>
         {t('lesson_attachments')}
       </div>
       {items.map(({ material }) => (
         <button
           key={material.id}
           type="button"
-          className="tap"
+          className="row-btn glass-inner tap"
           onClick={() => {
             if (material.type === 'LINK' && material.downloadUrl) {
               try {
@@ -60,24 +46,12 @@ export function LessonAttachmentsList({ lessonId, dark = false }: Props) {
             }
             setPreview(material)
           }}
-          style={{
-            width: '100%',
-            padding: '10px 12px',
-            background: bg,
-            borderRadius: 10,
-            marginBottom: 6,
-            display: 'flex',
-            alignItems: 'center',
-            gap: 10,
-            border: dark ? '1px solid rgba(255,255,255,0.06)' : '1px solid var(--hair)',
-            color: ink,
-            fontSize: 14,
-            cursor: 'pointer',
-            textAlign: 'left',
-          }}
+          style={{ padding: '10px 12px', borderRadius: 18, marginBottom: 8 }}
         >
-          <span className="ms" style={{ fontSize: 22, color: 'var(--accent)' }}>
-            {TYPE_ICON[material.type]}
+          <span className="icon-tile" style={{ width: 36, height: 36, borderRadius: 12 }}>
+            <span className="ms fill" style={{ fontSize: 20 }} aria-hidden="true">
+              {TYPE_ICON[material.type]}
+            </span>
           </span>
           <span
             style={{
@@ -86,12 +60,12 @@ export function LessonAttachmentsList({ lessonId, dark = false }: Props) {
               overflow: 'hidden',
               textOverflow: 'ellipsis',
               whiteSpace: 'nowrap',
-              fontWeight: 500,
+              fontWeight: 600,
             }}
           >
             {material.name}
           </span>
-          <span className="ms" style={{ fontSize: 16, color: inkFaint }}>
+          <span className="ms" style={{ fontSize: 18, color: 'var(--ink-3)' }} aria-hidden="true">
             {material.type === 'LINK' ? 'open_in_new' : 'chevron_right'}
           </span>
         </button>

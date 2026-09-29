@@ -79,14 +79,6 @@ export function UploadMaterialSheet({ open, onClose }: Props) {
     }
   }
 
-  const labelStyle = {
-    fontSize: 11,
-    color: 'var(--ink-3)',
-    textTransform: 'uppercase' as const,
-    letterSpacing: '0.08em',
-    fontWeight: 600,
-    marginBottom: 8,
-  }
   const inputStyle = {
     width: '100%',
     padding: '12px 14px',
@@ -104,12 +96,12 @@ export function UploadMaterialSheet({ open, onClose }: Props) {
   return (
     <Sheet open={open} onClose={onClose}>
       <form onSubmit={submit} style={{ padding: '0 22px 10px' }}>
-        <div className="font-headline" style={{ fontSize: 26, letterSpacing: '-0.01em', marginBottom: 18 }}>
+        <div className="section-title" style={{ marginBottom: 18 }}>
           {t('upload_material_title')}
         </div>
 
         <div style={{ marginBottom: 14 }}>
-          <div style={labelStyle}>{t('material_type_label')}</div>
+          <div className="eyebrow field-label">{t('material_type_label')}</div>
           <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
             {TYPES.map((opt) => (
               <button
@@ -121,17 +113,8 @@ export function UploadMaterialSheet({ open, onClose }: Props) {
                   setUrl('')
                   setError(null)
                 }}
-                className="tap"
-                style={{
-                  padding: '8px 14px',
-                  borderRadius: 999,
-                  fontSize: 13,
-                  fontWeight: 600,
-                  cursor: 'pointer',
-                  border: '1px solid var(--hair)',
-                  background: type === opt.key ? 'var(--ink)' : 'transparent',
-                  color: type === opt.key ? 'var(--bg)' : 'var(--ink)',
-                }}
+                aria-pressed={type === opt.key}
+                className={`chip${type === opt.key ? ' on' : ''}`}
               >
                 {t(opt.labelKey)}
               </button>
@@ -140,7 +123,7 @@ export function UploadMaterialSheet({ open, onClose }: Props) {
         </div>
 
         <div style={{ marginBottom: 14 }}>
-          <div style={labelStyle}>{t('material_name_label')}</div>
+          <div className="eyebrow field-label">{t('material_name_label')}</div>
           <input
             value={name}
             onChange={(e) => setName(e.target.value)}
@@ -151,7 +134,7 @@ export function UploadMaterialSheet({ open, onClose }: Props) {
 
         {isLink ? (
           <div style={{ marginBottom: 18 }}>
-            <div style={labelStyle}>{t('material_url_label')}</div>
+            <div className="eyebrow field-label">{t('material_url_label')}</div>
             <input
               value={url}
               onChange={(e) => setUrl(e.target.value)}
@@ -162,7 +145,7 @@ export function UploadMaterialSheet({ open, onClose }: Props) {
           </div>
         ) : (
           <div style={{ marginBottom: 18 }}>
-            <div style={labelStyle}>{t('material_file_label')}</div>
+            <div className="eyebrow field-label">{t('material_file_label')}</div>
             <input
               ref={fileInputRef}
               type="file"
@@ -182,7 +165,7 @@ export function UploadMaterialSheet({ open, onClose }: Props) {
                 padding: '14px 16px',
                 borderRadius: 14,
                 fontSize: 14,
-                fontWeight: 600,
+                fontWeight: 700,
                 cursor: 'pointer',
                 textAlign: 'left',
                 display: 'flex',
@@ -231,7 +214,7 @@ export function UploadMaterialSheet({ open, onClose }: Props) {
             padding: '14px',
             borderRadius: 999,
             fontSize: 14,
-            fontWeight: 600,
+            fontWeight: 700,
           }}
         >
           {create.isPending ? `${t('upload_material_button')}…` : t('upload_material_button')}

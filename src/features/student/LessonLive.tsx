@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useAuth } from '@/auth/AuthGate'
-import { Avatar, Pill, Sheet } from '@/ui'
+import { Avatar, Button, Sheet } from '@/ui'
 import { useLessons } from '@/hooks/useLessons'
 import { useLiveKit, type LiveKitStatus } from '@/hooks/useLiveKit'
 import { useStartLesson } from '@/hooks/useLessonActions'
@@ -106,54 +106,62 @@ export function LessonLive() {
           position: 'fixed',
           inset: 0,
           zIndex: 100,
-          background: '#0A0A09',
-          color: '#F2F1EC',
+          color: 'var(--ink)',
           display: 'flex',
           flexDirection: 'column',
-          alignItems: 'center',
           justifyContent: 'center',
-          textAlign: 'center',
-          padding: 30,
-          gap: 14,
+          padding: '30px 16px',
         }}
       >
-        <div style={{ fontSize: 48 }}>🎉</div>
-        <div className="font-headline" style={{ fontSize: 28, letterSpacing: '-0.02em' }}>
-          {t('lesson_finished_title')}
-        </div>
-        <div style={{ fontSize: 14, color: 'rgba(242,241,236,0.7)', maxWidth: 280 }}>
-          {t('lesson_finished_sub')}
-        </div>
-        <button
-          type="button"
-          onClick={() => navigate('/')}
-          className="tap"
+        <div
+          className="card animate-in"
           style={{
-            marginTop: 14,
-            border: 0,
-            background: '#F2F1EC',
-            color: '#0A0A09',
-            padding: '12px 24px',
-            borderRadius: 999,
-            fontSize: 14,
-            fontWeight: 600,
-            cursor: 'pointer',
+            padding: '32px 24px',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            textAlign: 'center',
+            gap: 12,
           }}
         >
-          {t('go_to_dashboard')}
-        </button>
+          <span
+            className="icon-tile"
+            style={{
+              width: 76,
+              height: 76,
+              borderRadius: 26,
+              background: 'var(--sunny-soft)',
+              color: 'var(--sunny-ink)',
+              animation: 'scale-in var(--spring-bouncy-ms) var(--spring-bouncy)',
+            }}
+          >
+            <span className="ms fill" style={{ fontSize: 40 }} aria-hidden="true">
+              celebration
+            </span>
+          </span>
+          <h1 className="page-h1" style={{ marginTop: 6 }}>
+            {t('lesson_finished_title')}
+          </h1>
+          <p className="page-sub" style={{ margin: 0, maxWidth: 300 }}>
+            {t('lesson_finished_sub')}
+          </p>
+          <Button leadingIcon="home" onClick={() => navigate('/')} style={{ marginTop: 12 }}>
+            {t('go_to_dashboard')}
+          </Button>
+        </div>
       </div>
     )
   }
 
   return (
     <div
+      className="dark"
       style={{
         position: 'fixed',
         inset: 0,
         zIndex: 100,
-        background: '#0A0A09',
-        color: '#F2F1EC',
+        background: 'var(--bg)',
+        color: 'var(--ink)',
         display: 'flex',
         flexDirection: 'column',
         overflow: 'hidden',
@@ -165,7 +173,7 @@ export function LessonLive() {
             position: 'absolute',
             inset: 0,
             background:
-              'radial-gradient(circle at 50% 40%, oklch(0.35 0.12 172) 0%, oklch(0.12 0.05 200) 70%)',
+              'radial-gradient(60% 45% at 30% 30%, color-mix(in srgb, var(--blob-1) 45%, transparent), transparent 70%), radial-gradient(55% 45% at 75% 70%, color-mix(in srgb, var(--blob-2) 35%, transparent), transparent 70%)',
           }}
         />
 
@@ -184,7 +192,7 @@ export function LessonLive() {
             }}
           >
             <Avatar
-              hue={172}
+              hue={140}
               initials={teacherInitials || '··'}
               size={120}
               live={live.status === 'connected'}
@@ -195,7 +203,7 @@ export function LessonLive() {
         <div
           style={{
             position: 'absolute',
-            top: 'calc(env(safe-area-inset-top) + 18px)',
+            top: 'calc(var(--tg-viewport-safe-area-inset-top, env(safe-area-inset-top)) + var(--tg-viewport-content-safe-area-inset-top, 0px) + 16px)',
             left: 16,
             right: 16,
             display: 'flex',
@@ -205,42 +213,21 @@ export function LessonLive() {
           }}
         >
           {showLivePill ? (
-            <Pill
-              tone="live"
-              style={{
-                background: 'rgba(0,0,0,0.4)',
-                color: '#fff',
-                backdropFilter: 'blur(12px)',
-                WebkitBackdropFilter: 'blur(12px)',
-              }}
-            >
-              <span className="live-dot" />
+            <span className="countdown-chip is-live" style={{ background: 'var(--glass-bg-strong)' }}>
+              <span className="live-dot" aria-hidden="true" />
               {live.status === 'connected' ? t('live_elapsed', { time: fmtElapsed(elapsed) }) : t('live')}
-            </Pill>
+            </span>
           ) : (
             <div />
           )}
           <button
             type="button"
             onClick={() => navigate(-1)}
-            className="tap"
+            className="ico-btn"
             aria-label={t('back')}
-            style={{
-              width: 36,
-              height: 36,
-              borderRadius: 999,
-              background: 'rgba(0,0,0,0.4)',
-              backdropFilter: 'blur(12px)',
-              WebkitBackdropFilter: 'blur(12px)',
-              border: '1px solid rgba(255,255,255,0.1)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              cursor: 'pointer',
-              color: '#fff',
-            }}
+            style={{ background: 'var(--glass-bg-strong)' }}
           >
-            <span className="ms" style={{ fontSize: 18 }}>
+            <span className="ms" style={{ fontSize: 22 }} aria-hidden="true">
               expand_more
             </span>
           </button>
@@ -248,27 +235,25 @@ export function LessonLive() {
 
         {banner && (
           <div
+            className="glass animate-in"
             style={{
               position: 'absolute',
-              top: 'calc(env(safe-area-inset-top) + 76px)',
+              top: 'calc(var(--tg-viewport-safe-area-inset-top, env(safe-area-inset-top)) + var(--tg-viewport-content-safe-area-inset-top, 0px) + 76px)',
               left: 16,
               right: 16,
-              padding: '10px 14px',
-              borderRadius: 12,
-              background: 'rgba(0,0,0,0.5)',
-              backdropFilter: 'blur(16px)',
-              WebkitBackdropFilter: 'blur(16px)',
-              color: 'rgba(242,241,236,0.9)',
-              fontSize: 12,
+              padding: '12px 16px',
+              borderRadius: 20,
+              background: 'var(--glass-bg-strong)',
+              color: 'var(--ink)',
+              fontSize: 'var(--text-small)',
+              fontWeight: 700,
               lineHeight: 1.4,
               textAlign: 'center',
-              border: '1px solid rgba(255,255,255,0.06)',
-              animation: 'fade-in .3s var(--ease)',
             }}
           >
             {banner}
             {live.errorMessage && (
-              <div style={{ marginTop: 6, fontSize: 11, color: 'rgba(242,241,236,0.55)' }}>
+              <div style={{ marginTop: 6, fontSize: 'var(--text-caption)', fontWeight: 400, color: 'var(--ink-2)' }}>
                 {live.errorMessage}
               </div>
             )}
@@ -278,14 +263,14 @@ export function LessonLive() {
         <div
           style={{
             position: 'absolute',
-            bottom: 220,
+            bottom: 24,
             right: 16,
-            width: 90,
-            height: 130,
-            borderRadius: 16,
-            background:
-              'linear-gradient(180deg, oklch(0.35 0.1 290), oklch(0.18 0.05 290))',
-            border: '2px solid rgba(255,255,255,0.15)',
+            width: 92,
+            height: 132,
+            borderRadius: 22,
+            background: 'linear-gradient(180deg, var(--grape-soft), var(--glass-bg-strong))',
+            border: '2px solid var(--glass-border)',
+            boxShadow: 'var(--shadow-2)',
             overflow: 'hidden',
             display: 'flex',
             alignItems: 'center',
@@ -297,99 +282,78 @@ export function LessonLive() {
           ) : live.cameraEnabled ? (
             <Avatar hue={290} initials={userInitials} size={48} src={user.avatarUrl} />
           ) : (
-            <span className="ms" style={{ fontSize: 28, color: 'rgba(255,255,255,0.6)' }}>
+            <span className="ms" style={{ fontSize: 28, color: 'var(--ink-2)' }} aria-hidden="true">
               videocam_off
             </span>
           )}
         </div>
-
       </div>
 
-      <div
-        style={{
-          padding: '16px 16px calc(env(safe-area-inset-bottom) + 16px)',
-          background: 'linear-gradient(180deg, transparent, #0A0A09 50%)',
-        }}
-      >
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            marginBottom: 12,
-          }}
-        >
-          <div>
-            <div className="font-headline" style={{ fontSize: 18 }}>
+      <div style={{ padding: '0 12px calc(var(--tg-viewport-safe-area-inset-bottom, env(safe-area-inset-bottom)) + 12px)' }}>
+        <div className="glass-chrome" style={{ borderRadius: 'var(--radius-chrome)', padding: '16px 16px 18px' }}>
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              gap: 12,
+              marginBottom: 16,
+            }}
+          >
+            <div
+              className="font-headline"
+              style={{
+                fontSize: 'var(--text-card-title)',
+                minWidth: 0,
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+              }}
+            >
               {lesson?.topic ?? teacherName}
             </div>
+            <Button variant="secondary" size="sm" leadingIcon="note_alt" onClick={() => setShowRecap(true)}>
+              {t('notes_button')}
+            </Button>
           </div>
-          <button
-            type="button"
-            onClick={() => setShowRecap(true)}
-            className="tap"
-            style={{
-              border: '1px solid rgba(255,255,255,0.18)',
-              background: 'rgba(255,255,255,0.06)',
-              color: '#fff',
-              padding: '8px 12px',
-              borderRadius: 999,
-              fontSize: 12,
-              fontWeight: 600,
-              cursor: 'pointer',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 6,
-            }}
-          >
-            <span className="ms" style={{ fontSize: 14 }}>
-              note_alt
-            </span>
-            {t('notes_button')}
-          </button>
-        </div>
 
-        <div
-          style={{
-            display: 'flex',
-            gap: 12,
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}
-        >
-          <CallBtn
-            icon={live.micEnabled ? 'mic' : 'mic_off'}
-            active={live.micEnabled}
-            onClick={() => void live.setMic(!live.micEnabled)}
-          />
-          <CallBtn
-            icon={live.cameraEnabled ? 'videocam' : 'videocam_off'}
-            active={live.cameraEnabled}
-            onClick={() => void live.setCamera(!live.cameraEnabled)}
-          />
-          <button
-            type="button"
-            onClick={() => void endCall()}
-            className="tap"
-            aria-label={t('end_call')}
+          <div
             style={{
-              width: 60,
-              height: 60,
-              borderRadius: 999,
-              background: 'oklch(0.55 0.22 25)',
-              border: 0,
               display: 'flex',
-              alignItems: 'center',
+              gap: 14,
               justifyContent: 'center',
-              cursor: 'pointer',
-              color: '#fff',
-              boxShadow: '0 8px 24px oklch(0.55 0.22 25 / 0.5)',
+              alignItems: 'center',
             }}
           >
-            <span className="ms fill" style={{ fontSize: 26 }}>
-              call_end
-            </span>
-          </button>
+            <CallBtn
+              icon={live.micEnabled ? 'mic' : 'mic_off'}
+              active={live.micEnabled}
+              onClick={() => void live.setMic(!live.micEnabled)}
+            />
+            <CallBtn
+              icon={live.cameraEnabled ? 'videocam' : 'videocam_off'}
+              active={live.cameraEnabled}
+              onClick={() => void live.setCamera(!live.cameraEnabled)}
+            />
+            <button
+              type="button"
+              onClick={() => void endCall()}
+              className="btn-primary"
+              aria-label={t('end_call')}
+              style={{
+                width: 64,
+                height: 64,
+                padding: 0,
+                background: 'var(--coral-vivid)',
+                color: 'var(--on-coral-ink)',
+                boxShadow: '0 4px 0 color-mix(in srgb, var(--coral-vivid) 55%, #000), 0 10px 22px -8px var(--coral-vivid)',
+              }}
+            >
+              <span className="ms fill" style={{ fontSize: 28 }} aria-hidden="true">
+                call_end
+              </span>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -401,14 +365,14 @@ export function LessonLive() {
       />
 
       <Sheet open={showRecap} onClose={() => setShowRecap(false)} dark>
-        <div style={{ padding: '0 22px 10px' }}>
-          <div className="font-headline" style={{ fontSize: 26, letterSpacing: '-0.01em', marginBottom: 4 }}>
+        <div style={{ padding: '0 20px 4px' }}>
+          <div className="section-title" style={{ marginBottom: 4 }}>
             {t('lesson_notes_title')}
           </div>
-          <div style={{ fontSize: 13, color: '#A7A69C', marginBottom: 18 }}>
+          <div style={{ fontSize: 'var(--text-small)', color: 'var(--ink-2)', marginBottom: 18 }}>
             {t('lesson_notes_sub')}
           </div>
-          {id && <LessonAttachmentsList lessonId={id} dark />}
+          {id && <LessonAttachmentsList lessonId={id} />}
         </div>
       </Sheet>
     </div>
@@ -428,23 +392,16 @@ function CallBtn({
     <button
       type="button"
       onClick={onClick}
-      className="tap"
+      aria-pressed={active}
+      className="ico-btn"
       style={{
-        width: 52,
-        height: 52,
-        borderRadius: 999,
-        border: `1px solid ${active ? 'rgba(255,255,255,0.14)' : 'transparent'}`,
-        cursor: 'pointer',
-        background: active ? 'rgba(255,255,255,0.1)' : 'rgba(255,100,100,0.85)',
-        color: '#fff',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        backdropFilter: 'blur(12px)',
-        WebkitBackdropFilter: 'blur(12px)',
+        width: 54,
+        height: 54,
+        background: active ? 'var(--glass-bg-inner)' : 'var(--coral-soft)',
+        color: active ? 'var(--ink)' : 'var(--coral-ink)',
       }}
     >
-      <span className="ms" style={{ fontSize: 22 }}>
+      <span className="ms fill" style={{ fontSize: 24 }} aria-hidden="true">
         {icon}
       </span>
     </button>

@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
-import { Card } from '@/ui'
+import { Banner, Button, Card } from '@/ui'
 import { useChangePassword } from '@/hooks/usePasswordChange'
 
 function strengthOf(p: string): number {
@@ -14,10 +14,10 @@ function strengthOf(p: string): number {
 }
 
 const STRENGTH_COLORS = [
-  'oklch(0.6 0.18 25)',
-  'oklch(0.6 0.18 25)',
-  'oklch(0.7 0.14 75)',
-  'oklch(0.55 0.14 172)',
+  'var(--coral-vivid)',
+  'var(--coral-vivid)',
+  'var(--sunny-vivid)',
+  'var(--leaf-vivid)',
 ]
 
 export function ChangePassword() {
@@ -66,44 +66,30 @@ export function ChangePassword() {
                 alignItems: 'center',
                 justifyContent: 'center',
                 margin: '0 auto 18px',
-                animation: 'scale-in .5s var(--spring)',
+                boxShadow: 'var(--glass-highlight), 0 0 0 10px color-mix(in srgb, var(--accent) 10%, transparent)',
+                animation: 'scale-in var(--spring-bouncy-ms) var(--spring-bouncy)',
               }}
             >
               <span className="ms fill" style={{ fontSize: 42 }}>
                 lock_reset
               </span>
             </div>
-            <div className="font-headline" style={{ fontSize: 30, letterSpacing: '-0.02em', marginBottom: 6 }}>
+            <h1 className="page-h1" style={{ marginBottom: 6 }}>
               {t('password_updated_title')}
-            </div>
+            </h1>
             <div
               style={{
-                fontSize: 14,
+                fontSize: 'var(--text-lead)',
                 color: 'var(--ink-2)',
-                marginBottom: 24,
                 maxWidth: 280,
                 margin: '0 auto 24px',
               }}
             >
               {t('password_updated_sub')}
             </div>
-            <button
-              type="button"
-              onClick={() => navigate('/settings')}
-              className="tap"
-              style={{
-                border: 0,
-                background: 'var(--ink)',
-                color: 'var(--bg)',
-                padding: '12px 24px',
-                borderRadius: 999,
-                fontSize: 14,
-                fontWeight: 600,
-                cursor: 'pointer',
-              }}
-            >
+            <Button leadingIcon="arrow_back" onClick={() => navigate('/settings')}>
               {t('back_to_settings')}
-            </button>
+            </Button>
           </div>
         </div>
       </div>
@@ -115,24 +101,15 @@ export function ChangePassword() {
       <ScreenHeader title={t('change_password_title')} />
 
       <form onSubmit={submit} style={{ padding: '0 16px' }}>
-        <div className="font-headline" style={{ fontSize: 26, letterSpacing: '-0.02em', marginBottom: 6 }}>
+        <div className="section-title" style={{ marginBottom: 6 }}>
           {t('new_password')}
         </div>
-        <div style={{ fontSize: 13, color: 'var(--ink-2)', marginBottom: 22 }}>
+        <div style={{ fontSize: 'var(--text-small)', color: 'var(--ink-2)', marginBottom: 22 }}>
           {t('password_strength_hint')}
         </div>
 
         <Card>
-          <div
-            style={{
-              fontSize: 11,
-              color: 'var(--ink-3)',
-              textTransform: 'uppercase',
-              letterSpacing: '0.08em',
-              fontWeight: 600,
-              marginBottom: 6,
-            }}
-          >
+          <div className="eyebrow" style={{ marginBottom: 6 }}>
             {t('new_password')}
           </div>
           <input
@@ -141,17 +118,8 @@ export function ChangePassword() {
             type="password"
             placeholder="••••••••"
             autoComplete="new-password"
-            style={{
-              width: '100%',
-              padding: '10px 0',
-              background: 'transparent',
-              color: 'var(--ink)',
-              border: 0,
-              fontSize: 16,
-              fontFamily: 'inherit',
-              outline: 'none',
-              marginBottom: 10,
-            }}
+            className="glass-field"
+            style={{ marginBottom: 10 }}
           />
           <div style={{ display: 'flex', gap: 4, marginBottom: 6 }}>
             {[0, 1, 2, 3].map((i) => (
@@ -159,28 +127,19 @@ export function ChangePassword() {
                 key={i}
                 style={{
                   flex: 1,
-                  height: 3,
+                  height: 6,
                   borderRadius: 999,
-                  background: i < st ? STRENGTH_COLORS[st - 1] : 'var(--hair)',
+                  background: i < st ? STRENGTH_COLORS[st - 1] : 'var(--bg-3)',
                   transition: 'background .2s var(--ease)',
                 }}
               />
             ))}
           </div>
-          <div style={{ fontSize: 11, color: 'var(--ink-3)' }}>{strengthLabel()}</div>
+          <div style={{ fontSize: 'var(--text-caption)', fontWeight: 700, color: 'var(--ink-2)' }}>{strengthLabel()}</div>
 
           <div style={{ height: 1, background: 'var(--hair)', margin: '14px 0' }} />
 
-          <div
-            style={{
-              fontSize: 11,
-              color: 'var(--ink-3)',
-              textTransform: 'uppercase',
-              letterSpacing: '0.08em',
-              fontWeight: 600,
-              marginBottom: 6,
-            }}
-          >
+          <div className="eyebrow" style={{ marginBottom: 6 }}>
             {t('confirm_password')}
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -190,23 +149,15 @@ export function ChangePassword() {
               type="password"
               placeholder="••••••••"
               autoComplete="new-password"
-              style={{
-                flex: 1,
-                padding: '10px 0',
-                background: 'transparent',
-                color: 'var(--ink)',
-                border: 0,
-                fontSize: 16,
-                fontFamily: 'inherit',
-                outline: 'none',
-              }}
+              className="glass-field"
+              style={{ flex: 1 }}
             />
             {pw2 && (
               <span
                 className="ms fill"
                 style={{
-                  fontSize: 18,
-                  color: match ? 'oklch(0.55 0.14 172)' : 'oklch(0.6 0.18 25)',
+                  fontSize: 22,
+                  color: match ? 'var(--leaf-ink)' : 'var(--coral-ink)',
                 }}
               >
                 {match ? 'check_circle' : 'cancel'}
@@ -216,39 +167,14 @@ export function ChangePassword() {
         </Card>
 
         {change.error && (
-          <div
-            style={{
-              marginTop: 12,
-              padding: '10px 14px',
-              borderRadius: 12,
-              background: 'oklch(0.96 0.05 25)',
-              color: 'oklch(0.5 0.18 25)',
-              fontSize: 13,
-            }}
-          >
+          <Banner tone="error" style={{ marginTop: 12 }}>
             {change.error instanceof Error ? change.error.message : t('update_failed')}
-          </div>
+          </Banner>
         )}
 
-        <button
-          type="submit"
-          disabled={!canSubmit}
-          className="tap"
-          style={{
-            width: '100%',
-            marginTop: 16,
-            border: 0,
-            cursor: canSubmit ? 'pointer' : 'not-allowed',
-            background: canSubmit ? 'var(--ink)' : 'var(--hair-strong)',
-            color: canSubmit ? 'var(--bg)' : 'var(--ink-3)',
-            padding: '14px',
-            borderRadius: 999,
-            fontSize: 14,
-            fontWeight: 600,
-          }}
-        >
-          {change.isPending ? `${t('update_password')}…` : t('update_password')}
-        </button>
+        <Button type="submit" block disabled={!canSubmit} loading={change.isPending} style={{ marginTop: 16 }}>
+          {t('update_password')}
+        </Button>
       </form>
     </div>
   )

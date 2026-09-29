@@ -71,7 +71,7 @@ export function TeacherHome() {
               color: 'var(--ink-3)',
               letterSpacing: '0.04em',
               textTransform: 'uppercase',
-              fontWeight: 600,
+              fontWeight: 700,
               marginBottom: 6,
             }}
           >
@@ -79,12 +79,12 @@ export function TeacherHome() {
           </div>
           <div
             className="font-headline"
-            style={{ fontSize: 38, lineHeight: 1.02, letterSpacing: '-0.02em' }}
+            style={{ fontSize: 'var(--text-page-title)', lineHeight: 1.02 }}
           >
             {user.firstName}
             
           </div>
-          <div style={{ fontSize: 13, color: 'var(--ink-2)', marginTop: 4 }}>
+          <div style={{ fontSize: 'var(--text-small)', color: 'var(--ink-2)', marginTop: 4 }}>
             {t('lessons_today', { count: todayLessons.length })}
             {requests.length > 0 && ` · ${t('requests_count', { count: requests.length })}`}
           </div>
@@ -153,7 +153,7 @@ export function TeacherHome() {
                 >
                   ● Live · {lessonTime(live.scheduledAt)}
                 </div>
-                <div className="font-headline" style={{ fontSize: 20, lineHeight: 1.1 }}>
+                <div className="section-title" style={{ lineHeight: 1.1 }}>
                   {live.topic}
                 </div>
               </div>
@@ -201,7 +201,7 @@ export function TeacherHome() {
                 background: 'transparent',
                 color: 'var(--ink)',
                 fontSize: 12,
-                fontWeight: 600,
+                fontWeight: 700,
                 cursor: 'pointer',
               }}
             >
@@ -236,7 +236,7 @@ export function TeacherHome() {
                 background: 'transparent',
                 color: 'var(--ink)',
                 fontSize: 12,
-                fontWeight: 600,
+                fontWeight: 700,
                 cursor: 'pointer',
               }}
             >
@@ -267,7 +267,7 @@ export function TeacherHome() {
                 <div
                   style={{
                     fontSize: 13,
-                    fontWeight: 600,
+                    fontWeight: 700,
                     marginTop: 10,
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
@@ -307,10 +307,10 @@ function RequestCard({ lesson }: { lesson: Lesson }) {
       <div style={{ display: 'flex', gap: 12, alignItems: 'center', marginBottom: 12 }}>
         <Avatar hue={hueFor(student?.id ?? '')} initials={initials} />
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontSize: 14, fontWeight: 600 }}>
+          <div style={{ fontSize: 14, fontWeight: 700 }}>
             {student?.firstName} {student?.lastName}
           </div>
-          <div style={{ fontSize: 12, color: 'var(--ink-2)' }}>
+          <div style={{ fontSize: 'var(--text-caption)', color: 'var(--ink-2)' }}>
             {lesson.topic} · {t('today')} {time}
           </div>
         </div>
@@ -377,7 +377,7 @@ function TimelineRow({ lesson, last, onClick }: TimelineRowProps) {
       }}
     >
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: 42 }}>
-        <div className="mono" style={{ fontSize: 16, fontWeight: 600, letterSpacing: '-0.03em' }}>
+        <div className="mono" style={{ fontSize: 16, fontWeight: 700, letterSpacing: '-0.03em' }}>
           {time}
         </div>
         <div
@@ -426,7 +426,7 @@ function TimelineRow({ lesson, last, onClick }: TimelineRowProps) {
         <div
           style={{
             fontSize: 14,
-            fontWeight: 600,
+            fontWeight: 700,
             overflow: 'hidden',
             textOverflow: 'ellipsis',
             whiteSpace: 'nowrap',

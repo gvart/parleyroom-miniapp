@@ -153,7 +153,7 @@ export function VocabReview() {
                 <span className="eyebrow">{t(wordTypeLabelKey(currentWord.wordType))}</span>
                 <div
                   className="font-headline"
-                  style={{ fontSize: 40, lineHeight: 1.1, fontWeight: 900, color: 'var(--ink)' }}
+                  style={{ fontSize: 'var(--text-page-title)', lineHeight: 1.1, fontWeight: 900, color: 'var(--ink)' }}
                 >
                   {vocabHeadword(currentWord)}
                 </div>
@@ -171,7 +171,7 @@ export function VocabReview() {
                 <span className="eyebrow" style={{ color: 'var(--grape-ink)' }}>
                   {t('meaning')}
                 </span>
-                <div className="font-headline" style={{ fontSize: 30, lineHeight: 1.15, fontWeight: 900 }}>
+                <div className="font-headline" style={{ fontSize: 'var(--text-page-title)', lineHeight: 1.15, fontWeight: 900 }}>
                   {vocabMeaning(currentWord)}
                 </div>
                 {currentWord.exampleSentence && (

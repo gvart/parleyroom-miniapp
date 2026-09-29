@@ -66,27 +66,28 @@ export function AssignGoalSheet({ open, studentId, studentName, onClose, onDone 
               alignItems: 'center',
               justifyContent: 'center',
               margin: '0 auto 14px',
-              animation: 'scale-in .4s var(--spring)',
+              boxShadow: 'var(--glass-highlight), 0 0 0 8px color-mix(in srgb, var(--accent) 10%, transparent)',
+              animation: 'scale-in var(--spring-bouncy-ms) var(--spring-bouncy)',
             }}
           >
             <span className="ms fill" style={{ fontSize: 36 }}>
               flag
             </span>
           </div>
-          <div className="font-headline" style={{ fontSize: 26, marginBottom: 4 }}>
+          <div className="section-title" style={{ marginBottom: 4 }}>
             {t('goal_assigned_title')}
           </div>
-          <div style={{ fontSize: 13, color: 'var(--ink-2)' }}>
+          <div style={{ fontSize: 'var(--text-small)', color: 'var(--ink-2)' }}>
             {t('goal_assigned_sub')}
           </div>
         </div>
       ) : (
         <form onSubmit={submit} style={{ padding: '0 22px 10px' }}>
-          <div className="font-headline" style={{ fontSize: 26, letterSpacing: '-0.01em', marginBottom: 4 }}>
+          <div className="section-title" style={{ marginBottom: 4 }}>
             {t('assign_goal_title')}
           </div>
           {studentName && (
-            <div style={{ fontSize: 13, color: 'var(--ink-2)', marginBottom: 18 }}>
+            <div style={{ fontSize: 'var(--text-small)', color: 'var(--ink-2)', marginBottom: 18 }}>
               {t('for_student', { name: studentName })}
             </div>
           )}

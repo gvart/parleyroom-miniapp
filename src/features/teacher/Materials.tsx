@@ -1,15 +1,15 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Card, Pill, Sheet } from '@/ui'
+import { Card, EmptyState, PageHeader, Pill, Sheet, type Tone, TONE_VARS } from '@/ui'
 import { useMaterials } from '@/hooks/useMaterials'
 import type { Material, MaterialType } from '@/api/types'
 import { UploadMaterialSheet } from './UploadMaterialSheet'
 
-const TYPE_HUE: Record<MaterialType, number> = {
-  PDF: 25,
-  AUDIO: 290,
-  VIDEO: 210,
-  LINK: 75,
+const TYPE_TONE: Record<MaterialType, Tone> = {
+  PDF: 'coral',
+  AUDIO: 'grape',
+  VIDEO: 'sky',
+  LINK: 'sunny',
 }
 
 const TYPE_ICON: Record<MaterialType, string> = {
@@ -44,70 +44,31 @@ export function Materials() {
 
   return (
     <div>
-      <div
-        style={{
-          padding: '12px 16px 18px',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'flex-end',
-        }}
-      >
-        <div>
-          <div
-            style={{
-              fontSize: 11,
-              color: 'var(--ink-3)',
-              letterSpacing: '0.12em',
-              textTransform: 'uppercase',
-              fontWeight: 600,
-              marginBottom: 6,
-            }}
+      <PageHeader
+        eyebrow={t('materials')}
+        title={t('library_title')}
+        action={
+          <button
+            type="button"
+            onClick={() => setUploadOpen(true)}
+            className="btn-primary"
+            aria-label={t('upload_material_title')}
+            style={{ width: 44, minHeight: 44, padding: 0 }}
           >
-            {t('materials')}
-          </div>
-          <div
-            className="font-headline"
-            style={{ fontSize: 30, lineHeight: 1.05, letterSpacing: '-0.02em' }}
-          >
-            {t('library_title')}
-            
-          </div>
-        </div>
-        <button
-          type="button"
-          onClick={() => setUploadOpen(true)}
-          className="tap"
-          aria-label={t('upload_material_title')}
-          style={{
-            width: 40,
-            height: 40,
-            borderRadius: 999,
-            background: 'var(--ink)',
-            color: 'var(--bg)',
-            border: 0,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            cursor: 'pointer',
-          }}
-        >
-          <span className="ms" style={{ fontSize: 20 }}>
-            add
-          </span>
-        </button>
-      </div>
+            <span className="ms" style={{ fontSize: 24 }} aria-hidden="true">
+              add
+            </span>
+          </button>
+        }
+      />
 
       {items.length === 0 ? (
         !materialsQuery.isLoading && (
-          <div style={{ padding: '40px 30px', textAlign: 'center' }}>
-            <div style={{ fontSize: 40, marginBottom: 10 }}>◌</div>
-            <div className="font-headline" style={{ fontSize: 22, marginBottom: 4 }}>
-              {t('empty_materials_title')}
-            </div>
-            <div style={{ fontSize: 13, color: 'var(--ink-2)', maxWidth: 280, margin: '0 auto' }}>
-              {t('empty_materials_sub')}
-            </div>
-          </div>
+          <EmptyState
+            icon="collections_bookmark"
+            title={t('empty_materials_title')}
+            sub={t('empty_materials_sub')}
+          />
         )
       ) : (
         <div
@@ -119,52 +80,43 @@ export function Materials() {
           }}
         >
           {items.map((m) => {
-            const hue = TYPE_HUE[m.type]
+            const tone = TONE_VARS[TYPE_TONE[m.type]]
             return (
               <Card
                 key={m.id}
                 onClick={() => handleTap(m)}
                 padded={false}
-                style={{ overflow: 'hidden', cursor: 'pointer' }}
+                className="tap"
+                style={{ overflow: 'hidden', cursor: 'pointer', borderRadius: 24 }}
               >
                 <div
                   style={{
-                    height: 88,
-                    background: `linear-gradient(135deg, oklch(0.85 0.10 ${hue}) 0%, oklch(0.55 0.14 ${hue}) 100%)`,
+                    height: 84,
+                    margin: 6,
+                    borderRadius: 18,
+                    background: `radial-gradient(circle at 25% 20%, color-mix(in srgb, ${tone.vivid} 35%, transparent), ${tone.soft} 70%)`,
                     position: 'relative',
                   }}
                 >
-                  <div style={{ position: 'absolute', top: 10, left: 10 }}>
-                    <Pill
-                      style={{
-                        background: 'rgba(0,0,0,0.35)',
-                        color: '#fff',
-                        backdropFilter: 'blur(6px)',
-                      }}
-                    >
+                  <div style={{ position: 'absolute', top: 8, left: 8 }}>
+                    <Pill style={{ background: 'var(--card-surface)', color: tone.ink }}>
                       {t(m.type.toLowerCase())}
                     </Pill>
                   </div>
-                  <div
-                    style={{
-                      position: 'absolute',
-                      bottom: 10,
-                      right: 10,
-                      color: '#fff',
-                      opacity: 0.8,
-                    }}
+                  <span
+                    className="ms fill"
+                    style={{ position: 'absolute', bottom: 8, right: 10, fontSize: 30, color: tone.ink }}
+                    aria-hidden="true"
                   >
-                    <span className="ms" style={{ fontSize: 28 }}>
-                      {TYPE_ICON[m.type]}
-                    </span>
-                  </div>
+                    {TYPE_ICON[m.type]}
+                  </span>
                 </div>
-                <div style={{ padding: '10px 12px 12px' }}>
+                <div style={{ padding: '6px 12px 12px' }}>
                   <div
                     style={{
-                      fontSize: 12,
-                      fontWeight: 600,
-                      lineHeight: 1.25,
+                      fontSize: 'var(--text-small)',
+                      fontWeight: 800,
+                      lineHeight: 1.3,
                       marginBottom: 4,
                       overflow: 'hidden',
                       display: '-webkit-box',
@@ -176,10 +128,11 @@ export function Materials() {
                   </div>
                   <div
                     style={{
-                      fontSize: 10,
+                      fontSize: 'var(--text-label)',
+                      fontWeight: 800,
                       color: 'var(--ink-3)',
                       textTransform: 'uppercase',
-                      letterSpacing: '0.08em',
+                      letterSpacing: '0.06em',
                     }}
                   >
                     {m.fileSize ? bytesToLabel(m.fileSize) : t(m.type.toLowerCase())}
@@ -194,10 +147,10 @@ export function Materials() {
       <Sheet open={!!openMaterial} onClose={() => setOpenMaterial(null)}>
         {openMaterial && (
           <div style={{ padding: '0 22px' }}>
-            <div className="font-headline" style={{ fontSize: 26, letterSpacing: '-0.01em', marginBottom: 6 }}>
+            <div className="section-title" style={{ marginBottom: 6 }}>
               {openMaterial.name}
             </div>
-            <div style={{ fontSize: 13, color: 'var(--ink-2)', marginBottom: 18 }}>
+            <div style={{ fontSize: 'var(--text-small)', color: 'var(--ink-2)', marginBottom: 18 }}>
               {t(openMaterial.type.toLowerCase())} · {bytesToLabel(openMaterial.fileSize) || '—'}
             </div>
             {openMaterial.downloadUrl ? (
@@ -218,7 +171,7 @@ export function Materials() {
                   padding: '14px',
                   borderRadius: 999,
                   fontSize: 14,
-                  fontWeight: 600,
+                  fontWeight: 700,
                   textDecoration: 'none',
                 }}
               >
@@ -228,7 +181,7 @@ export function Materials() {
                 {t('open_link')}
               </a>
             ) : (
-              <div style={{ fontSize: 13, color: 'var(--ink-2)', textAlign: 'center', padding: 20 }}>
+              <div style={{ fontSize: 'var(--text-small)', color: 'var(--ink-2)', textAlign: 'center', padding: 20 }}>
                 {t('preview_soon')}
               </div>
             )}

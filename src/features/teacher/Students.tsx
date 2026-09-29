@@ -26,21 +26,12 @@ export function TeacherStudents() {
   return (
     <div>
       <div style={{ padding: '8px 16px 14px' }}>
-        <div
-          style={{
-            fontSize: 11,
-            color: 'var(--ink-3)',
-            letterSpacing: '0.12em',
-            textTransform: 'uppercase',
-            fontWeight: 600,
-            marginBottom: 6,
-          }}
-        >
+        <div className="eyebrow" style={{ marginBottom: 6 }}>
           {t('students')}
         </div>
         <div
           className="font-headline"
-          style={{ fontSize: 34, lineHeight: 1.05, letterSpacing: '-0.02em' }}
+          style={{ fontSize: 'var(--text-page-title)', lineHeight: 1.05 }}
         >
           {students.length === 1
             ? t('students_count_singular')
@@ -84,7 +75,7 @@ export function TeacherStudents() {
       {filtered.length === 0 ? (
         <div style={{ padding: '40px 30px', textAlign: 'center' }}>
           <div style={{ fontSize: 36, marginBottom: 10 }}>◌</div>
-          <div className="font-headline" style={{ fontSize: 20, color: 'var(--ink-2)' }}>
+          <div className="section-title" style={{ color: 'var(--ink-2)' }}>
             {t('no_students_found')}
           </div>
         </div>
@@ -113,10 +104,10 @@ export function TeacherStudents() {
               >
                 <Avatar hue={hueFor(s.id)} initials={initialsOf(s)} size={40} />
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize: 14, fontWeight: 600 }}>
+                  <div style={{ fontSize: 14, fontWeight: 700 }}>
                     {s.firstName} {s.lastName}
                   </div>
-                  <div style={{ fontSize: 12, color: 'var(--ink-2)' }}>
+                  <div style={{ fontSize: 'var(--text-caption)', color: 'var(--ink-2)' }}>
                     {s.level ?? t('role_student')}
                   </div>
                 </div>

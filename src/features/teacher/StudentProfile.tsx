@@ -72,7 +72,7 @@ export function StudentProfile() {
             arrow_back
           </span>
         </button>
-        <div className="font-headline" style={{ fontSize: 22, color: 'var(--ink-2)' }}>
+        <div className="section-title" style={{ color: 'var(--ink-2)' }}>
           {t('student_not_found')}
         </div>
       </div>
@@ -106,10 +106,10 @@ export function StudentProfile() {
         <div style={{ display: 'inline-flex' }}>
           <Avatar hue={hueFor(student.id)} initials={initialsOf(student)} size={88} />
         </div>
-        <div className="font-headline" style={{ fontSize: 28, marginTop: 12, letterSpacing: '-0.02em' }}>
+        <div className="font-headline" style={{ fontSize: 'var(--text-page-title)', marginTop: 12 }}>
           {studentName}
         </div>
-        <div style={{ fontSize: 13, color: 'var(--ink-2)', marginTop: 2 }}>
+        <div style={{ fontSize: 'var(--text-small)', color: 'var(--ink-2)', marginTop: 2 }}>
           {student.level ?? t('role_student')} · {t('joined', { date: joinedDate })}
         </div>
       </div>
@@ -123,7 +123,7 @@ export function StudentProfile() {
         }}
       >
         <Card padded={false} style={{ padding: 14, textAlign: 'center' }}>
-          <div style={{ fontSize: 22, fontWeight: 600, letterSpacing: '-0.02em' }}>
+          <div style={{ fontSize: 22, fontWeight: 700, letterSpacing: '-0.02em' }}>
             {allLessonsForStudent}
           </div>
           <div
@@ -138,7 +138,7 @@ export function StudentProfile() {
           </div>
         </Card>
         <Card padded={false} style={{ padding: 14, textAlign: 'center' }}>
-          <div style={{ fontSize: 22, fontWeight: 600, letterSpacing: '-0.02em' }}>
+          <div style={{ fontSize: 22, fontWeight: 700, letterSpacing: '-0.02em' }}>
             {student.level ?? '—'}
           </div>
           <div
@@ -153,7 +153,7 @@ export function StudentProfile() {
           </div>
         </Card>
         <Card padded={false} style={{ padding: 14, textAlign: 'center' }}>
-          <div style={{ fontSize: 22, fontWeight: 600, letterSpacing: '-0.02em' }}>
+          <div style={{ fontSize: 22, fontWeight: 700, letterSpacing: '-0.02em' }}>
             {student.locale.toUpperCase()}
           </div>
           <div
@@ -192,16 +192,7 @@ export function StudentProfile() {
 
       <div style={{ padding: '0 16px 18px' }}>
         <Card>
-          <div
-            style={{
-              fontSize: 11,
-              color: 'var(--ink-3)',
-              textTransform: 'uppercase',
-              letterSpacing: '0.08em',
-              fontWeight: 600,
-              marginBottom: 8,
-            }}
-          >
+          <div className="eyebrow" style={{ marginBottom: 8 }}>
             {t('native_language_label')}
           </div>
           <div style={{ display: 'flex', gap: 6 }}>
@@ -215,18 +206,9 @@ export function StudentProfile() {
                     id && updateNativeLanguage.mutate({ studentId: id, nativeLanguage: opt.key })
                   }
                   disabled={updateNativeLanguage.isPending}
-                  className="tap"
-                  style={{
-                    flex: 1,
-                    padding: '8px 10px',
-                    borderRadius: 999,
-                    fontSize: 13,
-                    fontWeight: 600,
-                    cursor: 'pointer',
-                    border: '1px solid var(--hair)',
-                    background: active ? 'var(--ink)' : 'transparent',
-                    color: active ? 'var(--bg)' : 'var(--ink)',
-                  }}
+                  aria-pressed={active}
+                  className={`chip${active ? ' on' : ''}`}
+                  style={{ flex: 1, justifyContent: 'center' }}
                 >
                   {t(opt.labelKey)}
                 </button>
@@ -239,7 +221,7 @@ export function StudentProfile() {
       <Section eyebrow={t('upcoming_eyebrow')} title={t('next_lessons')}>
         {studentLessons.length === 0 ? (
           <Card style={{ textAlign: 'center', padding: '20px' }}>
-            <div style={{ fontSize: 13, color: 'var(--ink-2)' }}>{t('no_upcoming')}</div>
+            <div style={{ fontSize: 'var(--text-small)', color: 'var(--ink-2)' }}>{t('no_upcoming')}</div>
           </Card>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -254,7 +236,7 @@ export function StudentProfile() {
                       width: 48,
                     }}
                   >
-                    <div className="mono" style={{ fontSize: 16, fontWeight: 600 }}>
+                    <div className="mono" style={{ fontSize: 16, fontWeight: 700 }}>
                       {lessonTime(l.scheduledAt)}
                     </div>
                     <div
@@ -269,8 +251,8 @@ export function StudentProfile() {
                     </div>
                   </div>
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: 14, fontWeight: 600 }}>{l.topic}</div>
-                    <div style={{ fontSize: 12, color: 'var(--ink-2)' }}>
+                    <div style={{ fontSize: 14, fontWeight: 700 }}>{l.topic}</div>
+                    <div style={{ fontSize: 'var(--text-caption)', color: 'var(--ink-2)' }}>
                       {l.durationMinutes}m · {l.level ?? '—'}
                     </div>
                   </div>
@@ -284,7 +266,7 @@ export function StudentProfile() {
       <Section eyebrow={t('student_goals')}>
         {activeGoals.length === 0 ? (
           <Card style={{ textAlign: 'center', padding: '16px' }}>
-            <div style={{ fontSize: 13, color: 'var(--ink-2)' }}>{t('no_goals_yet')}</div>
+            <div style={{ fontSize: 'var(--text-small)', color: 'var(--ink-2)' }}>{t('no_goals_yet')}</div>
           </Card>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -298,15 +280,15 @@ export function StudentProfile() {
                     tone={(['leaf', 'grape', 'sunny', 'sky', 'coral'] as const)[i % 5]}
                   />
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: 14, fontWeight: 600 }}>{g.description}</div>
-                    <div style={{ fontSize: 12, color: 'var(--ink-2)' }}>
+                    <div style={{ fontSize: 14, fontWeight: 700 }}>{g.description}</div>
+                    <div style={{ fontSize: 'var(--text-caption)', color: 'var(--ink-2)' }}>
                       {g.setBy === 'TEACHER' ? t('set_by_teacher') : t('set_by_you')}
                       {g.targetDate ? ` · ${formatShortDate(g.targetDate)}` : ''}
                     </div>
                   </div>
                   <div
                     className="mono"
-                    style={{ fontSize: 13, color: 'var(--ink-3)', fontWeight: 600 }}
+                    style={{ fontSize: 13, color: 'var(--ink-3)', fontWeight: 700 }}
                   >
                     {g.progress}%
                   </div>
@@ -320,7 +302,7 @@ export function StudentProfile() {
       <Section eyebrow={t('student_homework')}>
         {homework.length === 0 ? (
           <Card style={{ textAlign: 'center', padding: '16px' }}>
-            <div style={{ fontSize: 13, color: 'var(--ink-2)' }}>{t('no_homework_yet')}</div>
+            <div style={{ fontSize: 'var(--text-small)', color: 'var(--ink-2)' }}>{t('no_homework_yet')}</div>
           </Card>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -340,7 +322,7 @@ export function StudentProfile() {
                       <div
                         style={{
                           fontSize: 14,
-                          fontWeight: 600,
+                          fontWeight: 700,
                           marginBottom: 2,
                           overflow: 'hidden',
                           textOverflow: 'ellipsis',
@@ -349,7 +331,7 @@ export function StudentProfile() {
                       >
                         {h.title}
                       </div>
-                      <div style={{ fontSize: 12, color: 'var(--ink-2)' }}>
+                      <div style={{ fontSize: 'var(--text-caption)', color: 'var(--ink-2)' }}>
                         {t('units_answered', { done: h.answeredUnits, total: h.totalUnits })}
                         {h.dueDate ? ` · ${formatShortDate(h.dueDate)}` : ''}
                       </div>

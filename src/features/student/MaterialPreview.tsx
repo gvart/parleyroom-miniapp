@@ -79,10 +79,10 @@ export function MaterialPreview({ material, onClose }: Props) {
   return (
     <div style={{ padding: '0 22px', display: 'flex', flexDirection: 'column', gap: 14 }}>
       <div>
-        <div className="font-headline" style={{ fontSize: 26, letterSpacing: '-0.01em' }}>
+        <div className="section-title">
           {material.name}
         </div>
-        <div style={{ fontSize: 13, color: 'var(--ink-2)', marginTop: 4 }}>
+        <div style={{ fontSize: 'var(--text-small)', color: 'var(--ink-2)', marginTop: 4 }}>
           {t(material.type.toLowerCase())}
           {material.fileSize ? ` · ${bytesToLabel(material.fileSize)}` : ''}
           {material.level ? ` · ${material.level}` : ''}
@@ -111,7 +111,7 @@ export function MaterialPreview({ material, onClose }: Props) {
       )}
 
       {!isLink && loading && (
-        <div style={{ fontSize: 13, color: 'var(--ink-2)', textAlign: 'center', padding: 20 }}>
+        <div style={{ fontSize: 'var(--text-small)', color: 'var(--ink-2)', textAlign: 'center', padding: 20 }}>
           {t('preview_loading')}
         </div>
       )}

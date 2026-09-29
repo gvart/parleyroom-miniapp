@@ -83,7 +83,7 @@ export function LessonRow({ lesson, onOpen }: LessonRowProps) {
           >
             {lesson.topic || lesson.title}
           </div>
-          <div style={{ fontSize: 'var(--text-small)', fontWeight: 600, color: 'var(--ink-2)' }}>
+          <div style={{ fontSize: 'var(--text-small)', fontWeight: 700, color: 'var(--ink-2)' }}>
             {club
               ? `${participants}${capacity ? `/${capacity}` : ''} · ${lesson.level ?? '—'} · ${lesson.durationMinutes}m`
               : `${teacherInitial ?? t('role_teacher')} · ${lesson.level ?? '—'} · ${lesson.durationMinutes}m`}

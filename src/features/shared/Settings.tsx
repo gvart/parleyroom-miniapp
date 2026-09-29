@@ -55,7 +55,7 @@ export function Settings() {
             <div style={{ fontSize: 'var(--text-card-title)', fontWeight: 800 }}>
               {user.firstName} {user.lastName}
             </div>
-            <div style={{ fontSize: 'var(--text-small)', fontWeight: 600, color: 'var(--ink-2)' }}>{subtitle}</div>
+            <div style={{ fontSize: 'var(--text-small)', fontWeight: 700, color: 'var(--ink-2)' }}>{subtitle}</div>
           </div>
           <span className="ms" style={{ fontSize: 22, color: 'var(--ink-3)' }}>
             chevron_right
