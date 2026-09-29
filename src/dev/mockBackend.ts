@@ -18,6 +18,25 @@ function todayISO(): string {
 const TEACHER_MOCK = { id: 'u-mock', firstName: 'Helena', lastName: 'König' }
 const TEACHER_REAL = { id: 't1', firstName: 'Helena', lastName: 'König' }
 
+// Mutable so PUT /students/{id}/native-language can update it in place.
+const sampleStudentsList = [
+  { id: 's1', firstName: 'Lina', lastName: 'Weber', initials: 'LW', level: 'B1' },
+  { id: 's2', firstName: 'Mateo', lastName: 'Alves', initials: 'MA', level: 'A2' },
+  { id: 's3', firstName: 'Priya', lastName: 'Shah', initials: 'PS', level: 'B2' },
+  { id: 's4', firstName: 'Yuki', lastName: 'Tanaka', initials: 'YT', level: 'A1' },
+  { id: 's5', firstName: 'Noa', lastName: 'Ben-Ami', initials: 'NB', level: 'C1' },
+  { id: 's6', firstName: 'Sören', lastName: 'Krüger', initials: 'SK', level: 'B1' },
+].map((s) => ({
+  ...s,
+  email: `${s.firstName.toLowerCase()}@example.com`,
+  role: 'STUDENT',
+  status: 'ACTIVE',
+  locale: 'ru',
+  nativeLanguage: 'ru' as string,
+  localeConfirmedAt: '2026-02-01T00:00:00Z' as string | null,
+  createdAt: '2026-02-01T00:00:00Z',
+}))
+
 function lessonsBody(role: MockUser['role']) {
   const today = todayISO()
   if (role === 'TEACHER') {
@@ -496,7 +515,12 @@ export function installMockBackend(): void {
     initials: role === 'TEACHER' ? 'HK' : 'LW',
     role,
     status: 'ACTIVE',
-    locale: 'en',
+    locale: 'ru',
+    // Student mock starts unconfirmed so the first-run language picker can be
+    // exercised on a fresh `?mock=1` load; the teacher mock is pre-confirmed
+    // so teacher screens aren't blocked by it.
+    nativeLanguage: role === 'STUDENT' ? 'ru' : null,
+    localeConfirmedAt: role === 'STUDENT' ? null : '2026-01-01T00:00:00Z',
     level: role === 'TEACHER' ? null : 'B1',
     avatarUrl: null,
     telegramId: 42,
@@ -562,9 +586,22 @@ export function installMockBackend(): void {
     if (url.endsWith('/api/v1/users/me')) {
       if (method === 'PATCH') {
         const patch = init?.body ? (JSON.parse(init.body as string) as Record<string, unknown>) : {}
-        Object.assign(me, patch)
+        const { confirmLocale, ...rest } = patch
+        Object.assign(me, rest)
+        if (confirmLocale) {
+          ;(me as { localeConfirmedAt?: string | null }).localeConfirmedAt = new Date().toISOString()
+        }
       }
       return json(me)
+    }
+    const nativeLanguageMatch = url.match(/\/api\/v1\/students\/([^/]+)\/native-language$/)
+    if (nativeLanguageMatch && method === 'PUT') {
+      const body = init?.body
+        ? (JSON.parse(init.body as string) as { nativeLanguage?: string })
+        : {}
+      const student = sampleStudentsList.find((s) => s.id === nativeLanguageMatch[1])
+      if (student) student.nativeLanguage = body.nativeLanguage ?? 'ru'
+      return json({ nativeLanguage: body.nativeLanguage ?? 'ru' })
     }
     const videoTokenMatch = url.match(/\/api\/v1\/lessons\/([^/]+)\/video-token$/)
     if (videoTokenMatch && method === 'POST') {
@@ -672,24 +709,12 @@ export function installMockBackend(): void {
         role: 'TEACHER',
         status: 'ACTIVE',
         locale: 'de',
+        nativeLanguage: null,
+        localeConfirmedAt: '2026-01-01T00:00:00Z',
         level: null,
         createdAt: '2026-01-01T00:00:00Z',
       }
-      const sampleStudents = [
-        { id: 's1', firstName: 'Lina', lastName: 'Weber', initials: 'LW', level: 'B1' },
-        { id: 's2', firstName: 'Mateo', lastName: 'Alves', initials: 'MA', level: 'A2' },
-        { id: 's3', firstName: 'Priya', lastName: 'Shah', initials: 'PS', level: 'B2' },
-        { id: 's4', firstName: 'Yuki', lastName: 'Tanaka', initials: 'YT', level: 'A1' },
-        { id: 's5', firstName: 'Noa', lastName: 'Ben-Ami', initials: 'NB', level: 'C1' },
-        { id: 's6', firstName: 'Sören', lastName: 'Krüger', initials: 'SK', level: 'B1' },
-      ].map((s) => ({
-        ...s,
-        email: `${s.firstName.toLowerCase()}@example.com`,
-        role: 'STUDENT',
-        status: 'ACTIVE',
-        locale: 'en',
-        createdAt: '2026-02-01T00:00:00Z',
-      }))
+      const sampleStudents = sampleStudentsList
       return json({
         users: [teacher, ...sampleStudents],
         total: 1 + sampleStudents.length,

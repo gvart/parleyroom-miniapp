@@ -7,7 +7,8 @@ import {
   useCancelLesson,
   useJoinLesson,
 } from '@/hooks/useLessonActions'
-import { isClub, lessonDate, lessonTime } from '@/lib/lesson'
+import { isClub, lessonTime } from '@/lib/lesson'
+import { formatShortDate } from '@/lib/intl'
 import type { Lesson } from '@/api/types'
 import { RescheduleSheet } from './RescheduleSheet'
 
@@ -79,7 +80,7 @@ export function LessonActionsSheet({ open, lesson, onClose }: Props) {
             {lesson.topic}
           </div>
           <div style={{ fontSize: 13, color: 'var(--ink-2)', marginBottom: 18 }}>
-            {lessonDate(lesson.scheduledAt)} · {lessonTime(lesson.scheduledAt)} · {lesson.durationMinutes}m
+            {formatShortDate(lesson.scheduledAt)} · {lessonTime(lesson.scheduledAt)} · {lesson.durationMinutes}m
             {club && capacity
               ? ` · ${lesson.students.length}/${capacity}`
               : ''}

@@ -18,6 +18,7 @@ import type {
   MaterialPage,
   MaterialSkill,
   MaterialType,
+  NativeLanguage,
   NotificationPage,
   StartLessonResponse,
   TelegramLink,
@@ -32,6 +33,10 @@ export interface UpdateProfileRequest {
   firstName?: string | null
   lastName?: string | null
   locale?: string | null
+  /** Students only; a teacher sending this is rejected by the backend. */
+  nativeLanguage?: NativeLanguage | null
+  /** Set together with `locale` to dismiss the first-run language picker. */
+  confirmLocale?: true
   level?: Level | null
 }
 
@@ -310,6 +315,13 @@ export const api = {
       method: 'POST',
       auth: false,
       body: { token, newPassword },
+    }),
+
+  /** Teacher-only; mirrors PUT /level. */
+  updateStudentNativeLanguage: (studentId: string, nativeLanguage: NativeLanguage) =>
+    apiFetch<unknown>(`/api/v1/students/${studentId}/native-language`, {
+      method: 'PUT',
+      body: { nativeLanguage },
     }),
 
   uploadAvatar: (file: File) => {

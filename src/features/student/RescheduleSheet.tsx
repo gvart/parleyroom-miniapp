@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { Banner, Button, Sheet, TextArea, TextField } from '@/ui'
 import { useRequestReschedule } from '@/hooks/useLessonActions'
 import { lessonDate, lessonTime } from '@/lib/lesson'
+import { formatShortDate } from '@/lib/intl'
 import type { Lesson } from '@/api/types'
 
 interface Props {
@@ -92,7 +93,7 @@ export function RescheduleSheet({ open, lesson, onClose, onDone }: Props) {
             {t('reschedule_title')}
           </div>
           <div style={{ fontSize: 13, color: 'var(--ink-2)', marginBottom: 18 }}>
-            {lesson.topic} · {lessonDate(lesson.scheduledAt)} · {lessonTime(lesson.scheduledAt)}
+            {lesson.topic} · {formatShortDate(lesson.scheduledAt)} · {lessonTime(lesson.scheduledAt)}
           </div>
 
           <div style={{ display: 'flex', gap: 10, marginBottom: 14 }}>

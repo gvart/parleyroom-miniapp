@@ -1,9 +1,10 @@
+import { useTranslation } from 'react-i18next'
 import { useLocation, useNavigate } from 'react-router-dom'
 
 export interface TabDef {
   key: string
   path: string
-  label: string
+  labelKey: string
   icon: string
 }
 
@@ -12,9 +13,12 @@ interface TabBarProps {
 }
 
 export function TabBar({ tabs }: TabBarProps) {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const { pathname } = useLocation()
-  const activeKey = tabs.find((t) => pathname === t.path || pathname.startsWith(`${t.path}/`))?.key
+  const activeKey = tabs.find(
+    (tab) => pathname === tab.path || pathname.startsWith(`${tab.path}/`),
+  )?.key
 
   return (
     <div
@@ -39,13 +43,13 @@ export function TabBar({ tabs }: TabBarProps) {
         margin: '0 auto',
       }}
     >
-      {tabs.map((t) => {
-        const active = t.key === activeKey
+      {tabs.map((tab) => {
+        const active = tab.key === activeKey
         return (
           <button
             type="button"
-            key={t.key}
-            onClick={() => navigate(t.path)}
+            key={tab.key}
+            onClick={() => navigate(tab.path)}
             className="tap"
             style={{
               flex: 1,
@@ -66,9 +70,9 @@ export function TabBar({ tabs }: TabBarProps) {
             }}
           >
             <span className={`ms ${active ? 'fill' : ''}`} style={{ fontSize: 22 }}>
-              {t.icon}
+              {tab.icon}
             </span>
-            {t.label}
+            {t(tab.labelKey)}
           </button>
         )
       })}

@@ -115,10 +115,10 @@ export function Notifications() {
                         color: 'var(--ink)',
                       }}
                     >
-                      {notificationText(n)}
+                      {notificationText(n, t)}
                     </div>
                     <div style={{ fontSize: 11, color: 'var(--ink-3)' }}>
-                      {relativeTime(n.createdAt)}
+                      {relativeTime(n.createdAt, t)}
                     </div>
                   </div>
                   {unread && (

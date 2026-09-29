@@ -1,27 +1,26 @@
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/auth/AuthGate'
-import { useUpdateProfile } from '@/hooks/useUpdateProfile'
 import { Card } from '@/ui'
-import type { SupportedLocale } from '@/i18n'
+import { useUpdateProfile } from '@/hooks/useUpdateProfile'
+import type { NativeLanguage } from '@/api/types'
 
-const LANGS: Array<{ code: SupportedLocale; labelKey: string }> = [
+const LANGS: Array<{ code: NativeLanguage; labelKey: string }> = [
   { code: 'ru', labelKey: 'russian' },
-  { code: 'de', labelKey: 'german' },
+  { code: 'uk', labelKey: 'ukrainian' },
   { code: 'en', labelKey: 'english' },
 ]
 
-export function InterfaceLanguage() {
+export function TranslationLanguage() {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const { user, refreshUser } = useAuth()
   const updateProfile = useUpdateProfile()
-  const current = user.locale
+  const current = user.nativeLanguage ?? 'ru'
 
-  async function pick(code: SupportedLocale) {
+  async function pick(code: NativeLanguage) {
     if (code === current) return
-    // i18n follows `user.locale` (synced in RoleRouter) once the profile refetches.
-    await updateProfile.mutateAsync({ locale: code })
+    await updateProfile.mutateAsync({ nativeLanguage: code })
     await refreshUser()
   }
 
@@ -51,12 +50,12 @@ export function InterfaceLanguage() {
           </span>
         </button>
         <div className="serif" style={{ fontSize: 22, letterSpacing: '-0.01em' }}>
-          {t('interface_language_title')}
+          {t('translation_language_title')}
         </div>
       </div>
 
       <div style={{ padding: '0 20px 18px' }}>
-        <div style={{ fontSize: 13, color: 'var(--ink-2)' }}>{t('interface_language_sub')}</div>
+        <div style={{ fontSize: 13, color: 'var(--ink-2)' }}>{t('translation_language_sub')}</div>
       </div>
 
       <div style={{ padding: '0 20px' }}>
@@ -86,10 +85,7 @@ export function InterfaceLanguage() {
               >
                 <div style={{ flex: 1, fontSize: 14, fontWeight: 600 }}>{t(l.labelKey)}</div>
                 {selected && (
-                  <span
-                    className="ms fill"
-                    style={{ fontSize: 22, color: 'var(--accent)' }}
-                  >
+                  <span className="ms fill" style={{ fontSize: 22, color: 'var(--accent)' }}>
                     check_circle
                   </span>
                 )}

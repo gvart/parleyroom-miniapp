@@ -290,7 +290,7 @@ export function TeacherHome() {
                   {s.firstName} {s.lastName}
                 </div>
                 <div style={{ fontSize: 11, color: 'var(--ink-3)' }}>
-                  {s.level ?? 'student'}
+                  {s.level ?? t('role_student')}
                 </div>
               </Card>
             ))}

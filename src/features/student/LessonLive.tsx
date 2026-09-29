@@ -19,27 +19,18 @@ function fmtElapsed(seconds: number): string {
   return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`
 }
 
-function statusMessage(status: LiveKitStatus): string | null {
-  switch (status) {
-    case 'fetching-token':
-      return 'Connecting…'
-    case 'connecting':
-      return 'Joining room…'
-    case 'connected':
-      return null
-    case 'lesson-not-started':
-      return 'Lesson hasn’t been started yet. Waiting for your teacher to start it.'
-    case 'permission-denied':
-      return 'Camera or microphone access blocked. Update your browser permissions.'
-    case 'unavailable':
-      return 'Live video unavailable in preview mode. Open from a real lesson to connect.'
-    case 'error':
-      return 'Could not connect to the lesson room.'
-    case 'disconnected':
-      return 'Call ended.'
-    default:
-      return null
-  }
+const STATUS_MESSAGE_KEY: Partial<Record<LiveKitStatus, string>> = {
+  'fetching-token': 'live_status_fetching_token',
+  connecting: 'live_status_connecting',
+  'lesson-not-started': 'live_status_lesson_not_started',
+  'permission-denied': 'live_status_permission_denied',
+  unavailable: 'live_status_unavailable',
+  error: 'live_status_error',
+  disconnected: 'live_status_disconnected',
+}
+
+function statusMessageKey(status: LiveKitStatus): string | null {
+  return STATUS_MESSAGE_KEY[status] ?? null
 }
 
 export function LessonLive() {
@@ -85,7 +76,8 @@ export function LessonLive() {
     ? `${teacher.firstName[0] ?? ''}${teacher.lastName[0] ?? ''}`.toUpperCase()
     : ''
   const userInitials = `${user.firstName[0] ?? ''}${user.lastName[0] ?? ''}`.toUpperCase()
-  const banner = statusMessage(live.status)
+  const statusKey = statusMessageKey(live.status)
+  const banner = statusKey ? t(statusKey) : null
   const showLivePill = LIVE_STATUSES.includes(live.status)
 
   // Server-initiated end (teacher completed the lesson / room deleted) — the
@@ -223,7 +215,7 @@ export function LessonLive() {
               }}
             >
               <span className="live-dot" />
-              {live.status === 'connected' ? `Live · ${fmtElapsed(elapsed)}` : 'Live'}
+              {live.status === 'connected' ? t('live_elapsed', { time: fmtElapsed(elapsed) }) : t('live')}
             </Pill>
           ) : (
             <div />
