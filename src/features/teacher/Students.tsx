@@ -117,7 +117,7 @@ export function TeacherStudents() {
                     {s.firstName} {s.lastName}
                   </div>
                   <div style={{ fontSize: 12, color: 'var(--ink-2)' }}>
-                    {s.level ?? 'student'}
+                    {s.level ?? t('role_student')}
                   </div>
                 </div>
                 <span className="ms" style={{ fontSize: 20, color: 'var(--ink-3)' }}>

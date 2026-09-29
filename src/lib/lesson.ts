@@ -29,8 +29,9 @@ export function isClub(lesson: Lesson): boolean {
   return lesson.type !== 'ONE_ON_ONE'
 }
 
-export function clubLabel(lesson: Lesson): string | null {
-  if (lesson.type === 'SPEAKING_CLUB') return 'Speaking Club'
-  if (lesson.type === 'READING_CLUB') return 'Reading Club'
+/** Translation key for a club lesson's type label, or null for 1:1 lessons. */
+export function clubLabelKey(lesson: Lesson): string | null {
+  if (lesson.type === 'SPEAKING_CLUB') return 'type_speaking_club'
+  if (lesson.type === 'READING_CLUB') return 'type_reading_club'
   return null
 }

@@ -6,11 +6,26 @@ import { useUsers } from '@/hooks/useCreateLesson'
 import { useLessons } from '@/hooks/useLessons'
 import { useHomework } from '@/hooks/useHomework'
 import { useGoals } from '@/hooks/useGoals'
+import { useUpdateStudentNativeLanguage } from '@/hooks/useUpdateStudentNativeLanguage'
 import { hueFor, initialsOf } from './avatarHue'
 import { lessonTime, todayISO } from '@/lib/lesson'
+import { formatMonthYearFromIso, formatShortDate } from '@/lib/intl'
 import { AssignHomeworkSheet } from './AssignHomeworkSheet'
 import { AssignGoalSheet } from './AssignGoalSheet'
-import type { Lesson } from '@/api/types'
+import type { Lesson, NativeLanguage } from '@/api/types'
+
+const NATIVE_LANGUAGES: Array<{ key: NativeLanguage; labelKey: string }> = [
+  { key: 'ru', labelKey: 'russian' },
+  { key: 'uk', labelKey: 'ukrainian' },
+  { key: 'en', labelKey: 'english' },
+]
+
+const HOMEWORK_STATUS_KEY: Record<string, string> = {
+  OPEN: 'status_open',
+  SUBMITTED: 'submitted',
+  REVIEWED: 'reviewed',
+  DONE: 'done',
+}
 
 export function StudentProfile() {
   const { t } = useTranslation()
@@ -20,6 +35,7 @@ export function StudentProfile() {
   const lessonsQuery = useLessons()
   const homeworkQuery = useHomework(id ? { studentId: id } : {})
   const goalsQuery = useGoals(id ? { studentId: id } : {})
+  const updateNativeLanguage = useUpdateStudentNativeLanguage()
   const [assignHwOpen, setAssignHwOpen] = useState(false)
   const [assignGoalOpen, setAssignGoalOpen] = useState(false)
 
@@ -74,10 +90,7 @@ export function StudentProfile() {
     )
   }
 
-  const joinedDate = new Date(student.createdAt).toLocaleDateString(undefined, {
-    month: 'short',
-    year: 'numeric',
-  })
+  const joinedDate = formatMonthYearFromIso(student.createdAt)
 
   const studentName = `${student.firstName} ${student.lastName}`.trim()
   const homework = homeworkQuery.data?.homework ?? []
@@ -120,7 +133,7 @@ export function StudentProfile() {
           {studentName}
         </div>
         <div style={{ fontSize: 13, color: 'var(--ink-2)', marginTop: 2 }}>
-          {student.level ?? 'student'} · {t('joined', { date: joinedDate })}
+          {student.level ?? t('role_student')} · {t('joined', { date: joinedDate })}
         </div>
       </div>
 
@@ -200,6 +213,52 @@ export function StudentProfile() {
         </Button>
       </div>
 
+      <div style={{ padding: '0 20px 18px' }}>
+        <Card>
+          <div
+            style={{
+              fontSize: 11,
+              color: 'var(--ink-3)',
+              textTransform: 'uppercase',
+              letterSpacing: '0.08em',
+              fontWeight: 600,
+              marginBottom: 8,
+            }}
+          >
+            {t('native_language_label')}
+          </div>
+          <div style={{ display: 'flex', gap: 6 }}>
+            {NATIVE_LANGUAGES.map((opt) => {
+              const active = (student.nativeLanguage ?? 'ru') === opt.key
+              return (
+                <button
+                  type="button"
+                  key={opt.key}
+                  onClick={() =>
+                    id && updateNativeLanguage.mutate({ studentId: id, nativeLanguage: opt.key })
+                  }
+                  disabled={updateNativeLanguage.isPending}
+                  className="tap"
+                  style={{
+                    flex: 1,
+                    padding: '8px 10px',
+                    borderRadius: 999,
+                    fontSize: 13,
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                    border: '1px solid var(--hair)',
+                    background: active ? 'var(--ink)' : 'transparent',
+                    color: active ? 'var(--bg)' : 'var(--ink)',
+                  }}
+                >
+                  {t(opt.labelKey)}
+                </button>
+              )
+            })}
+          </div>
+        </Card>
+      </div>
+
       <Section eyebrow={t('upcoming_eyebrow')} title={t('next_lessons')}>
         {studentLessons.length === 0 ? (
           <Card style={{ textAlign: 'center', padding: '20px' }}>
@@ -229,7 +288,7 @@ export function StudentProfile() {
                         letterSpacing: '0.06em',
                       }}
                     >
-                      {l.scheduledAt.slice(5, 10)}
+                      {formatShortDate(l.scheduledAt)}
                     </div>
                   </div>
                   <div style={{ flex: 1, minWidth: 0 }}>
@@ -265,7 +324,7 @@ export function StudentProfile() {
                     <div style={{ fontSize: 14, fontWeight: 600 }}>{g.description}</div>
                     <div style={{ fontSize: 12, color: 'var(--ink-2)' }}>
                       {g.setBy === 'TEACHER' ? t('set_by_teacher') : t('set_by_you')}
-                      {g.targetDate ? ` · ${g.targetDate.slice(0, 10)}` : ''}
+                      {g.targetDate ? ` · ${formatShortDate(g.targetDate)}` : ''}
                     </div>
                   </div>
                   <div
@@ -315,10 +374,10 @@ export function StudentProfile() {
                       </div>
                       <div style={{ fontSize: 12, color: 'var(--ink-2)' }}>
                         {t('units_answered', { done: h.answeredUnits, total: h.totalUnits })}
-                        {h.dueDate ? ` · ${h.dueDate.slice(0, 10)}` : ''}
+                        {h.dueDate ? ` · ${formatShortDate(h.dueDate)}` : ''}
                       </div>
                     </div>
-                    <Pill tone={tone}>{h.status.toLowerCase()}</Pill>
+                    <Pill tone={tone}>{t(HOMEWORK_STATUS_KEY[h.status] ?? 'status_open')}</Pill>
                   </div>
                 </Card>
               )

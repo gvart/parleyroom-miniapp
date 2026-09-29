@@ -95,9 +95,9 @@ export function Homework() {
             gap: 8,
           }}
         >
-          <StatChip icon="pending_actions" value={groups.open.length} label="open" hue={25} />
-          <StatChip icon="rate_review" value={groups.review.length} label="reviewed" hue={210} />
-          <StatChip icon="task_alt" value={groups.done.length} label="done" hue={172} />
+          <StatChip icon="pending_actions" value={groups.open.length} label={t('tab_open')} hue={25} />
+          <StatChip icon="rate_review" value={groups.review.length} label={t('tab_reviewed')} hue={210} />
+          <StatChip icon="task_alt" value={groups.done.length} label={t('tab_done')} hue={172} />
         </div>
       )}
 
@@ -405,7 +405,7 @@ function HomeworkSubmitSheet({ task, onClose }: SheetProps) {
                     marginBottom: 18,
                   }}
                 >
-                  {wordCount} / 200 words
+                  {t('words_count', { count: wordCount })}
                 </div>
               </>
             ) : (
@@ -427,7 +427,7 @@ function HomeworkSubmitSheet({ task, onClose }: SheetProps) {
                   fontSize: 13,
                 }}
               >
-                {submitError instanceof Error ? submitError.message : 'Submit failed'}
+                {submitError instanceof Error ? submitError.message : t('submit_failed')}
               </div>
             )}
 

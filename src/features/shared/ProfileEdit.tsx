@@ -30,14 +30,14 @@ export function ProfileEdit() {
     if (!file) return
     setAvatarError(null)
     if (file.size > 5 * 1024 * 1024) {
-      setAvatarError('Image must be 5 MB or smaller.')
+      setAvatarError(t('image_too_large'))
       return
     }
     try {
       await uploadAvatar.mutateAsync(file)
       await refreshUser()
     } catch (err) {
-      setAvatarError(err instanceof Error ? err.message : 'Upload failed')
+      setAvatarError(err instanceof Error ? err.message : t('upload_failed'))
     }
   }
 
@@ -47,7 +47,7 @@ export function ProfileEdit() {
       await deleteAvatar.mutateAsync()
       await refreshUser()
     } catch (err) {
-      setAvatarError(err instanceof Error ? err.message : 'Remove failed')
+      setAvatarError(err instanceof Error ? err.message : t('remove_failed'))
     }
   }
 
@@ -110,7 +110,7 @@ export function ProfileEdit() {
           <span className="ms" style={{ fontSize: 20 }}>arrow_back</span>
         </button>
         <div className="serif" style={{ fontSize: 22, letterSpacing: '-0.01em' }}>
-          Edit profile
+          {t('edit_profile')}
         </div>
       </div>
 
@@ -134,7 +134,7 @@ export function ProfileEdit() {
           onClick={() => fileInputRef.current?.click()}
           className="tap"
           disabled={uploadAvatar.isPending || deleteAvatar.isPending}
-          aria-label="Change photo"
+          aria-label={t('change_photo')}
           style={{
             position: 'relative',
             border: 0,
@@ -182,11 +182,11 @@ export function ProfileEdit() {
               textDecoration: 'underline',
             }}
           >
-            {deleteAvatar.isPending ? 'Removing…' : 'Remove photo'}
+            {deleteAvatar.isPending ? t('removing_ellipsis') : t('remove_photo')}
           </button>
         ) : (
           <div style={{ fontSize: 12, color: 'var(--ink-3)', marginTop: 10 }}>
-            Tap to add a photo
+            {t('tap_to_add_photo')}
           </div>
         )}
         {avatarError && (
@@ -208,7 +208,7 @@ export function ProfileEdit() {
       <form onSubmit={submit} style={{ padding: '0 20px' }}>
         <Card>
           <div style={{ marginBottom: 14 }}>
-            <div style={labelStyle}>First name</div>
+            <div style={labelStyle}>{t('first_name_label')}</div>
             <input
               value={firstName}
               onChange={(e) => setFirstName(e.target.value)}
@@ -216,7 +216,7 @@ export function ProfileEdit() {
             />
           </div>
           <div style={{ marginBottom: 14 }}>
-            <div style={labelStyle}>Last name</div>
+            <div style={labelStyle}>{t('last_name_label')}</div>
             <input
               value={lastName}
               onChange={(e) => setLastName(e.target.value)}
@@ -224,7 +224,7 @@ export function ProfileEdit() {
             />
           </div>
           <div style={{ marginBottom: 14 }}>
-            <div style={labelStyle}>Email</div>
+            <div style={labelStyle}>{t('email')}</div>
             <input value={user.email} readOnly style={{ ...inputStyle, opacity: 0.6 }} />
           </div>
           <div style={{ marginBottom: 4 }}>
@@ -267,7 +267,7 @@ export function ProfileEdit() {
           >
             {updateProfile.error instanceof Error
               ? updateProfile.error.message
-              : 'Save failed'}
+              : t('save_failed')}
           </div>
         )}
 
@@ -297,7 +297,7 @@ export function ProfileEdit() {
           <span className="ms fill" style={{ fontSize: 18 }}>
             {saved ? 'check' : 'save'}
           </span>
-          {saved ? 'Saved' : updateProfile.isPending ? 'Saving…' : 'Save changes'}
+          {saved ? t('saved') : updateProfile.isPending ? t('saving_ellipsis') : t('save_changes')}
         </button>
       </form>
     </div>

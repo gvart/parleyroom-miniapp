@@ -14,24 +14,31 @@ export function Settings() {
   const { user, signOut } = useAuth()
   const navigate = useNavigate()
 
+  const accountItems: SettingsItem[] = [
+    { icon: 'person', label: t('edit_profile'), to: '/settings/profile' },
+    { icon: 'language', label: t('interface_language_title'), to: '/settings/language' },
+  ]
+  if (user.role === 'STUDENT') {
+    accountItems.push({
+      icon: 'translate',
+      label: t('translation_language'),
+      to: '/settings/translation-language',
+    })
+  }
   const groups: Array<{ title: string; items: SettingsItem[] }> = [
+    { title: t('settings_group_account'), items: accountItems },
     {
-      title: 'Account',
-      items: [
-        { icon: 'person', label: 'Edit profile', to: '/settings/profile' },
-        { icon: 'language', label: 'Interface language', to: '/settings/language' },
-      ],
-    },
-    {
-      title: 'Privacy',
-      items: [
-        { icon: 'lock', label: 'Change password', to: '/settings/password' },
-      ],
+      title: t('settings_group_privacy'),
+      items: [{ icon: 'lock', label: t('change_password_title'), to: '/settings/password' }],
     },
   ]
 
   const subtitle =
-    user.role === 'TEACHER' ? 'Teacher' : user.level ? `Level ${user.level}` : 'Learning German'
+    user.role === 'TEACHER'
+      ? t('role_teacher')
+      : user.level
+        ? t('level_label_value', { level: user.level })
+        : t('learning_german')
 
   return (
     <div>

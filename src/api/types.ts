@@ -8,6 +8,8 @@ export interface AuthResponse {
 
 export type Level = 'A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2'
 
+export type NativeLanguage = 'ru' | 'uk' | 'en'
+
 export interface UserProfile {
   id: string
   email: string
@@ -17,6 +19,10 @@ export interface UserProfile {
   role: Role
   status: string
   locale: string
+  /** Students only; null for teachers/admins. */
+  nativeLanguage?: NativeLanguage | null
+  /** Null means the client should show the one-time language picker. */
+  localeConfirmedAt?: string | null
   level?: Level | null
   avatarUrl?: string | null
   telegramId?: number | null

@@ -60,7 +60,7 @@ export function Vocab() {
           className="serif"
           style={{ fontSize: 34, lineHeight: 1.05, letterSpacing: '-0.02em' }}
         >
-          Your glossary
+          {t('your_glossary')}
           <span style={{ color: 'var(--accent)' }}>.</span>
         </div>
       </div>

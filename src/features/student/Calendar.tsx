@@ -3,12 +3,12 @@ import { useTranslation } from 'react-i18next'
 import { Pill } from '@/ui'
 import { useLessons } from '@/hooks/useLessons'
 import { isClub, lessonDate, lessonTime, todayISO } from '@/lib/lesson'
+import { formatMonthYear, formatWeekdayShort } from '@/lib/intl'
 import { BookLessonSheet } from './BookLessonSheet'
 import { LessonActionsSheet } from './LessonActionsSheet'
 import type { Lesson } from '@/api/types'
 
 const HOURS = ['08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20']
-const DAY_LABELS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 
 interface DayCell {
   iso: string
@@ -34,23 +34,8 @@ function isoFromDate(d: Date): string {
   return `${y}-${m}-${day}`
 }
 
-const MONTH_NAMES = [
-  'January',
-  'February',
-  'March',
-  'April',
-  'May',
-  'June',
-  'July',
-  'August',
-  'September',
-  'October',
-  'November',
-  'December',
-]
-
 export function Calendar() {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const lessonsQuery = useLessons()
   const today = todayISO()
   const [selected, setSelected] = useState(today)
@@ -68,13 +53,13 @@ export function Calendar() {
       )
       return {
         iso,
-        label: DAY_LABELS[i],
+        label: formatWeekdayShort(d),
         dayNum: d.getDate(),
         isToday: iso === today,
         hasLessons: lessonsByDate,
       }
     })
-  }, [lessonsQuery.data, today])
+  }, [lessonsQuery.data, today, i18n.resolvedLanguage])
 
   const dayLessons = useMemo<Lesson[]>(() => {
     return (lessonsQuery.data?.lessons ?? [])
@@ -82,10 +67,10 @@ export function Calendar() {
       .sort((a, b) => lessonTime(a.scheduledAt).localeCompare(lessonTime(b.scheduledAt)))
   }, [lessonsQuery.data, selected])
 
-  const monthLabel = useMemo(() => {
-    const d = new Date(selected)
-    return `${MONTH_NAMES[d.getMonth()]} ${d.getFullYear()}`
-  }, [selected])
+  const monthLabel = useMemo(
+    () => formatMonthYear(new Date(selected)),
+    [selected, i18n.resolvedLanguage],
+  )
 
   return (
     <div>
@@ -286,7 +271,7 @@ export function Calendar() {
                           {live && (
                             <Pill tone="live" style={{ fontSize: 9, padding: '2px 6px' }}>
                               <span className="live-dot" />
-                              LIVE
+                              {t('live').toUpperCase()}
                             </Pill>
                           )}
                         </div>

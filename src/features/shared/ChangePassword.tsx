@@ -226,7 +226,7 @@ export function ChangePassword() {
               fontSize: 13,
             }}
           >
-            {change.error instanceof Error ? change.error.message : 'Update failed'}
+            {change.error instanceof Error ? change.error.message : t('update_failed')}
           </div>
         )}
 

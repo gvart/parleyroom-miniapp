@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/auth/AuthGate'
 import { Banner, Button, Card, Ring, Section, Sheet, TextField } from '@/ui'
+import { formatShortDate } from '@/lib/intl'
 import {
   useAbandonGoal,
   useCompleteGoal,
@@ -124,7 +125,7 @@ function GoalCard({ goal, hue }: { goal: Goal; hue: number }) {
 
   const meta = goal.setBy === 'TEACHER' ? t('set_by_teacher') : t('set_by_you')
   const targetMeta = goal.targetDate
-    ? `${meta} · ${t('target_by', { date: goal.targetDate.slice(5) })}`
+    ? `${meta} · ${t('target_by', { date: formatShortDate(goal.targetDate) })}`
     : meta
 
   const anyError = complete.error ?? abandon.error ?? remove.error ?? updateProgress.error
@@ -143,7 +144,7 @@ function GoalCard({ goal, hue }: { goal: Goal; hue: number }) {
           type="button"
           onClick={() => setMenuOpen((m) => !m)}
           className="tap"
-          aria-label="More"
+          aria-label={t('more_options')}
           style={{
             width: 32,
             height: 32,
@@ -359,7 +360,7 @@ function NewGoalSheet({ open, onClose, onCreated }: NewGoalProps) {
         {create.error && (
           <div style={{ marginBottom: 12 }}>
             <Banner tone="error">
-              {create.error instanceof Error ? create.error.message : 'Create failed'}
+              {create.error instanceof Error ? create.error.message : t('create_failed')}
             </Banner>
           </div>
         )}

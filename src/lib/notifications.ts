@@ -1,4 +1,6 @@
+import type { TFunction } from 'i18next'
 import type { Notification, NotificationType } from '@/api/types'
+import { activeIntlLocale } from './intl'
 
 export function notificationIcon(type: NotificationType): string {
   if (type.startsWith('LESSON') || type.startsWith('RESCHEDULE') || type.startsWith('JOIN')) {
@@ -10,55 +12,41 @@ export function notificationIcon(type: NotificationType): string {
   return 'notifications'
 }
 
-export function notificationText(n: Notification): string {
-  const who = `${n.actor.firstName} ${n.actor.lastName}`
-  switch (n.type) {
-    case 'LESSON_CREATED':
-      return `${who} scheduled a new lesson.`
-    case 'LESSON_REQUESTED':
-      return `${who} requested a lesson.`
-    case 'LESSON_ACCEPTED':
-      return `${who} confirmed your lesson.`
-    case 'LESSON_CANCELLED':
-      return `${who} cancelled a lesson.`
-    case 'LESSON_STARTED':
-      return `Your lesson with ${who} just started.`
-    case 'LESSON_COMPLETED':
-      return `${who} marked your lesson as complete.`
-    case 'RESCHEDULE_REQUESTED':
-      return `${who} asked to reschedule a lesson.`
-    case 'RESCHEDULE_ACCEPTED':
-      return `${who} accepted your reschedule request.`
-    case 'RESCHEDULE_REJECTED':
-      return `${who} declined your reschedule request.`
-    case 'JOIN_REQUESTED':
-      return `${who} asked to join a club.`
-    case 'JOIN_ACCEPTED':
-      return `${who} accepted your join request.`
-    case 'JOIN_REJECTED':
-      return `${who} declined your join request.`
-    case 'VOCAB_REVIEW_DUE':
-      return 'You have words ready to review.'
-    case 'MATERIAL_SHARED':
-      return `${who} shared a material with you.`
-    case 'FOLDER_SHARED':
-      return `${who} shared a folder with you.`
-    case 'MATERIAL_ATTACHED_TO_LESSON':
-      return `${who} added materials to your lesson.`
-  }
+const NOTIF_KEY: Record<NotificationType, string> = {
+  LESSON_CREATED: 'notif_lesson_created',
+  LESSON_REQUESTED: 'notif_lesson_requested',
+  LESSON_ACCEPTED: 'notif_lesson_accepted',
+  LESSON_CANCELLED: 'notif_lesson_cancelled',
+  LESSON_STARTED: 'notif_lesson_started',
+  LESSON_COMPLETED: 'notif_lesson_completed',
+  RESCHEDULE_REQUESTED: 'notif_reschedule_requested',
+  RESCHEDULE_ACCEPTED: 'notif_reschedule_accepted',
+  RESCHEDULE_REJECTED: 'notif_reschedule_rejected',
+  JOIN_REQUESTED: 'notif_join_requested',
+  JOIN_ACCEPTED: 'notif_join_accepted',
+  JOIN_REJECTED: 'notif_join_rejected',
+  VOCAB_REVIEW_DUE: 'notif_vocab_review_due',
+  MATERIAL_SHARED: 'notif_material_shared',
+  FOLDER_SHARED: 'notif_folder_shared',
+  MATERIAL_ATTACHED_TO_LESSON: 'notif_material_attached',
 }
 
-export function relativeTime(iso: string, now: number = Date.now()): string {
-  const t = new Date(iso).getTime()
-  if (Number.isNaN(t)) return ''
-  const diff = Math.max(0, Math.round((now - t) / 1000))
-  if (diff < 30) return 'just now'
-  if (diff < 60) return `${diff}s ago`
+export function notificationText(n: Notification, t: TFunction): string {
+  const who = `${n.actor.firstName} ${n.actor.lastName}`
+  return t(NOTIF_KEY[n.type], { who })
+}
+
+export function relativeTime(iso: string, t: TFunction, now: number = Date.now()): string {
+  const time = new Date(iso).getTime()
+  if (Number.isNaN(time)) return ''
+  const diff = Math.max(0, Math.round((now - time) / 1000))
+  if (diff < 30) return t('time_just_now')
+  if (diff < 60) return t('time_seconds_ago', { count: diff })
   const m = Math.round(diff / 60)
-  if (m < 60) return `${m}m ago`
+  if (m < 60) return t('time_minutes_ago', { count: m })
   const h = Math.round(m / 60)
-  if (h < 24) return `${h}h ago`
+  if (h < 24) return t('time_hours_ago', { count: h })
   const d = Math.round(h / 24)
-  if (d < 7) return `${d}d ago`
-  return new Date(iso).toLocaleDateString()
+  if (d < 7) return t('time_days_ago', { count: d })
+  return new Date(iso).toLocaleDateString(activeIntlLocale())
 }

@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/auth/AuthGate'
 import { Card, Pill } from '@/ui'
-import { clubLabel, isClub, lessonTime } from '@/lib/lesson'
+import { clubLabelKey, isClub, lessonTime } from '@/lib/lesson'
 import type { Lesson } from '@/api/types'
 
 interface LessonRowProps {
@@ -59,7 +59,7 @@ export function LessonRow({ lesson, onOpen }: LessonRowProps) {
               </Pill>
             )}
             {requested && <Pill tone="warn">{t('review')}</Pill>}
-            {club && <Pill tone="violet">{clubLabel(lesson)}</Pill>}
+            {club && <Pill tone="violet">{t(clubLabelKey(lesson) ?? '')}</Pill>}
             {hasPendingReschedule && <Pill tone="warn">{t('reschedule_pending')}</Pill>}
             {canJoin && <Pill tone="accent">{t('join_available')}</Pill>}
           </div>
@@ -78,7 +78,7 @@ export function LessonRow({ lesson, onOpen }: LessonRowProps) {
           <div style={{ fontSize: 12, color: 'var(--ink-2)' }}>
             {club
               ? `${participants}${capacity ? `/${capacity}` : ''} · ${lesson.level ?? '—'} · ${lesson.durationMinutes}m`
-              : `${teacherInitial ?? 'Teacher'} · ${lesson.level ?? '—'} · ${lesson.durationMinutes}m`}
+              : `${teacherInitial ?? t('role_teacher')} · ${lesson.level ?? '—'} · ${lesson.durationMinutes}m`}
           </div>
         </div>
         <span className="ms" style={{ fontSize: 20, color: 'var(--ink-3)' }}>

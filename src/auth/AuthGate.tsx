@@ -7,11 +7,13 @@ import {
   type FormEvent,
   type ReactNode,
 } from 'react'
-import { useRawInitData } from '@telegram-apps/sdk-react'
+import { useLaunchParams, useRawInitData } from '@telegram-apps/sdk-react'
 import { useTranslation } from 'react-i18next'
 import { ApiError, setApiToken } from '@/api/client'
 import { api } from '@/api/endpoints'
 import type { UserProfile } from '@/api/types'
+import i18n, { DEFAULT_LOCALE, normalizeLocale } from '@/i18n'
+import { FirstRunLocalePicker } from '@/features/shared/FirstRunLocalePicker'
 
 const TOKEN_KEY = 'parleyroom.access'
 
@@ -38,15 +40,35 @@ type Status =
   | { kind: 'error'; message: string }
 
 export function AuthGate({ children }: { children: ReactNode }) {
+  const { t } = useTranslation()
   const rawInitData = useRawInitData() ?? ''
+  const launchParams = useLaunchParams()
   const [status, setStatus] = useState<Status>({ kind: 'checking' })
+
+  // Pre-login default: Telegram's `language_code` if it's ru/de/en, else 'ru'.
+  // Only applies on a genuinely first run — a previously cached/chosen
+  // language (localStorage, or `user.locale` synced below) always wins.
+  useEffect(() => {
+    if (localStorage.getItem('i18nextLng')) return
+    const code = launchParams?.tgWebAppData?.user?.language_code
+    void i18n.changeLanguage(normalizeLocale(code) ?? DEFAULT_LOCALE)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  // Once logged in, the interface language always follows `user.locale`.
+  useEffect(() => {
+    if (status.kind !== 'ready') return
+    const locale = normalizeLocale(status.user.locale) ?? DEFAULT_LOCALE
+    if (i18n.resolvedLanguage !== locale) void i18n.changeLanguage(locale)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [status.kind === 'ready' ? status.user.locale : null])
 
   useEffect(() => {
     let cancelled = false
 
     async function bootstrap() {
       if (!rawInitData) {
-        setStatus({ kind: 'error', message: 'No initData — open this page from Telegram.' })
+        setStatus({ kind: 'error', message: t('no_init_data') })
         return
       }
       try {
@@ -65,7 +87,7 @@ export function AuthGate({ children }: { children: ReactNode }) {
         }
         setStatus({
           kind: 'error',
-          message: err instanceof Error ? err.message : 'Unknown error',
+          message: err instanceof Error ? err.message : t('unknown_error'),
         })
       }
     }
@@ -74,6 +96,9 @@ export function AuthGate({ children }: { children: ReactNode }) {
     return () => {
       cancelled = true
     }
+    // `t` intentionally excluded — it changes identity on every language switch,
+    // and re-running the auth bootstrap on a language change would be wrong.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rawInitData])
 
   const signOut = useCallback(() => {
@@ -103,6 +128,15 @@ export function AuthGate({ children }: { children: ReactNode }) {
           sessionStorage.setItem(TOKEN_KEY, accessToken)
           setStatus({ kind: 'ready', user, accessToken })
         }}
+      />
+    )
+  }
+
+  if (!status.user.localeConfirmedAt) {
+    return (
+      <FirstRunLocalePicker
+        user={status.user}
+        onConfirmed={(user) => setStatus({ kind: 'ready', user, accessToken: status.accessToken })}
       />
     )
   }
@@ -215,7 +249,7 @@ function LinkForm({ rawInitData, isSubmitting, onStart, onError, onSuccess }: Li
       const user = await api.me()
       onSuccess(auth.accessToken, user)
     } catch (err) {
-      onError(err instanceof Error ? err.message : 'Link failed')
+      onError(err instanceof Error ? err.message : t('link_failed'))
     }
   }
 
