@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.21.1](https://github.com/gvart/parleyroom-miniapp/compare/v1.21.0...v1.21.1) (2026-04-20)
+
+
+### Bug Fixes
+
+* **miniapp:** unblock form input, drop call stubs, lock page scroll ([8645e30](https://github.com/gvart/parleyroom-miniapp/commit/8645e30f397939b5f02a9a8c00452a6e81a4b72b))
+
 ## [1.21.0](https://github.com/gvart/parleyroom-miniapp/compare/v1.20.0...v1.21.0) (2026-04-20)
 
 
