@@ -1,0 +1,66 @@
+src/features/student/VocabReview.tsx
+  s_81525541fb2fd4::t_1bf8b0443e1a6b 265
+  s_81525541fb2fd4::t_f1b40ee1e450d5 5
+  s_81525541fb2fd4::t_050f1d332cf392 204,215
+src/lib/homework.ts
+  s_81525541fb2fd4::t_91aaeb93bc0cc4 1,26
+src/features/student/Homework.tsx
+  s_81525541fb2fd4::t_4f2eece12b68da 3,5-11,39-40,52,210,216-217,222-224,226-235,251-253,257,259-263,267,301-318,322,334,338,342,346,361,365-417,419,430,434-460
+src/dev/mockBackend.ts
+  s_81525541fb2fd4::t_c2b6034b769b22 764-772,777-778,780-788,791-793,796-803
+  s_81525541fb2fd4::t_3710b1623b34dc 707-708
+  s_81525541fb2fd4::t_f06dcd1a251847 253-255,281-283,288-293,300-305,310,314-315,320-321,327-328,331,333-334,337-339,344-346,349-352,360-387,417-420,433-434,436-437,441-444,448,450-451,454,456-457,459-460,464-466,468-469,471-472,476-477,479
+  s_81525541fb2fd4::t_3333720f327e8a 256-280,284-287,294-299
+  s_81525541fb2fd4::t_6e873450a39b2c 389-416,421-432,435,438-440
+  s_81525541fb2fd4::t_05e94956660fb4 705,710
+  s_81525541fb2fd4::t_f488b8a125a658 388
+src/i18n.ts
+  s_81525541fb2fd4::t_59e03c2b25b112 362
+  s_81525541fb2fd4::t_0fa63596a8b5cb 296
+  s_81525541fb2fd4::t_1190e10baeb03a 97
+  s_81525541fb2fd4::t_a08f32c308dae2 392
+  s_81525541fb2fd4::t_f24d5a3477aafa 592
+  s_81525541fb2fd4::t_1244041d4b3535 46,49-57
+  s_81525541fb2fd4::t_30421067363691 341,344-352
+  s_81525541fb2fd4::t_ff7d49ce5df29e 67
+src/features/teacher/StudentProfile.tsx
+  s_81525541fb2fd4::t_1b77d63db20da5 292,321
+  s_81525541fb2fd4::t_e15e6c0ac83c0f 317
+  s_81525541fb2fd4::t_afbc83e89bf2a2 84
+src/api/endpoints.ts
+  s_81525541fb2fd4::t_4224b73ec82298 159-163,167-168
+  s_81525541fb2fd4::t_67675e7e1a1b90 67-75
+  s_81525541fb2fd4::t_31866c91a99054 3,9
+  s_81525541fb2fd4::t_cce6e6ba93c369 169
+src/lib/vocab.ts
+  s_81525541fb2fd4::t_358edab269e840 1-33
+src/api/types.ts
+  s_81525541fb2fd4::t_84ef4b55b24a80 94-111,113-116,120-126,128-131,133-136,138-141,151-154,156-160,162-167,169-170,172,175-189,195,201-231
+  s_81525541fb2fd4::t_e6dc653a8090b8 232
+src/features/student/Vocab.tsx
+  s_81525541fb2fd4::t_997f9ffea7e4eb 4,6,14,19-31
+  s_81525541fb2fd4::t_dbbff277c6a618 151,153
+  s_81525541fb2fd4::t_791427c24f5468 177,179
+  s_81525541fb2fd4::t_964adbcabe7ec6 32
+src/features/student/Home.tsx
+  s_81525541fb2fd4::t_d18955ec92f7a2 8,10
+  s_81525541fb2fd4::t_85d174fd6837c4 28
+src/hooks/useHomework.ts
+  s_81525541fb2fd4::t_94aa8c890588ff 6,16-34,38-39,41
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "1ff38e0f049c697b289753c2ea34568705fd2fb9",
+  "prompts": {},
+  "sessions": {
+    "s_81525541fb2fd4": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "6f74100a-bf7e-4308-bddf-c605ea23cebe",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Vladlen Gladis <vladlen.gladis@deliveryhero.com>"
+    }
+  }
+}
