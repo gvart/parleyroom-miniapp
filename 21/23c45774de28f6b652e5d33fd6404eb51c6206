@@ -1,0 +1,121 @@
+src/styles.css
+  s_81525541fb2fd4::t_b552aa4de4524e 1-6,8-54,56-60,62-92,95-96,98-99,102-149,152,180-182,184,189,196,198-199,203-205,208-213,215-244,247,259,261,264,267-302,305-424,426-443,446-458,461-494,497-811,813-841,843-882,885-888,891-909,915,919,926-941,943-974
+index.html
+  s_81525541fb2fd4::t_e44b6f94c8c70f 6,12,15,17
+src/App.tsx
+  s_81525541fb2fd4::t_cb273a32102d68 2,9-14
+src/auth/AuthGate.tsx
+  s_81525541fb2fd4::t_d033a9981b0f42 175,203,302
+src/features/shared/ChangePassword.tsx
+  s_81525541fb2fd4::t_dc75551976f6ba 64,76,118,284
+src/features/shared/FirstRunLocalePicker.tsx
+  s_81525541fb2fd4::t_a49ac6ad6a641b 58
+src/features/shared/InterfaceLanguage.tsx
+  s_81525541fb2fd4::t_b4fc3652a5358f 53
+src/features/shared/Notifications.tsx
+  s_81525541fb2fd4::t_09cdabdf5ecdc7 58,69
+src/features/shared/ProfileEdit.tsx
+  s_81525541fb2fd4::t_4e41e4f3641e60 112
+src/features/shared/Settings.tsx
+  s_81525541fb2fd4::t_5f252548a89333 59
+src/features/shared/TranslationLanguage.tsx
+  s_81525541fb2fd4::t_a4a88f8e5f4167 52
+src/features/student/BookLessonSheet.tsx
+  s_81525541fb2fd4::t_b02265a3e1527e 139,151,160
+src/features/student/Calendar.tsx
+  s_81525541fb2fd4::t_bed83fe38aced1 99,190
+src/features/student/Goals.tsx
+  s_81525541fb2fd4::t_a07f09aa6faeb9 5,17,53,87,100,117,136,334
+src/features/student/Home.tsx
+  s_81525541fb2fd4::t_4b1245561f4849 8,12,61,176,247,415
+src/features/student/Homework.tsx
+  s_81525541fb2fd4::t_3bc46f68e8ea48 83,98-100,135,197,282,294,315
+src/features/student/LessonActionsSheet.tsx
+  s_81525541fb2fd4::t_a3a649ca899ac7 79
+src/features/student/LessonLive.tsx
+  s_81525541fb2fd4::t_e42b97faa8665d 121,323,405
+src/features/student/Lessons.tsx
+  s_81525541fb2fd4::t_816f1ca9f3b312 69,80
+src/features/student/MaterialPreview.tsx
+  s_81525541fb2fd4::t_2768956f97d2a0 82
+src/features/student/Materials.tsx
+  s_81525541fb2fd4::t_9fe3d76036f758 117,227
+src/features/student/RescheduleSheet.tsx
+  s_81525541fb2fd4::t_4a5dd96540f92e 71,83,92
+src/features/student/Vocab.tsx
+  s_81525541fb2fd4::t_4814cd3f855f11 60,143,190
+src/features/student/VocabReview.tsx
+  s_81525541fb2fd4::t_8712cc6f0a9953 207,258,269,342,353
+src/features/teacher/AssignGoalSheet.tsx
+  s_81525541fb2fd4::t_c192f65041ae17 64,76,85
+src/features/teacher/AssignHomeworkSheet.tsx
+  s_81525541fb2fd4::t_63f12b97e4fe9b 74,86,95
+src/features/teacher/LessonCompleteSheet.tsx
+  s_81525541fb2fd4::t_a95e7a47bf7047 67,79,91
+src/features/teacher/Materials.tsx
+  s_81525541fb2fd4::t_a4c9b88a8bad15 69,104,197
+src/features/teacher/StudentProfile.tsx
+  s_81525541fb2fd4::t_d3205bff9ff790 86,132,321
+src/features/teacher/Students.tsx
+  s_81525541fb2fd4::t_967324a7fd7b1d 42,87
+src/features/teacher/TeacherHome.tsx
+  s_81525541fb2fd4::t_4dd9e1f95c91bd 81,169,189-192,304
+src/features/teacher/UploadMaterialSheet.tsx
+  s_81525541fb2fd4::t_b4d8ab0446599b 107
+src/layout/AppShell.tsx
+  s_81525541fb2fd4::t_bbbddd3b4ebd6f 44
+src/layout/BlobBackground.tsx
+  s_81525541fb2fd4::t_fff15a43203334 1-27
+src/layout/ErrorBoundary.tsx
+  s_81525541fb2fd4::t_e6ca11d349a976 37
+src/layout/ThemeProvider.tsx
+  s_81525541fb2fd4::t_6a8bde7360fc33 3,8,10
+src/ui/Avatar.tsx
+  s_81525541fb2fd4::t_1e6d518ba25d2e 9,11,19,26,31-32,35-36,45,52,55-56,59
+src/ui/Banner.tsx
+  s_81525541fb2fd4::t_b35e1b6057febc 6-9,23,28-29,32-34,38
+src/ui/Button.tsx
+  s_81525541fb2fd4::t_9d89f1fe9d560d 17-21,24,35,38-46,48,50,56
+src/ui/Card.tsx
+  s_81525541fb2fd4::t_c8eb467b8636bb 11,24
+src/ui/CategoryDot.tsx
+  s_81525541fb2fd4::t_00a5c512640a50 1-2,7-12,17,20-21,23
+src/ui/PageHeader.tsx
+  s_81525541fb2fd4::t_bede5b7eb60fa9 1-32
+src/ui/Pill.tsx
+  s_81525541fb2fd4::t_81d26e898a97f4 3,6-10,12-13,22,33,35-38
+src/ui/Ring.tsx
+  s_81525541fb2fd4::t_d919964b273b3a 2,8,13,18,24-25,27,30,33-34,55-56,72,76
+src/ui/Section.tsx
+  s_81525541fb2fd4::t_6b733497fac5e5 12,18-21,24-26,31
+src/ui/Segmented.tsx
+  s_81525541fb2fd4::t_aeb48af6b132e9 1-29
+src/ui/Sheet.tsx
+  s_81525541fb2fd4::t_c523296c80ec27 1,7,11-14,16-22,26,36-38
+src/ui/StatChip.tsx
+  s_81525541fb2fd4::t_6a2fa06a5d558a 1,7,10-12,14-15,17-18,20-22,24,30-36,41
+src/ui/TabBar.tsx
+  s_81525541fb2fd4::t_2ea36902a26f33 1,16-21,26-45,52-54,57-59,62-66,68-69,72-107
+src/ui/TextField.tsx
+  s_81525541fb2fd4::t_88bb6f5bfe42be 3-4,7-20,31,40,42-43,61,73,82,84-85,87
+src/ui/index.ts
+  s_81525541fb2fd4::t_eeabc653dc25d2 6,10,15
+src/ui/tones.ts
+  s_81525541fb2fd4::t_23c854dba9d656 1-11
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "2123c45774de28f6b652e5d33fd6404eb51c6206",
+  "prompts": {},
+  "sessions": {
+    "s_81525541fb2fd4": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "6f74100a-bf7e-4308-bddf-c605ea23cebe",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Vladlen Gladis <vladlen.gladis@deliveryhero.com>"
+    }
+  }
+}
