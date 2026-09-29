@@ -1,7 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/auth/AuthGate'
-import { Card } from '@/ui'
 import { useUpdateProfile } from '@/hooks/useUpdateProfile'
 import type { NativeLanguage } from '@/api/types'
 
@@ -26,41 +25,29 @@ export function TranslationLanguage() {
 
   return (
     <div>
-      <div style={{ padding: '8px 20px 18px', display: 'flex', alignItems: 'center', gap: 12 }}>
+      <div style={{ padding: '12px 16px 18px', display: 'flex', alignItems: 'center', gap: 12 }}>
         <button
           type="button"
           onClick={() => navigate('/settings')}
-          className="tap"
+          className="ico-btn"
           aria-label={t('back')}
-          style={{
-            width: 40,
-            height: 40,
-            borderRadius: 999,
-            background: 'var(--card)',
-            border: '1px solid var(--hair)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            cursor: 'pointer',
-            color: 'var(--ink)',
-          }}
         >
           <span className="ms" style={{ fontSize: 20 }}>
             arrow_back
           </span>
         </button>
-        <div className="serif" style={{ fontSize: 22, letterSpacing: '-0.01em' }}>
+        <div className="section-title">
           {t('translation_language_title')}
         </div>
       </div>
 
-      <div style={{ padding: '0 20px 18px' }}>
-        <div style={{ fontSize: 13, color: 'var(--ink-2)' }}>{t('translation_language_sub')}</div>
+      <div style={{ padding: '0 16px 18px' }}>
+        <div style={{ fontSize: 'var(--text-lead)', color: 'var(--ink-2)' }}>{t('translation_language_sub')}</div>
       </div>
 
-      <div style={{ padding: '0 20px' }}>
-        <Card padded={false}>
-          {LANGS.map((l, i) => {
+      <div style={{ padding: '0 16px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          {LANGS.map((l) => {
             const selected = current === l.code
             return (
               <button
@@ -68,31 +55,19 @@ export function TranslationLanguage() {
                 key={l.code}
                 onClick={() => void pick(l.code)}
                 disabled={updateProfile.isPending}
-                className="tap"
-                style={{
-                  width: '100%',
-                  border: 0,
-                  background: 'transparent',
-                  color: 'var(--ink)',
-                  textAlign: 'left',
-                  padding: '14px 18px',
-                  borderBottom: i < LANGS.length - 1 ? '1px solid var(--hair)' : 0,
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 12,
-                  cursor: 'pointer',
-                }}
+                aria-pressed={selected}
+                className={`mode-chip${selected ? ' on' : ''}`}
               >
-                <div style={{ flex: 1, fontSize: 14, fontWeight: 600 }}>{t(l.labelKey)}</div>
+                <div style={{ flex: 1 }}>{t(l.labelKey)}</div>
                 {selected && (
-                  <span className="ms fill" style={{ fontSize: 22, color: 'var(--accent)' }}>
+                  <span className="ms fill" style={{ fontSize: 22, color: 'var(--accent-ink)' }}>
                     check_circle
                   </span>
                 )}
               </button>
             )
           })}
-        </Card>
+        </div>
       </div>
     </div>
   )

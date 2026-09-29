@@ -64,7 +64,7 @@ export function LessonActionsSheet({ open, lesson, onClose }: Props) {
   return (
     <>
       <Sheet open={open} onClose={onClose}>
-        <div style={{ padding: '0 22px 10px' }}>
+        <div style={{ padding: '0 20px 4px' }}>
           <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 4 }}>
             {lesson.status === 'IN_PROGRESS' && (
               <Pill tone="live">
@@ -76,10 +76,10 @@ export function LessonActionsSheet({ open, lesson, onClose }: Props) {
             {lesson.pendingReschedule && <Pill tone="warn">{t('reschedule_pending')}</Pill>}
             {enrolled && club && <Pill tone="accent">{t('pill_joined')}</Pill>}
           </div>
-          <div className="serif" style={{ fontSize: 24, letterSpacing: '-0.01em', marginBottom: 4 }}>
+          <div className="section-title" style={{ marginBottom: 4 }}>
             {lesson.topic}
           </div>
-          <div style={{ fontSize: 13, color: 'var(--ink-2)', marginBottom: 18 }}>
+          <div style={{ fontSize: 'var(--text-small)', color: 'var(--ink-2)', marginBottom: 18 }}>
             {formatShortDate(lesson.scheduledAt)} · {lessonTime(lesson.scheduledAt)} · {lesson.durationMinutes}m
             {club && capacity
               ? ` · ${lesson.students.length}/${capacity}`
@@ -168,11 +168,10 @@ export function LessonActionsSheet({ open, lesson, onClose }: Props) {
                 </Banner>
               ) : (
                 <Button
-                  variant="ghost"
+                  variant="danger"
                   block
                   leadingIcon="close"
                   onClick={() => setConfirmCancel(true)}
-                  style={{ color: 'oklch(0.55 0.2 25)' }}
                 >
                   {t('cancel_lesson')}
                 </Button>

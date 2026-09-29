@@ -8,6 +8,7 @@ interface CardProps {
   className?: string
 }
 
+/** L1 glass content surface (portal `GlassCard` / `.card`) — no backdrop blur. */
 export function Card({
   children,
   padded = true,
@@ -20,12 +21,7 @@ export function Card({
       onClick={onClick}
       className={`card ${className}`}
       style={{
-        background: 'var(--card)',
-        borderRadius: 'var(--radius-card)',
-        padding: padded ? 'var(--pad)' : 0,
-        boxShadow:
-          '0 1px 0 rgba(255,255,255,0.5) inset, 0 1px 2px rgba(15,15,14,0.03), 0 8px 24px rgba(15,15,14,0.04)',
-        border: '1px solid var(--hair)',
+        padding: padded ? 20 : 0,
         ...style,
       }}
     >

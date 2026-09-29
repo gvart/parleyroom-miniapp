@@ -1,17 +1,17 @@
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { openLink } from '@telegram-apps/sdk-react'
-import { Card, Pill, Sheet } from '@/ui'
+import { Card, EmptyState, PageHeader, Pill, Sheet, type Tone, TONE_VARS } from '@/ui'
 import { useFolderTree } from '@/hooks/useMaterialFolders'
 import { useMaterials } from '@/hooks/useMaterials'
 import type { FolderTreeNode, Material, MaterialFolder, MaterialType } from '@/api/types'
 import { MaterialPreview } from './MaterialPreview'
 
-const TYPE_HUE: Record<MaterialType, number> = {
-  PDF: 25,
-  AUDIO: 290,
-  VIDEO: 210,
-  LINK: 75,
+const TYPE_TONE: Record<MaterialType, Tone> = {
+  PDF: 'coral',
+  AUDIO: 'grape',
+  VIDEO: 'sky',
+  LINK: 'sunny',
 }
 
 const TYPE_ICON: Record<MaterialType, string> = {
@@ -96,42 +96,19 @@ export function StudentMaterials() {
 
   return (
     <div>
-      <div
-        style={{
-          padding: '8px 20px 14px',
-        }}
-      >
-        <div
-          style={{
-            fontSize: 11,
-            color: 'var(--ink-3)',
-            letterSpacing: '0.12em',
-            textTransform: 'uppercase',
-            fontWeight: 600,
-            marginBottom: 6,
-          }}
-        >
-          {t('materials')}
-        </div>
-        <div
-          className="serif"
-          style={{ fontSize: 30, lineHeight: 1.05, letterSpacing: '-0.02em' }}
-        >
-          {t('library_title')}
-          <span style={{ color: 'var(--accent)' }}>.</span>
-        </div>
-      </div>
+      <PageHeader eyebrow={t('materials')} title={t('library_title')} />
 
       {/* Breadcrumbs */}
       {(folderId !== null || breadcrumb.length > 0) && (
         <div
           style={{
-            padding: '0 20px 10px',
+            padding: '0 16px 10px',
             display: 'flex',
             flexWrap: 'wrap',
             gap: 4,
             alignItems: 'center',
-            fontSize: 13,
+            fontSize: 'var(--text-small)',
+            fontWeight: 700,
             color: 'var(--ink-2)',
           }}
         >
@@ -180,7 +157,7 @@ export function StudentMaterials() {
       {visibleFolders.length > 0 && (
         <div
           style={{
-            padding: '0 20px',
+            padding: '0 16px',
             display: 'grid',
             gridTemplateColumns: '1fr 1fr',
             gap: 10,
@@ -192,16 +169,19 @@ export function StudentMaterials() {
               key={n.folder.id}
               onClick={() => setFolderId(n.folder.id)}
               padded
-              style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 12 }}
+              className="tap"
+              style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 10, padding: 12, borderRadius: 22 }}
             >
-              <span className="ms" style={{ fontSize: 28, color: 'var(--accent)' }}>
-                folder
+              <span className="icon-tile" style={{ background: 'var(--grape-soft)', color: 'var(--grape-ink)' }}>
+                <span className="ms fill" style={{ fontSize: 22 }} aria-hidden="true">
+                  folder
+                </span>
               </span>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div
                   style={{
-                    fontSize: 13,
-                    fontWeight: 600,
+                    fontSize: 'var(--text-small)',
+                    fontWeight: 800,
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
                     whiteSpace: 'nowrap',
@@ -209,7 +189,7 @@ export function StudentMaterials() {
                 >
                   {n.folder.name}
                 </div>
-                <div style={{ fontSize: 11, color: 'var(--ink-3)' }}>
+                <div style={{ fontSize: 'var(--text-caption)', fontWeight: 600, color: 'var(--ink-2)' }}>
                   {t('library_folder_count', {
                     count: n.folder.materialCount + n.folder.childFolderCount,
                   })}
@@ -222,71 +202,58 @@ export function StudentMaterials() {
 
       {/* Materials */}
       {materials.length === 0 && visibleFolders.length === 0 && !materialsQuery.isLoading && !folderTree.isLoading ? (
-        <div style={{ padding: '40px 30px', textAlign: 'center' }}>
-          <div style={{ fontSize: 40, marginBottom: 10 }}>◌</div>
-          <div className="serif" style={{ fontSize: 22, marginBottom: 4 }}>
-            {t('empty_materials_title')}
-          </div>
-          <div style={{ fontSize: 13, color: 'var(--ink-2)', maxWidth: 280, margin: '0 auto' }}>
-            {t('empty_materials_sub')}
-          </div>
-        </div>
+        <EmptyState
+            icon="collections_bookmark"
+            title={t('empty_materials_title')}
+            sub={t('empty_materials_sub')}
+          />
       ) : (
         <div
           style={{
-            padding: '0 20px',
+            padding: '0 16px',
             display: 'grid',
             gridTemplateColumns: '1fr 1fr',
             gap: 10,
           }}
         >
           {materials.map((m) => {
-            const hue = TYPE_HUE[m.type]
+            const tone = TONE_VARS[TYPE_TONE[m.type]]
             return (
               <Card
                 key={m.id}
                 onClick={() => handleTap(m)}
                 padded={false}
-                style={{ overflow: 'hidden', cursor: 'pointer' }}
+                className="tap"
+                style={{ overflow: 'hidden', cursor: 'pointer', borderRadius: 24 }}
               >
                 <div
                   style={{
-                    height: 88,
-                    background: `linear-gradient(135deg, oklch(0.85 0.10 ${hue}) 0%, oklch(0.55 0.14 ${hue}) 100%)`,
+                    height: 84,
+                    margin: 6,
+                    borderRadius: 18,
+                    background: `radial-gradient(circle at 25% 20%, color-mix(in srgb, ${tone.vivid} 35%, transparent), ${tone.soft} 70%)`,
                     position: 'relative',
                   }}
                 >
-                  <div style={{ position: 'absolute', top: 10, left: 10 }}>
-                    <Pill
-                      style={{
-                        background: 'rgba(0,0,0,0.35)',
-                        color: '#fff',
-                        backdropFilter: 'blur(6px)',
-                      }}
-                    >
+                  <div style={{ position: 'absolute', top: 8, left: 8 }}>
+                    <Pill style={{ background: 'var(--card-surface)', color: tone.ink }}>
                       {t(m.type.toLowerCase())}
                     </Pill>
                   </div>
-                  <div
-                    style={{
-                      position: 'absolute',
-                      bottom: 10,
-                      right: 10,
-                      color: '#fff',
-                      opacity: 0.8,
-                    }}
+                  <span
+                    className="ms fill"
+                    style={{ position: 'absolute', bottom: 8, right: 10, fontSize: 30, color: tone.ink }}
+                    aria-hidden="true"
                   >
-                    <span className="ms" style={{ fontSize: 28 }}>
-                      {TYPE_ICON[m.type]}
-                    </span>
-                  </div>
+                    {TYPE_ICON[m.type]}
+                  </span>
                 </div>
-                <div style={{ padding: '10px 12px 12px' }}>
+                <div style={{ padding: '6px 12px 12px' }}>
                   <div
                     style={{
-                      fontSize: 12,
-                      fontWeight: 600,
-                      lineHeight: 1.25,
+                      fontSize: 'var(--text-small)',
+                      fontWeight: 800,
+                      lineHeight: 1.3,
                       marginBottom: 4,
                       overflow: 'hidden',
                       display: '-webkit-box',
@@ -298,10 +265,11 @@ export function StudentMaterials() {
                   </div>
                   <div
                     style={{
-                      fontSize: 10,
+                      fontSize: 'var(--text-label)',
+                      fontWeight: 800,
                       color: 'var(--ink-3)',
                       textTransform: 'uppercase',
-                      letterSpacing: '0.08em',
+                      letterSpacing: '0.06em',
                     }}
                   >
                     {m.fileSize ? bytesToLabel(m.fileSize) : t(m.type.toLowerCase())}

@@ -33,28 +33,23 @@ export class ErrorBoundary extends Component<{ children: ReactNode }, State> {
             color: 'var(--ink)',
           }}
         >
-          <div style={{ fontSize: 40 }}>◌</div>
-          <div className="serif" style={{ fontSize: 24, letterSpacing: '-0.02em' }}>
-            {i18n.t('something_went_wrong')}
-          </div>
-          <div style={{ fontSize: 13, color: 'var(--ink-2)', maxWidth: 280 }}>
+          <span
+            className="icon-tile"
+            style={{ width: 64, height: 64, borderRadius: 22, background: 'var(--coral-soft)', color: 'var(--coral-ink)' }}
+          >
+            <span className="ms fill" style={{ fontSize: 32 }} aria-hidden="true">
+              error
+            </span>
+          </span>
+          <div className="section-title">{i18n.t('something_went_wrong')}</div>
+          <div style={{ fontSize: 'var(--text-small)', color: 'var(--ink-2)', maxWidth: 280 }}>
             {this.state.error.message}
           </div>
           <button
             type="button"
-            className="tap"
+            className="btn-primary"
             onClick={() => window.location.reload()}
-            style={{
-              marginTop: 14,
-              border: 0,
-              background: 'var(--ink)',
-              color: 'var(--bg)',
-              padding: '10px 18px',
-              borderRadius: 999,
-              fontSize: 13,
-              fontWeight: 600,
-              cursor: 'pointer',
-            }}
+            style={{ marginTop: 10 }}
           >
             {i18n.t('reload')}
           </button>

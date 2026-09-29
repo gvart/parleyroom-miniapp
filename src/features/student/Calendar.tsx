@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Pill } from '@/ui'
+import { EmptyState, PageHeader, Pill } from '@/ui'
 import { useLessons } from '@/hooks/useLessons'
 import { isClub, lessonDate, lessonTime, todayISO } from '@/lib/lesson'
 import { formatMonthYear, formatWeekdayShort } from '@/lib/intl'
@@ -74,60 +74,26 @@ export function Calendar() {
 
   return (
     <div>
-      <div
-        style={{
-          padding: '8px 20px 14px',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'flex-end',
-        }}
-      >
-        <div>
-          <div
-            style={{
-              fontSize: 11,
-              color: 'var(--ink-3)',
-              letterSpacing: '0.12em',
-              textTransform: 'uppercase',
-              fontWeight: 600,
-              marginBottom: 6,
-            }}
+      <PageHeader
+        eyebrow={t('calendar')}
+        title={monthLabel}
+        action={
+          <button
+            type="button"
+            onClick={() => setSheetOpen(true)}
+            className="btn-primary"
+            aria-label={t('book_lesson_title')}
+            style={{ width: 44, minHeight: 44, padding: 0 }}
           >
-            {t('calendar')}
-          </div>
-          <div
-            className="serif"
-            style={{ fontSize: 30, lineHeight: 1.05, letterSpacing: '-0.02em' }}
-          >
-            {monthLabel}
-            <span style={{ color: 'var(--accent)' }}>.</span>
-          </div>
-        </div>
-        <button
-          type="button"
-          onClick={() => setSheetOpen(true)}
-          className="tap"
-          aria-label={t('book_lesson_title')}
-          style={{
-            width: 40,
-            height: 40,
-            borderRadius: 999,
-            background: 'var(--ink)',
-            color: 'var(--bg)',
-            border: 0,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            cursor: 'pointer',
-          }}
-        >
-          <span className="ms" style={{ fontSize: 20 }}>
-            add
-          </span>
-        </button>
-      </div>
+            <span className="ms" style={{ fontSize: 24 }} aria-hidden="true">
+              add
+            </span>
+          </button>
+        }
+      />
 
-      <div style={{ padding: '0 12px 16px', display: 'flex', gap: 4 }}>
+      <div style={{ padding: '0 16px 16px' }}>
+      <div className="card" style={{ padding: 6, display: 'flex', gap: 2, borderRadius: 24 }}>
         {week.map((d) => {
           const active = selected === d.iso
           return (
@@ -136,14 +102,16 @@ export function Calendar() {
               key={d.iso}
               onClick={() => setSelected(d.iso)}
               className="tap"
+              aria-pressed={active}
               style={{
                 flex: 1,
                 border: 0,
                 cursor: 'pointer',
-                padding: '10px 0',
-                background: active ? 'var(--ink)' : 'transparent',
-                color: active ? 'var(--bg)' : 'var(--ink)',
-                borderRadius: 14,
+                padding: '8px 0',
+                background: active ? 'var(--accent-face)' : 'transparent',
+                color: active ? 'var(--on-accent)' : d.isToday ? 'var(--accent-ink)' : 'var(--ink)',
+                boxShadow: active ? '0 3px 0 var(--accent-base)' : 'none',
+                borderRadius: 18,
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
@@ -152,11 +120,11 @@ export function Calendar() {
             >
               <div
                 style={{
-                  fontSize: 10,
-                  letterSpacing: '0.1em',
+                  fontSize: 'var(--text-label)',
+                  letterSpacing: '0.06em',
                   textTransform: 'uppercase',
-                  fontWeight: 600,
-                  opacity: 0.7,
+                  fontWeight: 800,
+                  opacity: 0.8,
                 }}
               >
                 {d.label}
@@ -172,25 +140,21 @@ export function Calendar() {
               </div>
               <div
                 style={{
-                  width: 4,
-                  height: 4,
+                  width: 5,
+                  height: 5,
                   borderRadius: 999,
-                  background: d.hasLessons ? 'var(--accent)' : 'transparent',
+                  background: d.hasLessons ? (active ? 'var(--on-accent)' : 'var(--accent)') : 'transparent',
                 }}
               />
             </button>
           )
         })}
       </div>
+      </div>
 
-      <div style={{ padding: '0 20px' }}>
+      <div style={{ padding: '0 16px' }}>
         {dayLessons.length === 0 ? (
-          <div style={{ padding: '40px 30px', textAlign: 'center' }}>
-            <div style={{ fontSize: 36, marginBottom: 10 }}>·</div>
-            <div className="serif" style={{ fontSize: 20, color: 'var(--ink-2)' }}>
-              {t('no_lessons_today')}
-            </div>
-          </div>
+          <EmptyState icon="event_busy" title={t('no_lessons_today')} />
         ) : (
           HOURS.map((h, i) => {
             const inHour = dayLessons.filter(
@@ -208,7 +172,7 @@ export function Calendar() {
                   paddingBottom: 6,
                 }}
               >
-                <div className="mono" style={{ width: 32, fontSize: 11, color: 'var(--ink-3)', paddingTop: 2 }}>
+                <div style={{ width: 40, fontSize: 'var(--text-caption)', fontWeight: 800, color: 'var(--ink-3)', paddingTop: 4, fontVariantNumeric: 'tabular-nums' }}>
                   {h}:00
                 </div>
                 <div style={{ flex: 1 }}>
@@ -229,22 +193,17 @@ export function Calendar() {
                           textAlign: 'left',
                           cursor: 'pointer',
                           background: live
-                            ? 'linear-gradient(135deg, oklch(0.38 0.12 145), oklch(0.28 0.1 200))'
+                            ? 'var(--coral-soft)'
                             : club
-                              ? 'oklch(0.94 0.04 290)'
-                              : 'var(--card)',
-                          color: live
-                            ? '#F2F1EC'
-                            : club
-                              ? 'oklch(0.35 0.12 290)'
-                              : 'var(--ink)',
-                          padding: '10px 12px',
-                          borderRadius: 14,
-                          border: live ? 0 : '1px solid var(--hair)',
+                              ? 'var(--grape-soft)'
+                              : 'var(--glass-bg)',
+                          color: 'var(--ink)',
+                          padding: '10px 14px',
+                          borderRadius: 18,
+                          border: '1px solid var(--glass-border)',
+                          borderLeft: `4px solid ${live ? 'var(--coral-vivid)' : club ? 'var(--grape-vivid)' : 'var(--accent)'}`,
                           marginBottom: 4,
-                          boxShadow: live
-                            ? '0 8px 20px oklch(0.28 0.1 200 / 0.3)'
-                            : 'none',
+                          boxShadow: 'var(--glass-highlight), var(--shadow-1)',
                           fontFamily: 'inherit',
                           fontSize: 'inherit',
                         }}
@@ -259,8 +218,8 @@ export function Calendar() {
                         >
                           <div
                             style={{
-                              fontSize: 13,
-                              fontWeight: 600,
+                              fontSize: 'var(--text-body)',
+                              fontWeight: 800,
                               overflow: 'hidden',
                               textOverflow: 'ellipsis',
                               whiteSpace: 'nowrap',
@@ -269,13 +228,13 @@ export function Calendar() {
                             {l.topic}
                           </div>
                           {live && (
-                            <Pill tone="live" style={{ fontSize: 9, padding: '2px 6px' }}>
+                            <Pill tone="live" style={{ fontSize: 'var(--text-label)', padding: '2px 8px' }}>
                               <span className="live-dot" />
                               {t('live').toUpperCase()}
                             </Pill>
                           )}
                         </div>
-                        <div style={{ fontSize: 11, opacity: 0.7 }}>
+                        <div style={{ fontSize: 'var(--text-caption)', fontWeight: 600, color: 'var(--ink-2)' }}>
                           {lessonTime(l.scheduledAt)} · {l.durationMinutes}m ·{' '}
                           {club
                             ? `${l.students.length}${l.maxParticipants ? `/${l.maxParticipants}` : ''}`

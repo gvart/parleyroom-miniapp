@@ -1,32 +1,26 @@
+import { TONE_VARS, type Tone } from './tones'
+
 interface CategoryDotProps {
   cat: string
 }
 
-const map: Record<string, { bg: string; fg: string; icon: string }> = {
-  writing: { bg: 'oklch(0.94 0.05 290)', fg: 'oklch(0.5 0.13 290)', icon: 'edit' },
-  reading: { bg: 'oklch(0.94 0.05 75)', fg: 'oklch(0.48 0.13 75)', icon: 'menu_book' },
-  grammar: { bg: 'oklch(0.94 0.04 172)', fg: 'oklch(0.45 0.11 172)', icon: 'school' },
-  vocabulary: { bg: 'oklch(0.94 0.05 210)', fg: 'oklch(0.5 0.13 210)', icon: 'dictionary' },
-  listening: { bg: 'oklch(0.94 0.05 25)', fg: 'oklch(0.55 0.15 25)', icon: 'headphones' },
+const map: Record<string, { tone: Tone; icon: string }> = {
+  writing: { tone: 'grape', icon: 'edit' },
+  reading: { tone: 'sunny', icon: 'menu_book' },
+  grammar: { tone: 'leaf', icon: 'school' },
+  vocabulary: { tone: 'sky', icon: 'dictionary' },
+  listening: { tone: 'coral', icon: 'headphones' },
 }
 
 export function CategoryDot({ cat }: CategoryDotProps) {
   const c = map[cat] ?? map.writing
+  const v = TONE_VARS[c.tone]
   return (
     <div
-      style={{
-        width: 34,
-        height: 34,
-        borderRadius: 10,
-        background: c.bg,
-        color: c.fg,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        flexShrink: 0,
-      }}
+      className="icon-tile"
+      style={{ width: 36, height: 36, borderRadius: 12, background: v.soft, color: v.ink }}
     >
-      <span className="ms" style={{ fontSize: 18 }}>
+      <span className="ms fill" style={{ fontSize: 18 }} aria-hidden="true">
         {c.icon}
       </span>
     </div>

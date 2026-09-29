@@ -1,14 +1,16 @@
 import type { CSSProperties, ReactNode } from 'react'
 
-export type PillTone = 'neutral' | 'accent' | 'warn' | 'violet' | 'live' | 'dark'
+export type PillTone = 'neutral' | 'accent' | 'warn' | 'violet' | 'live' | 'dark' | 'moss' | 'info'
 
 const tones: Record<PillTone, { bg: string; fg: string }> = {
-  neutral: { bg: 'var(--hair)', fg: 'var(--ink-2)' },
-  accent: { bg: 'var(--accent-soft)', fg: 'var(--accent-deep)' },
-  warn: { bg: 'oklch(0.95 0.05 75)', fg: 'oklch(0.45 0.12 75)' },
-  violet: { bg: 'oklch(0.95 0.04 290)', fg: 'oklch(0.40 0.12 290)' },
-  live: { bg: 'oklch(0.96 0.05 25)', fg: 'oklch(0.5 0.18 25)' },
+  neutral: { bg: 'var(--bg-3)', fg: 'var(--ink-2)' },
+  accent: { bg: 'var(--accent-soft)', fg: 'var(--accent-ink)' },
+  warn: { bg: 'var(--sunny-soft)', fg: 'var(--sunny-ink)' },
+  violet: { bg: 'var(--grape-soft)', fg: 'var(--grape-ink)' },
+  live: { bg: 'var(--coral-soft)', fg: 'var(--coral-ink)' },
   dark: { bg: 'var(--ink)', fg: 'var(--bg)' },
+  moss: { bg: 'var(--leaf-soft)', fg: 'var(--leaf-ink)' },
+  info: { bg: 'var(--sky-soft)', fg: 'var(--sky-ink)' },
 }
 
 interface PillProps {
@@ -17,6 +19,7 @@ interface PillProps {
   style?: CSSProperties
 }
 
+/** Small rounded status label — the portal's Liquid Glass pill. */
 export function Pill({ children, tone = 'neutral', style }: PillProps) {
   const t = tones[tone]
   return (
@@ -27,11 +30,12 @@ export function Pill({ children, tone = 'neutral', style }: PillProps) {
         gap: 5,
         background: t.bg,
         color: t.fg,
-        padding: '4px 10px',
+        padding: '3px 10px',
         borderRadius: 999,
-        fontSize: 11,
-        fontWeight: 600,
-        letterSpacing: '0.01em',
+        fontSize: 'var(--text-caption)',
+        lineHeight: 1.5,
+        fontWeight: 800,
+        whiteSpace: 'nowrap',
         ...style,
       }}
     >

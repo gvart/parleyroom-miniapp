@@ -1,31 +1,23 @@
 import { forwardRef, type InputHTMLAttributes, type ReactNode, type TextareaHTMLAttributes } from 'react'
 
-const labelStyle = {
-  fontSize: 11,
-  color: 'var(--ink-3)',
-  textTransform: 'uppercase' as const,
-  letterSpacing: '0.08em',
-  fontWeight: 600,
-  marginBottom: 8,
-  display: 'block',
-}
-
-const inputBase = {
-  width: '100%',
-  minWidth: 0,
-  padding: '12px 14px',
-  background: 'var(--card)',
-  color: 'var(--ink)',
-  border: '1px solid var(--hair)',
-  borderRadius: 14,
-  fontSize: 15,
-  fontFamily: 'inherit',
-  outline: 'none',
-  boxSizing: 'border-box' as const,
-}
-
 export function FieldLabel({ children }: { children: ReactNode }) {
-  return <div style={labelStyle}>{children}</div>
+  return <div className="eyebrow field-label">{children}</div>
+}
+
+function FieldMessage({ error, hint }: { error?: string | null; hint?: ReactNode }) {
+  if (!hint && !error) return null
+  return (
+    <div
+      style={{
+        fontSize: 'var(--text-caption)',
+        fontWeight: error ? 700 : 400,
+        color: error ? 'var(--coral-ink)' : 'var(--ink-3)',
+        marginTop: 6,
+      }}
+    >
+      {error ?? hint}
+    </div>
+  )
 }
 
 interface TextFieldProps extends InputHTMLAttributes<HTMLInputElement> {
@@ -36,23 +28,19 @@ interface TextFieldProps extends InputHTMLAttributes<HTMLInputElement> {
 }
 
 export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(function TextField(
-  { label, error, hint, trailing, style, ...rest },
+  { label, error, hint, trailing, style, className, ...rest },
   ref,
 ) {
-  const hasError = Boolean(error)
   return (
     <div style={{ width: '100%' }}>
       {label && <FieldLabel>{label}</FieldLabel>}
       <div style={{ position: 'relative' }}>
         <input
           ref={ref}
+          aria-invalid={error ? true : undefined}
           {...rest}
-          style={{
-            ...inputBase,
-            borderColor: hasError ? 'oklch(0.7 0.18 25)' : 'var(--hair)',
-            paddingRight: trailing ? 42 : inputBase.padding,
-            ...style,
-          }}
+          className={`glass-field${className ? ` ${className}` : ''}`}
+          style={{ paddingRight: trailing ? 44 : undefined, ...style }}
         />
         {trailing && (
           <span
@@ -70,17 +58,7 @@ export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(function T
           </span>
         )}
       </div>
-      {(hint || error) && (
-        <div
-          style={{
-            fontSize: 12,
-            color: hasError ? 'oklch(0.5 0.18 25)' : 'var(--ink-3)',
-            marginTop: 6,
-          }}
-        >
-          {error ?? hint}
-        </div>
-      )}
+      <FieldMessage error={error} hint={hint} />
     </div>
   )
 })
@@ -92,35 +70,21 @@ interface TextAreaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
 }
 
 export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(function TextArea(
-  { label, error, hint, style, rows = 3, ...rest },
+  { label, error, hint, style, className, rows = 3, ...rest },
   ref,
 ) {
-  const hasError = Boolean(error)
   return (
     <div style={{ width: '100%' }}>
       {label && <FieldLabel>{label}</FieldLabel>}
       <textarea
         ref={ref}
         rows={rows}
+        aria-invalid={error ? true : undefined}
         {...rest}
-        style={{
-          ...inputBase,
-          resize: 'vertical' as const,
-          borderColor: hasError ? 'oklch(0.7 0.18 25)' : 'var(--hair)',
-          ...style,
-        }}
+        className={`glass-field${className ? ` ${className}` : ''}`}
+        style={{ resize: 'vertical', ...style }}
       />
-      {(hint || error) && (
-        <div
-          style={{
-            fontSize: 12,
-            color: hasError ? 'oklch(0.5 0.18 25)' : 'var(--ink-3)',
-            marginTop: 6,
-          }}
-        >
-          {error ?? hint}
-        </div>
-      )}
+      <FieldMessage error={error} hint={hint} />
     </div>
   )
 })

@@ -79,10 +79,10 @@ export function MaterialPreview({ material, onClose }: Props) {
   return (
     <div style={{ padding: '0 22px', display: 'flex', flexDirection: 'column', gap: 14 }}>
       <div>
-        <div className="serif" style={{ fontSize: 26, letterSpacing: '-0.01em' }}>
+        <div className="section-title">
           {material.name}
         </div>
-        <div style={{ fontSize: 13, color: 'var(--ink-2)', marginTop: 4 }}>
+        <div style={{ fontSize: 'var(--text-small)', color: 'var(--ink-2)', marginTop: 4 }}>
           {t(material.type.toLowerCase())}
           {material.fileSize ? ` · ${bytesToLabel(material.fileSize)}` : ''}
           {material.level ? ` · ${material.level}` : ''}
@@ -111,7 +111,7 @@ export function MaterialPreview({ material, onClose }: Props) {
       )}
 
       {!isLink && loading && (
-        <div style={{ fontSize: 13, color: 'var(--ink-2)', textAlign: 'center', padding: 20 }}>
+        <div style={{ fontSize: 'var(--text-small)', color: 'var(--ink-2)', textAlign: 'center', padding: 20 }}>
           {t('preview_loading')}
         </div>
       )}
@@ -120,7 +120,7 @@ export function MaterialPreview({ material, onClose }: Props) {
         <img
           src={url}
           alt={material.name}
-          style={{ maxWidth: '100%', borderRadius: 12, border: '1px solid var(--hair)' }}
+          style={{ maxWidth: '100%', borderRadius: 18, border: '1px solid var(--hair)' }}
         />
       )}
       {!isLink && url && isPdf && (
@@ -131,7 +131,7 @@ export function MaterialPreview({ material, onClose }: Props) {
             width: '100%',
             height: '70vh',
             border: '1px solid var(--hair)',
-            borderRadius: 12,
+            borderRadius: 18,
           }}
         />
       )}
@@ -142,7 +142,7 @@ export function MaterialPreview({ material, onClose }: Props) {
         <video
           controls
           src={url}
-          style={{ width: '100%', maxHeight: '70vh', borderRadius: 12 }}
+          style={{ width: '100%', maxHeight: '70vh', borderRadius: 18 }}
         />
       )}
     </div>

@@ -1,6 +1,18 @@
 import { useEffect, useMemo, useState, type FormEvent } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Banner, Card, Pill, Sheet, StatChip, type PillTone } from '@/ui'
+import {
+  Banner,
+  Button,
+  Card,
+  EmptyState,
+  FieldLabel,
+  PageHeader,
+  Pill,
+  Segmented,
+  Sheet,
+  StatChip,
+  type PillTone,
+} from '@/ui'
 import {
   useHomework,
   useHomeworkDetail,
@@ -17,6 +29,13 @@ const TABS: Array<{ key: Tab; labelKey: string }> = [
   { key: 'review', labelKey: 'tab_reviewed' },
   { key: 'done', labelKey: 'tab_done' },
 ]
+
+const TILE: Record<Tab, { background: string; color: string }> = {
+  open: { background: 'var(--sunny-soft)', color: 'var(--sunny-ink)' },
+  review: { background: 'var(--sky-soft)', color: 'var(--sky-ink)' },
+  done: { background: 'var(--leaf-soft)', color: 'var(--leaf-ink)' },
+}
+const TILE_ICON: Record<Tab, string> = { open: 'edit_note', review: 'rate_review', done: 'task_alt' }
 
 function dueTone(d: DueInfo): PillTone {
   if (d.kind === 'overdue') return 'live'
@@ -67,80 +86,47 @@ export function Homework() {
 
   return (
     <div>
-      <div style={{ padding: '8px 20px 14px' }}>
-        <div
-          style={{
-            fontSize: 11,
-            color: 'var(--ink-3)',
-            letterSpacing: '0.12em',
-            textTransform: 'uppercase',
-            fontWeight: 600,
-            marginBottom: 6,
-          }}
-        >
-          {t('homework')}
-        </div>
-        <div className="serif" style={{ fontSize: 34, lineHeight: 1.05, letterSpacing: '-0.02em' }}>
-          {t('tasks')}
-          <span style={{ color: 'var(--accent)' }}>.</span>
-        </div>
-      </div>
+      <PageHeader eyebrow={t('homework')} title={t('tasks')} />
 
       {!isEmpty && (
         <div
           style={{
-            padding: '0 20px 18px',
+            padding: '0 16px 16px',
             display: 'grid',
             gridTemplateColumns: 'repeat(3, 1fr)',
             gap: 8,
           }}
         >
-          <StatChip icon="pending_actions" value={groups.open.length} label={t('tab_open')} hue={25} />
-          <StatChip icon="rate_review" value={groups.review.length} label={t('tab_reviewed')} hue={210} />
-          <StatChip icon="task_alt" value={groups.done.length} label={t('tab_done')} hue={172} />
+          <StatChip icon="pending_actions" value={groups.open.length} label={t('tab_open')} tone="coral" />
+          <StatChip icon="rate_review" value={groups.review.length} label={t('tab_reviewed')} tone="sky" />
+          <StatChip icon="task_alt" value={groups.done.length} label={t('tab_done')} tone="leaf" />
         </div>
       )}
 
       {!isEmpty && (
-        <div style={{ padding: '0 20px 14px' }}>
-          <div style={{ display: 'flex', gap: 6 }}>
-            {TABS.map(({ key, labelKey }) => (
-              <button
-                type="button"
-                key={key}
-                onClick={() => setTab(key)}
-                className="tap"
-                style={{
-                  flex: 1,
-                  padding: '9px 10px',
-                  borderRadius: 999,
-                  border: '1px solid var(--hair)',
-                  background: tab === key ? 'var(--ink)' : 'transparent',
-                  color: tab === key ? 'var(--bg)' : 'var(--ink-2)',
-                  fontSize: 12,
-                  fontWeight: 600,
-                  cursor: 'pointer',
-                }}
-              >
-                {t(labelKey)} · {groups[key].length}
-              </button>
-            ))}
-          </div>
+        <div style={{ padding: '0 16px 16px' }}>
+          <Segmented
+            options={TABS.map(({ key, labelKey }) => ({
+              key,
+              label: t(labelKey),
+              count: groups[key].length,
+            }))}
+            value={tab}
+            onChange={setTab}
+          />
         </div>
       )}
 
       {isEmpty ? (
-        <div style={{ padding: '40px 30px', textAlign: 'center' }}>
-          <div style={{ fontSize: 40, marginBottom: 10 }}>◌</div>
-          <div className="serif" style={{ fontSize: 22, marginBottom: 4 }}>
-            {t('empty_homework_title')}
-          </div>
-          <div style={{ fontSize: 13, color: 'var(--ink-2)' }}>{t('empty_homework_sub')}</div>
-        </div>
+        <EmptyState
+          icon="task_alt"
+          title={t('empty_homework_title')}
+          sub={t('empty_homework_sub')}
+        />
       ) : list.length > 0 ? (
-        <div style={{ padding: '0 20px' }}>
-          <Card padded={false}>
-            {list.map((h, i) => {
+        <div style={{ padding: '0 16px' }}>
+          <Card padded={false} className="row-list" style={{ overflow: 'hidden' }}>
+            {list.map((h) => {
               const due = computeDue(h.dueDate)
               const tone = dueTone(due)
               const sLabel = statusLabel(h.status, t)
@@ -149,23 +135,17 @@ export function Homework() {
                   type="button"
                   key={h.id}
                   onClick={() => setOpenTask(h)}
-                  className="tap"
-                  style={{
-                    width: '100%',
-                    border: 0,
-                    background: 'transparent',
-                    color: 'var(--ink)',
-                    textAlign: 'left',
-                    display: 'flex',
-                    gap: 12,
-                    alignItems: 'center',
-                    padding: '14px 18px',
-                    borderBottom: i < list.length - 1 ? '1px solid var(--hair)' : 0,
-                    cursor: 'pointer',
-                  }}
+                  className="row-btn"
                 >
+                  <span className="icon-tile" style={TILE[tab]}>
+                    <span className="ms fill" style={{ fontSize: 20 }} aria-hidden="true">
+                      {TILE_ICON[tab]}
+                    </span>
+                  </span>
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: 14, fontWeight: 500, marginBottom: 4 }}>{h.title}</div>
+                    <div style={{ fontSize: 'var(--text-card-title)', fontWeight: 700, marginBottom: 4 }}>
+                      {h.title}
+                    </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                       {(due.kind !== 'none' || tab === 'open') && (
                         <Pill tone={tone}>{dueLabel(due, t)}</Pill>
@@ -173,9 +153,9 @@ export function Homework() {
                       {sLabel && (
                         <span
                           style={{
-                            fontSize: 11,
-                            color: 'var(--ink-3)',
-                            textTransform: 'capitalize',
+                            fontSize: 'var(--text-caption)',
+                            fontWeight: 700,
+                            color: 'var(--ink-2)',
                           }}
                         >
                           {sLabel}
@@ -192,13 +172,11 @@ export function Homework() {
           </Card>
         </div>
       ) : (
-        <div style={{ padding: '40px 30px', textAlign: 'center' }}>
-          <div style={{ fontSize: 36, marginBottom: 10 }}>✓</div>
-          <div className="serif" style={{ fontSize: 20, marginBottom: 4 }}>
-            {t('empty_stack_title')}
-          </div>
-          <div style={{ fontSize: 13, color: 'var(--ink-2)' }}>{t('empty_stack_sub')}</div>
-        </div>
+        <EmptyState
+          icon="done_all"
+          title={t('empty_stack_title')}
+          sub={t('empty_stack_sub')}
+        />
       )}
 
       <HomeworkSubmitSheet task={openTask} onClose={() => setOpenTask(null)} />
@@ -270,7 +248,7 @@ function HomeworkSubmitSheet({ task, onClose }: SheetProps) {
 
   return (
     <Sheet open={!!task} onClose={onClose}>
-      <div style={{ padding: '0 22px 10px' }}>
+      <div style={{ padding: '0 16px 4px' }}>
         {submittedOk ? (
           <div style={{ textAlign: 'center', padding: '36px 10px' }}>
             <div
@@ -279,57 +257,48 @@ function HomeworkSubmitSheet({ task, onClose }: SheetProps) {
                 height: 72,
                 borderRadius: 999,
                 background: 'var(--accent-soft)',
-                color: 'var(--accent-deep)',
+                color: 'var(--accent-ink)',
+                boxShadow: 'var(--glass-highlight), 0 0 0 8px color-mix(in srgb, var(--accent) 10%, transparent)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                margin: '0 auto 14px',
-                animation: 'scale-in .4s var(--spring)',
+                margin: '0 auto 16px',
+                animation: 'scale-in var(--spring-bouncy-ms) var(--spring-bouncy)',
               }}
             >
               <span className="ms fill" style={{ fontSize: 36 }}>
                 check
               </span>
             </div>
-            <div className="serif" style={{ fontSize: 26, marginBottom: 4 }}>
+            <div className="section-title" style={{ marginBottom: 4 }}>
               {t('submitted_title')}
             </div>
-            <div style={{ fontSize: 13, color: 'var(--ink-2)' }}>{t('submitted_sub')}</div>
+            <div style={{ fontSize: 'var(--text-small)', color: 'var(--ink-2)' }}>{t('submitted_sub')}</div>
           </div>
         ) : (
           <form onSubmit={onSubmit}>
             <div style={{ marginBottom: 18 }}>
-              <div
-                style={{
-                  fontSize: 11,
-                  color: 'var(--ink-3)',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.1em',
-                  fontWeight: 600,
-                  marginBottom: 3,
-                }}
-              >
-                {dueText}
-              </div>
-              <div
-                className="serif"
-                style={{ fontSize: 24, lineHeight: 1.15, letterSpacing: '-0.01em' }}
-              >
+              {dueText && (
+                <div className="eyebrow" style={{ marginBottom: 6 }}>
+                  {dueText}
+                </div>
+              )}
+              <h2 className="section-title" style={{ margin: 0 }}>
                 {task.title}
-              </div>
+              </h2>
             </div>
 
             {detail?.instructions && (
               <div
                 style={{
-                  fontSize: 13,
+                  fontSize: 'var(--text-body)',
                   color: 'var(--ink-2)',
                   lineHeight: 1.5,
                   marginBottom: 16,
                   padding: '12px 14px',
-                  background: 'var(--bg-2)',
-                  borderRadius: 12,
+                  borderRadius: 18,
                 }}
+                className="glass-inner"
               >
                 {detail.instructions}
               </div>
@@ -338,24 +307,16 @@ function HomeworkSubmitSheet({ task, onClose }: SheetProps) {
             {detail?.feedback && (
               <div
                 style={{
-                  fontSize: 13,
+                  fontSize: 'var(--text-body)',
                   color: 'var(--ink-2)',
                   lineHeight: 1.5,
                   marginBottom: 16,
                   padding: '12px 14px',
-                  background: 'var(--bg-2)',
-                  borderRadius: 12,
+                  borderRadius: 18,
                 }}
+                className="glass-inner"
               >
-                <div
-                  style={{
-                    fontSize: 11,
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.08em',
-                    fontWeight: 600,
-                    marginBottom: 4,
-                  }}
-                >
+                <div className="eyebrow" style={{ marginBottom: 4 }}>
                   {t('teacher_feedback')}
                 </div>
                 {detail.feedback}
@@ -364,42 +325,19 @@ function HomeworkSubmitSheet({ task, onClose }: SheetProps) {
 
             {item ? (
               <>
-                <div
-                  style={{
-                    fontSize: 11,
-                    color: 'var(--ink-3)',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.08em',
-                    fontWeight: 600,
-                    marginBottom: 8,
-                  }}
-                >
-                  {t('notes')}
-                </div>
+                <FieldLabel>{t('notes')}</FieldLabel>
                 <textarea
+                  className="glass-field"
                   value={text}
                   onChange={(e) => setText(e.target.value)}
                   placeholder={t('submission_placeholder')}
                   disabled={!isOpenStatus(task.status)}
-                  style={{
-                    width: '100%',
-                    minHeight: 110,
-                    padding: '12px 14px',
-                    background: 'var(--card)',
-                    color: 'var(--ink)',
-                    border: '1px solid var(--hair)',
-                    borderRadius: 14,
-                    fontSize: 14,
-                    lineHeight: 1.5,
-                    fontFamily: 'inherit',
-                    resize: 'vertical',
-                    outline: 'none',
-                    marginBottom: 10,
-                  }}
+                  style={{ minHeight: 120, lineHeight: 1.5, resize: 'vertical', marginBottom: 8 }}
                 />
                 <div
                   style={{
-                    fontSize: 11,
+                    fontSize: 'var(--text-caption)',
+                    fontWeight: 700,
                     color: 'var(--ink-3)',
                     textAlign: 'right',
                     marginBottom: 18,
@@ -417,46 +355,15 @@ function HomeworkSubmitSheet({ task, onClose }: SheetProps) {
             )}
 
             {submitError && (
-              <div
-                style={{
-                  marginBottom: 12,
-                  padding: '10px 14px',
-                  borderRadius: 12,
-                  background: 'oklch(0.96 0.05 25)',
-                  color: 'oklch(0.5 0.18 25)',
-                  fontSize: 13,
-                }}
-              >
+              <Banner tone="error" style={{ marginBottom: 12 }}>
                 {submitError instanceof Error ? submitError.message : t('submit_failed')}
-              </div>
+              </Banner>
             )}
 
             {item && isOpenStatus(task.status) && (
-              <button
-                type="submit"
-                disabled={!canSubmit}
-                className="tap"
-                style={{
-                  width: '100%',
-                  border: 0,
-                  cursor: canSubmit ? 'pointer' : 'not-allowed',
-                  background: canSubmit ? 'var(--ink)' : 'var(--hair-strong)',
-                  color: canSubmit ? 'var(--bg)' : 'var(--ink-3)',
-                  padding: '14px',
-                  borderRadius: 999,
-                  fontSize: 14,
-                  fontWeight: 600,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: 6,
-                }}
-              >
-                <span className="ms fill" style={{ fontSize: 18 }}>
-                  send
-                </span>
-                {isPending ? `${t('ok_submit')}…` : t('ok_submit')}
-              </button>
+              <Button type="submit" block disabled={!canSubmit} loading={isPending} leadingIcon="send">
+                {t('ok_submit')}
+              </Button>
             )}
           </form>
         )}

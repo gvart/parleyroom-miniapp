@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Sheet } from '@/ui'
+import { Banner, Button, Sheet } from '@/ui'
 import { useCreateMaterial } from '@/hooks/useCreateMaterial'
 import type { MaterialType } from '@/api/types'
 
@@ -79,37 +79,17 @@ export function UploadMaterialSheet({ open, onClose }: Props) {
     }
   }
 
-  const labelStyle = {
-    fontSize: 11,
-    color: 'var(--ink-3)',
-    textTransform: 'uppercase' as const,
-    letterSpacing: '0.08em',
-    fontWeight: 600,
-    marginBottom: 8,
-  }
-  const inputStyle = {
-    width: '100%',
-    padding: '12px 14px',
-    background: 'var(--card)',
-    color: 'var(--ink)',
-    border: '1px solid var(--hair)',
-    borderRadius: 14,
-    fontSize: 15,
-    fontFamily: 'inherit',
-    outline: 'none',
-  }
-
   const acceptAttr = TYPES.find((opt) => opt.key === type)?.accept ?? ''
 
   return (
     <Sheet open={open} onClose={onClose}>
-      <form onSubmit={submit} style={{ padding: '0 22px 10px' }}>
-        <div className="serif" style={{ fontSize: 26, letterSpacing: '-0.01em', marginBottom: 18 }}>
+      <form onSubmit={submit} style={{ padding: '0 20px 4px' }}>
+        <div className="section-title" style={{ marginBottom: 18 }}>
           {t('upload_material_title')}
         </div>
 
         <div style={{ marginBottom: 14 }}>
-          <div style={labelStyle}>{t('material_type_label')}</div>
+          <div className="eyebrow field-label">{t('material_type_label')}</div>
           <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
             {TYPES.map((opt) => (
               <button
@@ -121,17 +101,8 @@ export function UploadMaterialSheet({ open, onClose }: Props) {
                   setUrl('')
                   setError(null)
                 }}
-                className="tap"
-                style={{
-                  padding: '8px 14px',
-                  borderRadius: 999,
-                  fontSize: 13,
-                  fontWeight: 600,
-                  cursor: 'pointer',
-                  border: '1px solid var(--hair)',
-                  background: type === opt.key ? 'var(--ink)' : 'transparent',
-                  color: type === opt.key ? 'var(--bg)' : 'var(--ink)',
-                }}
+                aria-pressed={type === opt.key}
+                className={`chip${type === opt.key ? ' on' : ''}`}
               >
                 {t(opt.labelKey)}
               </button>
@@ -140,29 +111,29 @@ export function UploadMaterialSheet({ open, onClose }: Props) {
         </div>
 
         <div style={{ marginBottom: 14 }}>
-          <div style={labelStyle}>{t('material_name_label')}</div>
+          <div className="eyebrow field-label">{t('material_name_label')}</div>
           <input
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder={t('material_name_placeholder')}
-            style={inputStyle}
+            className="glass-field"
           />
         </div>
 
         {isLink ? (
           <div style={{ marginBottom: 18 }}>
-            <div style={labelStyle}>{t('material_url_label')}</div>
+            <div className="eyebrow field-label">{t('material_url_label')}</div>
             <input
               value={url}
               onChange={(e) => setUrl(e.target.value)}
               placeholder={t('material_url_placeholder')}
               type="url"
-              style={inputStyle}
+              className="glass-field"
             />
           </div>
         ) : (
           <div style={{ marginBottom: 18 }}>
-            <div style={labelStyle}>{t('material_file_label')}</div>
+            <div className="eyebrow field-label">{t('material_file_label')}</div>
             <input
               ref={fileInputRef}
               type="file"
@@ -173,29 +144,24 @@ export function UploadMaterialSheet({ open, onClose }: Props) {
             <button
               type="button"
               onClick={pickFile}
-              className="tap"
+              className="row-btn tap"
               style={{
-                width: '100%',
-                border: '1px dashed var(--hair-strong)',
-                background: 'transparent',
-                color: 'var(--ink)',
-                padding: '14px 16px',
-                borderRadius: 14,
-                fontSize: 14,
-                fontWeight: 600,
-                cursor: 'pointer',
-                textAlign: 'left',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 12,
+                border: '1.5px dashed var(--hair-strong)',
+                borderRadius: 20,
+                padding: '12px 14px',
+                background: 'var(--bg-2)',
               }}
             >
-              <span className="ms" style={{ fontSize: 22, color: 'var(--accent)' }}>
-                {file ? 'check_circle' : 'upload_file'}
+              <span className="icon-tile">
+                <span className="ms fill" style={{ fontSize: 22 }} aria-hidden="true">
+                  {file ? 'check_circle' : 'upload_file'}
+                </span>
               </span>
-              <span style={{ flex: 1 }}>{file ? file.name : t('pick_file')}</span>
+              <span style={{ flex: 1, minWidth: 0, fontSize: 'var(--text-body)', fontWeight: 700, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                {file ? file.name : t('pick_file')}
+              </span>
               {file && (
-                <span style={{ fontSize: 11, color: 'var(--ink-3)' }}>
+                <span style={{ fontSize: 'var(--text-caption)', fontWeight: 700, color: 'var(--ink-2)' }}>
                   {(file.size / 1024 / 1024).toFixed(1)} MB
                 </span>
               )}
@@ -204,38 +170,14 @@ export function UploadMaterialSheet({ open, onClose }: Props) {
         )}
 
         {error && (
-          <div
-            style={{
-              marginBottom: 12,
-              padding: '10px 14px',
-              borderRadius: 12,
-              background: 'oklch(0.96 0.05 25)',
-              color: 'oklch(0.5 0.18 25)',
-              fontSize: 13,
-            }}
-          >
+          <Banner tone="error" style={{ marginBottom: 12 }}>
             {error}
-          </div>
+          </Banner>
         )}
 
-        <button
-          type="submit"
-          disabled={!canSubmit}
-          className="tap"
-          style={{
-            width: '100%',
-            border: 0,
-            cursor: canSubmit ? 'pointer' : 'not-allowed',
-            background: canSubmit ? 'var(--ink)' : 'var(--hair-strong)',
-            color: canSubmit ? 'var(--bg)' : 'var(--ink-3)',
-            padding: '14px',
-            borderRadius: 999,
-            fontSize: 14,
-            fontWeight: 600,
-          }}
-        >
-          {create.isPending ? `${t('upload_material_button')}…` : t('upload_material_button')}
-        </button>
+        <Button type="submit" block disabled={!canSubmit} loading={create.isPending} leadingIcon="upload">
+          {t('upload_material_button')}
+        </Button>
       </form>
     </Sheet>
   )

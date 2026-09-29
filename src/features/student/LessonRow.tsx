@@ -31,42 +31,50 @@ export function LessonRow({ lesson, onOpen }: LessonRowProps) {
   const hasPendingReschedule = Boolean(lesson.pendingReschedule)
 
   return (
-    <Card onClick={onClick} style={{ cursor: 'pointer', position: 'relative' }}>
-      <div style={{ display: 'flex', gap: 14, alignItems: 'center' }}>
+    <Card
+      onClick={onClick}
+      style={{
+        cursor: 'pointer',
+        padding: '14px 16px 14px 12px',
+        borderRadius: 24,
+        background: live ? 'color-mix(in srgb, var(--coral-vivid) 10%, var(--glass-bg))' : undefined,
+      }}
+      className="tap"
+    >
+      <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
         <div
+          className="font-headline"
           style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            width: 48,
-            gap: 2,
+            width: 56,
+            flexShrink: 0,
+            textAlign: 'center',
+            fontSize: 'var(--text-lead)',
+            fontWeight: 900,
+            fontVariantNumeric: 'tabular-nums',
           }}
         >
-          <div className="mono" style={{ fontSize: 18, fontWeight: 600, letterSpacing: '-0.04em' }}>
-            {time.split(':')[0]}
-          </div>
-          <div className="mono" style={{ fontSize: 10, color: 'var(--ink-3)' }}>
-            :{time.split(':')[1]}
-          </div>
+          {time}
         </div>
-        <div style={{ width: 1, height: 38, background: 'var(--hair)' }} />
+        <div style={{ width: 1, alignSelf: 'stretch', background: 'var(--hair)' }} />
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ display: 'flex', gap: 6, alignItems: 'center', marginBottom: 2, flexWrap: 'wrap' }}>
-            {live && (
-              <Pill tone="live">
-                <span className="live-dot" />
-                {t('live')}
-              </Pill>
-            )}
-            {requested && <Pill tone="warn">{t('review')}</Pill>}
-            {club && <Pill tone="violet">{t(clubLabelKey(lesson) ?? '')}</Pill>}
-            {hasPendingReschedule && <Pill tone="warn">{t('reschedule_pending')}</Pill>}
-            {canJoin && <Pill tone="accent">{t('join_available')}</Pill>}
-          </div>
+          {(live || requested || club || hasPendingReschedule || canJoin) && (
+            <div style={{ display: 'flex', gap: 6, alignItems: 'center', marginBottom: 4, flexWrap: 'wrap' }}>
+              {live && (
+                <Pill tone="live">
+                  <span className="live-dot" />
+                  {t('live')}
+                </Pill>
+              )}
+              {requested && <Pill tone="warn">{t('review')}</Pill>}
+              {club && <Pill tone="violet">{t(clubLabelKey(lesson) ?? '')}</Pill>}
+              {hasPendingReschedule && <Pill tone="warn">{t('reschedule_pending')}</Pill>}
+              {canJoin && <Pill tone="accent">{t('join_available')}</Pill>}
+            </div>
+          )}
           <div
             style={{
-              fontSize: 15,
-              fontWeight: 600,
+              fontSize: 'var(--text-card-title)',
+              fontWeight: 700,
               marginBottom: 2,
               overflow: 'hidden',
               textOverflow: 'ellipsis',
@@ -75,13 +83,13 @@ export function LessonRow({ lesson, onOpen }: LessonRowProps) {
           >
             {lesson.topic || lesson.title}
           </div>
-          <div style={{ fontSize: 12, color: 'var(--ink-2)' }}>
+          <div style={{ fontSize: 'var(--text-small)', fontWeight: 700, color: 'var(--ink-2)' }}>
             {club
               ? `${participants}${capacity ? `/${capacity}` : ''} · ${lesson.level ?? '—'} · ${lesson.durationMinutes}m`
               : `${teacherInitial ?? t('role_teacher')} · ${lesson.level ?? '—'} · ${lesson.durationMinutes}m`}
           </div>
         </div>
-        <span className="ms" style={{ fontSize: 20, color: 'var(--ink-3)' }}>
+        <span className="ms" style={{ fontSize: 20, color: 'var(--ink-3)' }} aria-hidden="true">
           chevron_right
         </span>
       </div>

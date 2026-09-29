@@ -1,35 +1,37 @@
 import { useId } from 'react'
+import { TONE_VARS, type Tone } from './tones'
 
 interface RingProps {
   value?: number
   size?: number
   stroke?: number
-  hue?: number | string
+  tone?: Tone
   label?: string | number
   sublabel?: string
 }
 
+/** Progress ring (portal `ProgressRing`, without the liquid fill). */
 export function Ring({
   value = 60,
   size = 64,
   stroke = 6,
-  hue = 172,
+  tone = 'accent',
   label,
   sublabel,
 }: RingProps) {
   const r = (size - stroke) / 2
   const c = 2 * Math.PI * r
-  const offset = c - (value / 100) * c
+  const v = Math.max(0, Math.min(100, value))
+  const offset = c - (v / 100) * c
   const id = useId()
-  const startStop = `oklch(0.72 0.14 ${hue})`
-  const endStop = `oklch(0.50 0.12 ${hue})`
+  const colors = TONE_VARS[tone]
   return (
     <div style={{ position: 'relative', width: size, height: size, flexShrink: 0 }}>
-      <svg width={size} height={size} style={{ transform: 'rotate(-90deg)' }}>
+      <svg width={size} height={size} style={{ transform: 'rotate(-90deg)' }} aria-hidden="true">
         <defs>
           <linearGradient id={id} x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stopColor={startStop} />
-            <stop offset="100%" stopColor={endStop} />
+            <stop offset="0%" stopColor={colors.vivid} />
+            <stop offset="100%" stopColor={colors.ink} />
           </linearGradient>
         </defs>
         <circle
@@ -50,7 +52,8 @@ export function Ring({
           strokeLinecap="round"
           strokeDasharray={c}
           strokeDashoffset={offset}
-          style={{ transition: 'stroke-dashoffset .6s var(--ease)' }}
+          opacity={v === 0 ? 0 : 1}
+          style={{ transition: 'stroke-dashoffset var(--spring-bouncy-ms) var(--spring-bouncy)' }}
         />
       </svg>
       {label !== undefined && (
@@ -66,11 +69,11 @@ export function Ring({
             lineHeight: 1,
           }}
         >
-          <div style={{ fontSize: size * 0.28, fontWeight: 600, letterSpacing: '-0.02em' }}>
+          <div className="font-headline" style={{ fontSize: size * 0.26, fontWeight: 900, color: 'var(--ink)' }}>
             {label}
           </div>
           {sublabel && (
-            <div style={{ fontSize: size * 0.13, color: 'var(--ink-3)', marginTop: 2 }}>
+            <div style={{ fontSize: Math.max(10, size * 0.11), color: 'var(--ink-2)', marginTop: 3, fontWeight: 700 }}>
               {sublabel}
             </div>
           )}

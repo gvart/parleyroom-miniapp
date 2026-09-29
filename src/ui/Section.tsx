@@ -9,42 +9,26 @@ interface SectionProps {
 
 export function Section({ eyebrow, title, action, children }: SectionProps) {
   return (
-    <section style={{ marginBottom: 22 }}>
+    <section style={{ marginBottom: 24 }}>
       {(eyebrow || title || action) && (
         <div
           style={{
             display: 'flex',
             justifyContent: 'space-between',
-            alignItems: 'baseline',
-            marginBottom: 10,
-            padding: '0 20px',
+            alignItems: 'flex-end',
+            gap: 12,
+            marginBottom: 12,
+            padding: '0 16px',
           }}
         >
-          <div>
-            {eyebrow && (
-              <div
-                style={{
-                  fontSize: 11,
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.12em',
-                  color: 'var(--ink-3)',
-                  fontWeight: 600,
-                  marginBottom: 2,
-                }}
-              >
-                {eyebrow}
-              </div>
-            )}
-            {title && (
-              <div className="serif" style={{ fontSize: 24, color: 'var(--ink)' }}>
-                {title}
-              </div>
-            )}
+          <div style={{ minWidth: 0 }}>
+            {eyebrow && <div className="eyebrow" style={{ marginBottom: 4 }}>{eyebrow}</div>}
+            {title && <h2 className="section-title" style={{ margin: 0 }}>{title}</h2>}
           </div>
           {action}
         </div>
       )}
-      <div style={{ padding: '0 20px' }}>{children}</div>
+      <div style={{ padding: '0 16px' }}>{children}</div>
     </section>
   )
 }

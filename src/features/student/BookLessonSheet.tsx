@@ -117,47 +117,40 @@ export function BookLessonSheet({ open, onClose, defaultDate }: BookLessonSheetP
     }
   }
 
-  const labelStyle = {
-    fontSize: 11,
-    color: 'var(--ink-3)',
-    textTransform: 'uppercase' as const,
-    letterSpacing: '0.08em',
-    fontWeight: 600,
-    marginBottom: 8,
-  }
 
   return (
     <Sheet open={open} onClose={onClose}>
       {submitted ? (
-        <div style={{ textAlign: 'center', padding: '36px 22px' }}>
+        <div style={{ textAlign: 'center', padding: '28px 20px' }}>
           <div
             style={{
               width: 72,
               height: 72,
               borderRadius: 999,
               background: 'var(--accent-soft)',
-              color: 'var(--accent-deep)',
+              color: 'var(--accent-ink)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               margin: '0 auto 14px',
-              animation: 'scale-in .4s var(--spring)',
+              boxShadow: 'var(--glass-highlight), 0 0 0 8px color-mix(in srgb, var(--accent) 10%, transparent)',
+              animation: 'scale-in var(--spring-bouncy-ms) var(--spring-bouncy)',
             }}
           >
             <span className="ms fill" style={{ fontSize: 36 }}>
               check
             </span>
           </div>
-          <div className="serif" style={{ fontSize: 26, marginBottom: 4 }}>
+          <div className="section-title" style={{ marginBottom: 4 }}>
             {isTeacher ? t('lesson_created_title') : t('request_sent_title')}
           </div>
-          <div style={{ fontSize: 13, color: 'var(--ink-2)' }}>
+          <div style={{ fontSize: 'var(--text-small)', color: 'var(--ink-2)' }}>
             {isTeacher ? t('lesson_created_sub') : t('request_sent_sub')}
           </div>
         </div>
       ) : (
-        <form onSubmit={submit} style={{ padding: '0 22px 10px' }}>
-          <div className="serif" style={{ fontSize: 26, letterSpacing: '-0.01em', marginBottom: 18 }}>
+        <form onSubmit={submit} style={{ padding: '0 20px 4px' }}>
+          <div className="section-title" style={{ marginBottom: 18 }}>
             {isTeacher ? t('create_lesson_title') : t('book_lesson_title')}
           </div>
 
@@ -172,7 +165,7 @@ export function BookLessonSheet({ open, onClose, defaultDate }: BookLessonSheetP
           </div>
 
           <div style={{ marginBottom: 14 }}>
-            <div style={labelStyle}>{t('lesson_type_label')}</div>
+            <div className="eyebrow field-label">{t('lesson_type_label')}</div>
             <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
               {TYPES.map((opt) => {
                 const active = type === opt.key
@@ -181,17 +174,8 @@ export function BookLessonSheet({ open, onClose, defaultDate }: BookLessonSheetP
                     type="button"
                     key={opt.key}
                     onClick={() => handleTypeChange(opt.key)}
-                    className="tap"
-                    style={{
-                      padding: '8px 14px',
-                      borderRadius: 999,
-                      fontSize: 13,
-                      fontWeight: 600,
-                      cursor: 'pointer',
-                      border: '1px solid var(--hair)',
-                      background: active ? 'var(--ink)' : 'transparent',
-                      color: active ? 'var(--bg)' : 'var(--ink)',
-                    }}
+                    aria-pressed={active}
+                    className={`chip${active ? ' on' : ''}`}
                   >
                     {t(opt.labelKey)}
                   </button>
@@ -202,11 +186,11 @@ export function BookLessonSheet({ open, onClose, defaultDate }: BookLessonSheetP
 
           {isTeacher && (
             <div style={{ marginBottom: 14 }}>
-              <div style={labelStyle}>
+              <div className="eyebrow field-label">
                 {isGroup ? t('students_label_group') : t('student_label')}
               </div>
               {availableStudents.length === 0 ? (
-                <div style={{ fontSize: 13, color: 'var(--ink-2)' }}>
+                <div style={{ fontSize: 'var(--text-small)', color: 'var(--ink-2)' }}>
                   {t('no_students_available')}
                 </div>
               ) : (
@@ -218,17 +202,8 @@ export function BookLessonSheet({ open, onClose, defaultDate }: BookLessonSheetP
                         type="button"
                         key={s.id}
                         onClick={() => toggleStudent(s.id)}
-                        className="tap"
-                        style={{
-                          padding: '8px 14px',
-                          borderRadius: 999,
-                          fontSize: 13,
-                          fontWeight: 600,
-                          cursor: 'pointer',
-                          border: '1px solid var(--hair)',
-                          background: selected ? 'var(--ink)' : 'transparent',
-                          color: selected ? 'var(--bg)' : 'var(--ink)',
-                        }}
+                        aria-pressed={selected}
+                        className={`chip${selected ? ' on' : ''}`}
                       >
                         {selected && <span style={{ marginRight: 4 }}>✓</span>}
                         {s.firstName} {s.lastName}
@@ -267,25 +242,16 @@ export function BookLessonSheet({ open, onClose, defaultDate }: BookLessonSheetP
           </div>
 
           <div style={{ marginBottom: 18 }}>
-            <div style={labelStyle}>{t('duration_label')}</div>
+            <div className="eyebrow field-label">{t('duration_label')}</div>
             <div style={{ display: 'flex', gap: 6 }}>
               {DURATIONS.map((d) => (
                 <button
                   type="button"
                   key={d}
                   onClick={() => setDuration(d)}
-                  className="tap"
-                  style={{
-                    flex: 1,
-                    padding: '10px',
-                    borderRadius: 14,
-                    fontSize: 13,
-                    fontWeight: 600,
-                    cursor: 'pointer',
-                    border: '1px solid var(--hair)',
-                    background: duration === d ? 'var(--ink)' : 'transparent',
-                    color: duration === d ? 'var(--bg)' : 'var(--ink)',
-                  }}
+                  aria-pressed={duration === d}
+                  className={`chip${duration === d ? ' on' : ''}`}
+                  style={{ flex: 1, justifyContent: 'center' }}
                 >
                   {t('duration_min', { min: d })}
                 </button>
