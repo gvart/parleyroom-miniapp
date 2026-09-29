@@ -1,0 +1,24 @@
+src/features/teacher/LessonCompleteSheet.tsx
+  s_81525541fb2fd4::t_5fa0bb168e9119 4,16,22-23,25,29,33-35,41-46,51,53,85-87,98,104,108,111,121
+src/features/student/LessonLive.tsx
+  s_81525541fb2fd4::t_bf4c5b9557add2 1,13-15,31,38-39,56,58,64-66,68-71,74-75,78-83,86,89-99,110-156,196,215-230
+src/i18n.ts
+  s_81525541fb2fd4::t_98140a2a1445c6 535,537-541
+  s_81525541fb2fd4::t_8b07d53a349b07 252,254-258
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "ae94608f4a859778ff2bed9d03c98fb33d283798",
+  "prompts": {},
+  "sessions": {
+    "s_81525541fb2fd4": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "6f74100a-bf7e-4308-bddf-c605ea23cebe",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Vladlen Gladis <vladlen.gladis@deliveryhero.com>"
+    }
+  }
+}
