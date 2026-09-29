@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.22.0](https://github.com/gvart/parleyroom-miniapp/compare/v1.21.1...v1.22.0) (2026-09-29)
+
+
+### Features
+
+* **i18n:** add Russian localization with locale-follows-user-profile flow ([#54](https://github.com/gvart/parleyroom-miniapp/issues/54)) ([505dd38](https://github.com/gvart/parleyroom-miniapp/commit/505dd38eb5c7391230364b9d62267bbf60f10202))
+* **ui:** adopt the portal's Liquid Glass design system ([#56](https://github.com/gvart/parleyroom-miniapp/issues/56)) ([9474932](https://github.com/gvart/parleyroom-miniapp/commit/94749328a22b89fcc2dd2a693e69f33e3ddc6f43))
+
+
+### Bug Fixes
+
+* **homework:** align homework/vocab types with backend and drop category picker ([#53](https://github.com/gvart/parleyroom-miniapp/issues/53)) ([a847644](https://github.com/gvart/parleyroom-miniapp/commit/a8476444aa1aa58986daf5a462d885dd8b6c46f7))
+* **i18n:** enforce locale/native-language contract rules in mock backend ([#55](https://github.com/gvart/parleyroom-miniapp/issues/55)) ([3f59db2](https://github.com/gvart/parleyroom-miniapp/commit/3f59db2e8fb436eca00dd2d285e1847ccfc2dc2e))
+* **lesson:** align call/end flow and broken endpoints with the backend ([#51](https://github.com/gvart/parleyroom-miniapp/issues/51)) ([811a322](https://github.com/gvart/parleyroom-miniapp/commit/811a32229f1116351b128b623c2543ad2b05a36f))
+
 ## [1.21.1](https://github.com/gvart/parleyroom-miniapp/compare/v1.21.0...v1.21.1) (2026-04-20)
 
 
