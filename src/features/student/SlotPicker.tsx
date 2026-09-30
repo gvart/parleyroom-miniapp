@@ -1,8 +1,17 @@
+import type { CSSProperties } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useAvailableSlots } from '@/hooks/useAvailableSlots'
 import { lessonTime, todayISO } from '@/lib/lesson'
 import { formatShortDate, formatWeekdayShort } from '@/lib/intl'
 import type { AvailableSlot } from '@/api/types'
+
+// Same solid-accent "selected" look as the calendar's day strip, in place of
+// `.chip.on`'s default soft tint.
+const CHIP_ON_STYLE: CSSProperties = {
+  background: 'var(--accent-face)',
+  borderColor: 'var(--accent-face)',
+  color: 'var(--on-accent)',
+}
 
 interface SlotPickerProps {
   teacherId: string | undefined
@@ -104,6 +113,7 @@ export function SlotPicker({
                 onClick={() => onSelect(slot)}
                 aria-pressed={active}
                 className={`chip${active ? ' on' : ''}`}
+                style={active ? CHIP_ON_STYLE : undefined}
               >
                 {lessonTime(slot.start)}
               </button>

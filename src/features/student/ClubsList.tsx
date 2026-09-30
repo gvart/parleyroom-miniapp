@@ -64,12 +64,31 @@ function ClubCard({ club }: { club: OpenClub }) {
         </div>
         <ClubAction club={club} full={full} join={join} withdraw={withdraw} />
       </div>
+      {club.maxParticipants != null && (
+        <div style={{ marginTop: 8 }}>
+          <SpotsBar taken={club.takenSpots} total={club.maxParticipants} />
+        </div>
+      )}
       {error && (
         <div style={{ marginTop: 10 }}>
           <Banner tone="error">{t('action_failed')}</Banner>
         </div>
       )}
     </Card>
+  )
+}
+
+/** Thin spots-taken bar under a capacity-limited club's meta row. */
+function SpotsBar({ taken, total }: { taken: number; total: number }) {
+  const ratio = total > 0 ? Math.min(1, taken / total) : 0
+  const full = taken >= total
+  return (
+    <div className="progress-track" style={{ height: 5 }}>
+      <div
+        className="progress-fill"
+        style={{ width: `${ratio * 100}%`, background: full ? 'var(--sunny-vivid)' : 'var(--accent)' }}
+      />
+    </div>
   )
 }
 

@@ -5,6 +5,8 @@ export function useOpenClubs() {
   return useQuery({
     queryKey: ['open-clubs'],
     queryFn: () => api.openClubs(),
+    // The backend doesn't guarantee an order — soonest first, like the calendar.
+    select: (clubs) => [...clubs].sort((a, b) => a.scheduledAt.localeCompare(b.scheduledAt)),
   })
 }
 

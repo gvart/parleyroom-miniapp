@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type FormEvent } from 'react'
+import { useEffect, useMemo, useState, type CSSProperties, type FormEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useQueryClient } from '@tanstack/react-query'
 import { useAuth } from '@/auth/AuthGate'
@@ -9,6 +9,15 @@ import { hasErrorCode } from '@/lib/errors'
 import { DEFAULT_LESSON_DURATION, LESSON_DURATIONS, lessonDate, todayISO } from '@/lib/lesson'
 import { SlotPicker } from './SlotPicker'
 import type { AvailableSlot, LessonType } from '@/api/types'
+
+// `.chip.on`'s default is a soft accent tint — for the student's date/length/
+// slot pickers we want the same solid-accent "selected" look as the calendar's
+// day strip, so override it inline rather than touching the shared class.
+const CHIP_ON_STYLE: CSSProperties = {
+  background: 'var(--accent-face)',
+  borderColor: 'var(--accent-face)',
+  color: 'var(--on-accent)',
+}
 
 const AVAILABILITY_ERROR_CODES = [
   'AVAILABILITY_SLOT_BLOCKED',
@@ -344,6 +353,7 @@ export function BookLessonSheet({ open, onClose, defaultDate, initialSlot }: Boo
                           onClick={() => changeStudentTeacher(tch.id)}
                           aria-pressed={active}
                           className={`chip${active ? ' on' : ''}`}
+                          style={active ? CHIP_ON_STYLE : undefined}
                         >
                           {tch.firstName} {tch.lastName}
                         </button>
@@ -363,7 +373,7 @@ export function BookLessonSheet({ open, onClose, defaultDate, initialSlot }: Boo
                       onClick={() => changeStudentDuration(d)}
                       aria-pressed={duration === d}
                       className={`chip${duration === d ? ' on' : ''}`}
-                      style={{ flex: 1, justifyContent: 'center' }}
+                      style={{ flex: 1, justifyContent: 'center', ...(duration === d ? CHIP_ON_STYLE : null) }}
                     >
                       {t('duration_min', { min: d })}
                     </button>
