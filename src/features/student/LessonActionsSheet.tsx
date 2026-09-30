@@ -4,8 +4,11 @@ import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/auth/AuthGate'
 import { Banner, Button, Pill, Sheet } from '@/ui'
 import {
+  useAcceptReschedule,
   useCancelLesson,
   useJoinLesson,
+  useRejectReschedule,
+  useWithdrawReschedule,
 } from '@/hooks/useLessonActions'
 import { clubLabelKey, isClub, lessonTime } from '@/lib/lesson'
 import { formatShortDate } from '@/lib/intl'
@@ -24,6 +27,9 @@ export function LessonActionsSheet({ open, lesson, onClose }: Props) {
   const { user } = useAuth()
   const join = useJoinLesson()
   const cancel = useCancelLesson()
+  const acceptReschedule = useAcceptReschedule()
+  const rejectReschedule = useRejectReschedule()
+  const withdrawReschedule = useWithdrawReschedule()
   const [rescheduleOpen, setRescheduleOpen] = useState(false)
   const [confirmCancel, setConfirmCancel] = useState(false)
 
@@ -34,9 +40,11 @@ export function LessonActionsSheet({ open, lesson, onClose }: Props) {
   const capacity = lesson.maxParticipants
   const atCapacity = capacity != null && lesson.students.length >= capacity
   const canJoin = club && !enrolled && !atCapacity && lesson.status !== 'CANCELLED'
-  const canReschedule =
-    (lesson.status === 'CONFIRMED' || lesson.status === 'REQUEST') &&
-    !lesson.pendingReschedule
+  const pendingReschedule = lesson.pendingReschedule
+  const rescheduleProposedByMe = pendingReschedule?.requestedBy === user.id
+  // Backend only allows rescheduling CONFIRMED lessons (400 LESSON_INVALID_STATE
+  // otherwise) — a pending REQUEST isn't scheduled yet, there's nothing to move.
+  const canReschedule = lesson.status === 'CONFIRMED' && !pendingReschedule
   const canCancel =
     lesson.status !== 'CANCELLED' && lesson.status !== 'COMPLETED'
   const canJoinLive = lesson.status === 'IN_PROGRESS'
@@ -58,6 +66,36 @@ export function LessonActionsSheet({ open, lesson, onClose }: Props) {
       onClose()
     } catch {
       /* error via cancel.error */
+    }
+  }
+
+  async function handleAcceptReschedule() {
+    if (!lesson) return
+    try {
+      await acceptReschedule.mutateAsync(lesson.id)
+      onClose()
+    } catch {
+      /* error via acceptReschedule.error */
+    }
+  }
+
+  async function handleRejectReschedule() {
+    if (!lesson) return
+    try {
+      await rejectReschedule.mutateAsync(lesson.id)
+      onClose()
+    } catch {
+      /* error via rejectReschedule.error */
+    }
+  }
+
+  async function handleWithdrawReschedule() {
+    if (!lesson) return
+    try {
+      await withdrawReschedule.mutateAsync(lesson.id)
+      onClose()
+    } catch {
+      /* error via withdrawReschedule.error */
     }
   }
 
@@ -86,21 +124,21 @@ export function LessonActionsSheet({ open, lesson, onClose }: Props) {
               : ''}
           </div>
 
-          {lesson.pendingReschedule && (
+          {pendingReschedule && (
             <div style={{ marginBottom: 16 }}>
               <Banner tone="warn" icon="schedule">
-                {t('reschedule_pending_note', {
-                  time: `${lesson.pendingReschedule.newScheduledAt.slice(0, 10)} ${lesson.pendingReschedule.newScheduledAt.slice(11, 16)}`,
+                {t(rescheduleProposedByMe ? 'reschedule_proposed_by_you_note' : 'reschedule_pending_note', {
+                  time: `${pendingReschedule.newScheduledAt.slice(0, 10)} ${pendingReschedule.newScheduledAt.slice(11, 16)}`,
                 })}
               </Banner>
             </div>
           )}
 
-          {(join.error || cancel.error) && (
+          {(join.error || cancel.error || acceptReschedule.error || rejectReschedule.error || withdrawReschedule.error) && (
             <div style={{ marginBottom: 12 }}>
               <Banner tone="error">
-                {(join.error ?? cancel.error) instanceof Error
-                  ? ((join.error ?? cancel.error) as Error).message
+                {(join.error ?? cancel.error ?? acceptReschedule.error ?? rejectReschedule.error ?? withdrawReschedule.error) instanceof Error
+                  ? ((join.error ?? cancel.error ?? acceptReschedule.error ?? rejectReschedule.error ?? withdrawReschedule.error) as Error).message
                   : t('action_failed')}
               </Banner>
             </div>
@@ -142,6 +180,41 @@ export function LessonActionsSheet({ open, lesson, onClose }: Props) {
               >
                 {t('reschedule_cta')}
               </Button>
+            )}
+
+            {pendingReschedule && rescheduleProposedByMe && (
+              <Button
+                variant="secondary"
+                block
+                leadingIcon="undo"
+                loading={withdrawReschedule.isPending}
+                onClick={handleWithdrawReschedule}
+              >
+                {t('reschedule_withdraw')}
+              </Button>
+            )}
+
+            {pendingReschedule && !rescheduleProposedByMe && (
+              <>
+                <Button
+                  variant="primary"
+                  block
+                  leadingIcon="check"
+                  loading={acceptReschedule.isPending}
+                  onClick={handleAcceptReschedule}
+                >
+                  {t('reschedule_accept')}
+                </Button>
+                <Button
+                  variant="secondary"
+                  block
+                  leadingIcon="close"
+                  loading={rejectReschedule.isPending}
+                  onClick={handleRejectReschedule}
+                >
+                  {t('reschedule_reject')}
+                </Button>
+              </>
             )}
 
             {canCancel && (

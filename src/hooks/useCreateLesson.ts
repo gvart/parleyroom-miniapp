@@ -7,6 +7,8 @@ export function useCreateLesson() {
     mutationFn: (body: CreateLessonRequest) => api.createLesson(body),
     onSuccess: () => {
       void qc.invalidateQueries({ queryKey: ['lessons'] })
+      // The booked slot is no longer free — refresh any slot pickers showing it.
+      void qc.invalidateQueries({ queryKey: ['available-slots'] })
     },
   })
 }

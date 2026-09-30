@@ -1,10 +1,20 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Banner, Button, Sheet, SuccessState, TextArea, TextField } from '@/ui'
+import { useQueryClient } from '@tanstack/react-query'
+import { Banner, Button, Sheet, SuccessState, TextArea } from '@/ui'
 import { useRequestReschedule } from '@/hooks/useLessonActions'
+import { hasErrorCode } from '@/lib/errors'
 import { lessonDate, lessonTime } from '@/lib/lesson'
 import { formatShortDate } from '@/lib/intl'
-import type { Lesson } from '@/api/types'
+import { SlotPicker } from './SlotPicker'
+import type { AvailableSlot, Lesson } from '@/api/types'
+
+const AVAILABILITY_ERROR_CODES = [
+  'AVAILABILITY_SLOT_BLOCKED',
+  'AVAILABILITY_OVERLAP',
+  'AVAILABILITY_MIN_NOTICE',
+  'AVAILABILITY_BUFFER_CONFLICT',
+]
 
 interface Props {
   open: boolean
@@ -15,16 +25,17 @@ interface Props {
 
 export function RescheduleSheet({ open, lesson, onClose, onDone }: Props) {
   const { t } = useTranslation()
+  const qc = useQueryClient()
   const request = useRequestReschedule()
   const [date, setDate] = useState('')
-  const [time, setTime] = useState('10:00')
+  const [selectedSlot, setSelectedSlot] = useState<AvailableSlot | null>(null)
   const [note, setNote] = useState('')
   const [submitted, setSubmitted] = useState(false)
 
   useEffect(() => {
     if (open && lesson) {
       setDate(lessonDate(lesson.scheduledAt))
-      setTime(lessonTime(lesson.scheduledAt))
+      setSelectedSlot(null)
       setNote('')
       setSubmitted(false)
       request.reset()
@@ -37,24 +48,32 @@ export function RescheduleSheet({ open, lesson, onClose, onDone }: Props) {
 
   if (!lesson) return null
 
-  const canSubmit = Boolean(date) && Boolean(time) && !request.isPending
+  const canSubmit = Boolean(selectedSlot) && !request.isPending
+
+  function changeDate(next: string) {
+    setDate(next)
+    setSelectedSlot(null)
+  }
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    if (!canSubmit || !lesson) return
-    const newScheduledAt = new Date(`${date}T${time}:00`).toISOString()
+    if (!canSubmit || !lesson || !selectedSlot) return
     try {
       await request.mutateAsync({
         id: lesson.id,
-        body: { newScheduledAt, note: note.trim() || null },
+        body: { newScheduledAt: selectedSlot.start, note: note.trim() || null },
       })
       setSubmitted(true)
       setTimeout(() => {
         onDone?.()
         onClose()
       }, 1200)
-    } catch {
-      /* surfaced via request.error */
+    } catch (err) {
+      // The slot list is now stale either way — pick again against a fresh fetch.
+      if (hasErrorCode(err, ...AVAILABILITY_ERROR_CODES)) {
+        setSelectedSlot(null)
+        void qc.invalidateQueries({ queryKey: ['available-slots'] })
+      }
     }
   }
 
@@ -71,23 +90,15 @@ export function RescheduleSheet({ open, lesson, onClose, onDone }: Props) {
             {lesson.topic} · {formatShortDate(lesson.scheduledAt)} · {lessonTime(lesson.scheduledAt)}
           </div>
 
-          <div style={{ display: 'flex', gap: 10, marginBottom: 14 }}>
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <TextField
-                type="date"
-                label={t('date_label')}
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
-              />
-            </div>
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <TextField
-                type="time"
-                label={t('time_label')}
-                value={time}
-                onChange={(e) => setTime(e.target.value)}
-              />
-            </div>
+          <div style={{ marginBottom: 18 }}>
+            <SlotPicker
+              teacherId={lesson.teacherId}
+              date={date}
+              onDateChange={changeDate}
+              durationMinutes={lesson.durationMinutes}
+              selectedStart={selectedSlot?.start ?? null}
+              onSelect={setSelectedSlot}
+            />
           </div>
 
           <div style={{ marginBottom: 18 }}>
@@ -103,7 +114,11 @@ export function RescheduleSheet({ open, lesson, onClose, onDone }: Props) {
           {request.error && (
             <div style={{ marginBottom: 12 }}>
               <Banner tone="error">
-                {request.error instanceof Error ? request.error.message : t('reschedule_failed')}
+                {hasErrorCode(request.error, ...AVAILABILITY_ERROR_CODES)
+                  ? t('slot_unavailable_error')
+                  : request.error instanceof Error
+                    ? request.error.message
+                    : t('reschedule_failed')}
               </Banner>
             </div>
           )}

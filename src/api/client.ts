@@ -31,6 +31,8 @@ export class ApiError extends Error {
   constructor(
     public readonly status: number,
     public readonly detail: string | null,
+    /** Backend's stable `ProblemDetail.code` (e.g. AVAILABILITY_SLOT_BLOCKED), when present. */
+    public readonly code: string | null = null,
   ) {
     super(detail ?? `HTTP ${status}`)
   }
@@ -71,8 +73,8 @@ export async function apiFetch<T>(path: string, init: ApiInit = {}): Promise<T> 
       unauthorizedFired = true
       unauthorizedHandler?.()
     }
-    const errBody = (await parseJsonBody(res)) as { detail?: string; title?: string } | null
-    throw new ApiError(res.status, errBody?.detail ?? errBody?.title ?? null)
+    const errBody = (await parseJsonBody(res)) as { detail?: string; title?: string; code?: string } | null
+    throw new ApiError(res.status, errBody?.detail ?? errBody?.title ?? null, errBody?.code ?? null)
   }
   if (res.status === 204) return undefined as T
   return (await parseJsonBody(res)) as T

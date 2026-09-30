@@ -44,6 +44,8 @@ export type LessonStatus =
 
 export type LessonType = 'ONE_ON_ONE' | 'SPEAKING_CLUB' | 'READING_CLUB'
 
+export type LessonStudentStatus = 'CONFIRMED' | 'REQUESTED' | 'REJECTED'
+
 export interface LessonStudent {
   id: string
   firstName: string
@@ -95,6 +97,38 @@ export interface LessonPage {
   total: number
   page: number
   pageSize: number
+}
+
+export interface AvailableSlot {
+  start: string
+  end: string
+}
+
+export interface AvailableSlotsResponse {
+  slots: AvailableSlot[]
+}
+
+/** An upcoming club as a student browsing clubs sees it (`GET /lessons/open-clubs`). */
+export interface OpenClub {
+  id: string
+  title: string
+  type: LessonType
+  scheduledAt: string
+  durationMinutes: number
+  topic: string
+  level: Level | null
+  teacher: LessonTeacher
+  /** null = unlimited. */
+  maxParticipants: number | null
+  /** Confirmed participants plus pending requests; a pending request holds a spot. */
+  takenSpots: number
+  /** The viewer's own participation; null when they haven't asked to join. */
+  myStatus: LessonStudentStatus | null
+}
+
+/** REQUESTED, or CONFIRMED when the teacher auto-accepts club joins. */
+export interface JoinLessonResponse {
+  status: LessonStudentStatus
 }
 
 export type VocabStatus = 'NEW' | 'LEARNING' | 'REVIEW' | 'LEARNED'
