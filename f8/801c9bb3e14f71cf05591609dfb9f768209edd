@@ -1,0 +1,72 @@
+src/dev/mockBackend.ts
+  s_4985e1aeba0736::t_1734e2a1dc869c 816-853
+  s_4985e1aeba0736::t_77de678260ab72 382-432
+src/hooks/usePractice.ts
+  s_4985e1aeba0736::t_9484a086b6bc71 1-2,4-73,75-78
+  s_4985e1aeba0736::t_3dcca9347d633a 3
+  s_4985e1aeba0736::t_93f29da0184ef5 74
+src/layout/RoleRouter.tsx
+  s_4985e1aeba0736::t_aafb40aad0be1a 9-10
+  s_4985e1aeba0736::t_f1bbb94225b918 61-62
+src/features/student/practice/RatingBar.tsx
+  s_4985e1aeba0736::t_01abb1f4a19ba2 1-68
+src/i18n/en.json
+  s_4985e1aeba0736::t_660a353c380a39 98
+  s_4985e1aeba0736::t_7816e8bf7101c8 105-129
+src/features/student/practice/modes.ts
+  s_4985e1aeba0736::t_42f58b127dfced 1-29
+src/lib/vocab.ts
+  s_4985e1aeba0736::t_fc51eb627ca2eb 1,3
+  s_4985e1aeba0736::t_b0e125a373ee65 36-41
+src/hooks/useVocab.ts
+  s_4985e1aeba0736::t_d9898a6915aecf 1-2
+src/features/student/practice/ArticleDrill.tsx
+  s_4985e1aeba0736::t_c0fbde68f82805 2-29,35-126
+  s_4985e1aeba0736::t_ca61f67a24d144 1
+  s_4985e1aeba0736::t_f3c73a34d2d82f 30-34
+src/api/endpoints.ts
+  s_4985e1aeba0736::t_defcf64f300f0d 71-85
+  s_4985e1aeba0736::t_a838465997711c 181-194
+  s_4985e1aeba0736::t_bbc90bc0e31f54 28
+  s_4985e1aeba0736::t_fbe7f60d6de14c 4,24-27,29,39
+  s_4985e1aeba0736::t_903569281e7d5c 36
+  s_4985e1aeba0736::t_3b8747a971e03b 86
+src/features/student/practice/PracticeHome.tsx
+  s_4985e1aeba0736::t_371605f841b8e1 1-59
+src/i18n/de.json
+  s_4985e1aeba0736::t_d8ed68bca632d5 105-129
+  s_4985e1aeba0736::t_14934526837154 98
+src/i18n/ru.json
+  s_4985e1aeba0736::t_02abd72924390a 98
+  s_4985e1aeba0736::t_dbfc38d134fbd2 105-133
+src/api/types.ts
+  s_4985e1aeba0736::t_011abe2a6948a9 157-214
+src/layout/AppShell.tsx
+  s_4985e1aeba0736::t_d3ec8b0bce1547 12
+src/features/student/Vocab.tsx
+  s_4985e1aeba0736::t_6b73d66c23fc47 6-7
+  s_4985e1aeba0736::t_4b57a6fe4310f4 39,42-45,51,54,62,65,67
+  s_4985e1aeba0736::t_cffd40ec16ea85 150-151
+src/features/student/practice/Flashcard.tsx
+  s_4985e1aeba0736::t_5fb5d1de0de056 1-92
+src/features/student/practice/PracticeSession.tsx
+  s_4985e1aeba0736::t_9419bec564af51 1-175
+src/features/student/practice/SentenceCard.tsx
+  s_4985e1aeba0736::t_2f7cef58a08b27 1-94
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "f8801c9bb3e14f71cf05591609dfb9f768209edd",
+  "prompts": {},
+  "sessions": {
+    "s_4985e1aeba0736": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "67d7b6f0-b72a-461c-a3eb-bc1269097f4b",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Vladlen Gladis <vladlen.gladis@deliveryhero.com>"
+    }
+  }
+}
