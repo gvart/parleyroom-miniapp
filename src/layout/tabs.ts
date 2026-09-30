@@ -6,7 +6,7 @@ export const STUDENT_TABS: TabDef[] = [
   { key: 'home', path: '/', labelKey: 'tab_home', icon: 'home' },
   { key: 'calendar', path: '/calendar', labelKey: 'calendar', icon: 'calendar_today' },
   { key: 'vocab', path: '/vocab', labelKey: 'tab_words', icon: 'menu_book' },
-  { key: 'homework', path: '/homework', labelKey: 'homework', icon: 'edit_note' },
+  { key: 'homework', path: '/homework', labelKey: 'tab_homework', icon: 'edit_note' },
   { key: 'settings', path: '/settings', labelKey: 'tab_you', icon: 'person' },
 ]
 
