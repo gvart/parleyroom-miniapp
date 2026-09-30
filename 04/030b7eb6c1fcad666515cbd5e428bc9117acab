@@ -1,0 +1,80 @@
+src/lib/errors.ts
+  s_4985e1aeba0736::t_26cde376bdb450 1-6
+src/features/student/BookLessonSheet.tsx
+  s_4985e1aeba0736::t_e0170e22997526 3,8-18,30-31,34,37,44-47,49,53,57-61,63-72,75-78,82,86-90,92-95,113-127,134,136,140,143-144,147-171,173,175-179,182,185-189,196-202,209-218,220-222,224-225,229-232,234,239-313,315-352,356-372,374-384,396-400,409
+src/i18n/en.json
+  s_4985e1aeba0736::t_4c48850abebc48 140-147,150
+  s_4985e1aeba0736::t_573d318c30f9ab 259-272
+  s_4985e1aeba0736::t_c465c2452b1839 151
+  s_4985e1aeba0736::t_9c0a7f2e7a56ac 148-149
+src/api/client.ts
+  s_4985e1aeba0736::t_77719a647798e7 76-77
+  s_4985e1aeba0736::t_9a0eb69f81b9c0 34-35
+src/features/student/ClubsList.tsx
+  s_4985e1aeba0736::t_1e6a751202b6a5 1-107
+src/features/student/LessonActionsSheet.tsx
+  s_4985e1aeba0736::t_5a6ba58d7ac1bc 127,130-131,137,140-141
+  s_4985e1aeba0736::t_232c951dc0ba38 7,10-11
+  s_4985e1aeba0736::t_4dac9d80dc9bba 30-32,43-44,72-100
+  s_4985e1aeba0736::t_3e0a044130e12e 185-219
+  s_4985e1aeba0736::t_f0a942ed7fb190 45-47
+  s_4985e1aeba0736::t_3a188340177106 101
+src/i18n/de.json
+  s_4985e1aeba0736::t_e95a8bd8ef61d5 140-147,150
+  s_4985e1aeba0736::t_8ad972b1a46834 151
+  s_4985e1aeba0736::t_9ede4f9a1c00eb 148-149
+  s_4985e1aeba0736::t_c161454ab48c42 259-272
+src/features/student/SlotPicker.tsx
+  s_4985e1aeba0736::t_9a7920af118e7a 1-41,46-116
+  s_4985e1aeba0736::t_1c1dcdced2ba2d 42-45
+src/lib/lesson.ts
+  s_4985e1aeba0736::t_48411216ef61dc 63-66
+src/hooks/useLessonActions.ts
+  s_4985e1aeba0736::t_22ad27ce5c7f66 75-78
+  s_4985e1aeba0736::t_36426858e1c1e8 13-14
+src/features/student/RescheduleSheet.tsx
+  s_4985e1aeba0736::t_891407a9af44de 3-4,6,9-17,28,31,38,51-56,60,64,71-76,93-101,117-121
+src/api/types.ts
+  s_4985e1aeba0736::t_a54233610ca30a 47-48
+  s_4985e1aeba0736::t_6e0dbbbc86924f 102-133
+src/hooks/useClubs.ts
+  s_4985e1aeba0736::t_678bd032368667 1-14,18-27,29-32
+  s_4985e1aeba0736::t_af271e226a0f28 15-17,28
+src/i18n/ru.json
+  s_4985e1aeba0736::t_57fdfe78ca20fd 148-149
+  s_4985e1aeba0736::t_e369e0faa67939 261-274
+  s_4985e1aeba0736::t_8938807ff97eb8 140-147,150
+  s_4985e1aeba0736::t_60d60e460b8a09 151
+src/dev/mockBackend.ts
+  s_4985e1aeba0736::t_59651f50bdb023 18-23
+  s_4985e1aeba0736::t_0e02c5c3a0201c 323-324,326
+  s_4985e1aeba0736::t_1f25d9a06e269b 949,965,970
+  s_4985e1aeba0736::t_79e87f3b645396 49-247
+  s_4985e1aeba0736::t_5171b91159cee7 808-813,837-911
+src/features/student/Calendar.tsx
+  s_4985e1aeba0736::t_ea94a96fcdc4a2 1,3,5-7,11-12,14-20,30-31,46-62,66,68-72,74,76-78,81-82,87,93,96-114,122-133,143,155-171,174-176,178-180,182-248,250-323,329
+src/api/endpoints.ts
+  s_4985e1aeba0736::t_e5bd10f134759d 272-274
+  s_4985e1aeba0736::t_beab76887be152 239-249
+  s_4985e1aeba0736::t_b07bd53fad32e7 5,13,25
+src/hooks/useCreateLesson.ts
+  s_4985e1aeba0736::t_e2517af9a5b0f9 10-11
+src/hooks/useAvailableSlots.ts
+  s_4985e1aeba0736::t_3077a20329de10 1-25
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "04030b7eb6c1fcad666515cbd5e428bc9117acab",
+  "prompts": {},
+  "sessions": {
+    "s_4985e1aeba0736": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "67d7b6f0-b72a-461c-a3eb-bc1269097f4b",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Vladlen Gladis <vladlen.gladis@deliveryhero.com>"
+    }
+  }
+}
