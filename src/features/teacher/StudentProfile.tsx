@@ -1,7 +1,8 @@
-import { useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate, useParams } from 'react-router-dom'
 import { Avatar, Button, Card, Pill, Ring, Section, StatChip } from '@/ui'
+import { useBackButton } from '@/hooks/useBackButton'
 import { useUsers } from '@/hooks/useCreateLesson'
 import { useLessons } from '@/hooks/useLessons'
 import { useHomework } from '@/hooks/useHomework'
@@ -38,6 +39,8 @@ export function StudentProfile() {
   const updateNativeLanguage = useUpdateStudentNativeLanguage()
   const [assignHwOpen, setAssignHwOpen] = useState(false)
   const [assignGoalOpen, setAssignGoalOpen] = useState(false)
+  const goBack = useCallback(() => navigate(-1), [navigate])
+  useBackButton(goBack)
 
   const student = usersQuery.data?.users.find((u) => u.id === id)
 

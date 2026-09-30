@@ -2,7 +2,7 @@ import { useRef, useState, type ChangeEvent, type FormEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/auth/AuthGate'
-import { Avatar, Banner, Button, Card } from '@/ui'
+import { Avatar, Banner, Button, Card, ScreenHeader } from '@/ui'
 import { useUpdateProfile } from '@/hooks/useUpdateProfile'
 import { useDeleteAvatar, useUploadAvatar } from '@/hooks/useAvatar'
 import type { Level } from '@/api/types'
@@ -70,19 +70,7 @@ export function ProfileEdit() {
 
   return (
     <div>
-      <div style={{ padding: '12px 16px 18px', display: 'flex', alignItems: 'center', gap: 12 }}>
-        <button
-          type="button"
-          className="ico-btn"
-          onClick={() => navigate('/settings')}
-          aria-label={t('back')}
-        >
-          <span className="ms" style={{ fontSize: 20 }}>arrow_back</span>
-        </button>
-        <div className="section-title">
-          {t('edit_profile')}
-        </div>
-      </div>
+      <ScreenHeader title={t('edit_profile')} onBack={() => navigate('/settings')} />
 
       <div
         style={{

@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
-import { Banner, Button, Card } from '@/ui'
+import { Banner, Button, Card, ScreenHeader } from '@/ui'
 import { useChangePassword } from '@/hooks/usePasswordChange'
 
 function strengthOf(p: string): number {
@@ -52,7 +52,7 @@ export function ChangePassword() {
   if (change.isSuccess) {
     return (
       <div>
-        <ScreenHeader title={t('change_password_title')} />
+        <ScreenHeader title={t('change_password_title')} onBack={() => navigate('/settings')} />
         <div style={{ padding: '0 16px' }}>
           <div style={{ textAlign: 'center', padding: '30px 10px' }}>
             <div
@@ -98,7 +98,7 @@ export function ChangePassword() {
 
   return (
     <div>
-      <ScreenHeader title={t('change_password_title')} />
+      <ScreenHeader title={t('change_password_title')} onBack={() => navigate('/settings')} />
 
       <form onSubmit={submit} style={{ padding: '0 16px' }}>
         <div className="section-title" style={{ marginBottom: 6 }}>
@@ -176,28 +176,6 @@ export function ChangePassword() {
           {t('update_password')}
         </Button>
       </form>
-    </div>
-  )
-}
-
-function ScreenHeader({ title }: { title: string }) {
-  const { t } = useTranslation()
-  const navigate = useNavigate()
-  return (
-    <div style={{ padding: '12px 16px 18px', display: 'flex', alignItems: 'center', gap: 12 }}>
-      <button
-        type="button"
-        onClick={() => navigate('/settings')}
-        className="ico-btn"
-        aria-label={t('back')}
-      >
-        <span className="ms" style={{ fontSize: 20 }}>
-          arrow_back
-        </span>
-      </button>
-      <div className="section-title">
-        {title}
-      </div>
     </div>
   )
 }

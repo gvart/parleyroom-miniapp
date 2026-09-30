@@ -5,12 +5,13 @@ import {
   Button,
   Card,
   EmptyState,
-  FieldLabel,
   PageHeader,
   Pill,
   Segmented,
   Sheet,
   StatChip,
+  SuccessState,
+  TextArea,
   type PillTone,
 } from '@/ui'
 import {
@@ -19,7 +20,7 @@ import {
   useSaveHomeworkAnswers,
   useSubmitHomework,
 } from '@/hooks/useHomework'
-import { computeDue, isDoneStatus, isOpenStatus, isReviewStatus, type DueInfo } from '@/lib/homework'
+import { computeDue, dueLabel, isDoneStatus, isOpenStatus, isReviewStatus, type DueInfo } from '@/lib/homework'
 import type { HomeworkSummary, HomeworkStatus } from '@/api/types'
 
 type Tab = 'open' | 'review' | 'done'
@@ -41,14 +42,6 @@ function dueTone(d: DueInfo): PillTone {
   if (d.kind === 'overdue') return 'live'
   if (d.kind === 'today') return 'warn'
   return 'neutral'
-}
-
-function dueLabel(d: DueInfo, t: ReturnType<typeof useTranslation>['t']): string {
-  if (d.kind === 'overdue') return t('overdue')
-  if (d.kind === 'today') return t('today')
-  if (d.kind === 'tomorrow') return `${t('due')} ${t('tomorrow')}`
-  if (d.kind === 'date') return `${t('due')} ${d.label}`
-  return t('due')
 }
 
 function statusLabel(status: HomeworkStatus, t: ReturnType<typeof useTranslation>['t']): string {
@@ -148,7 +141,7 @@ export function Homework() {
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                       {(due.kind !== 'none' || tab === 'open') && (
-                        <Pill tone={tone}>{dueLabel(due, t)}</Pill>
+                        <Pill tone={tone}>{dueLabel(due, t, { prefixed: true })}</Pill>
                       )}
                       {sLabel && (
                         <span
@@ -215,16 +208,7 @@ function HomeworkSubmitSheet({ task, onClose }: SheetProps) {
   if (!task) return null
 
   const due = computeDue(task.dueDate)
-  const dueText =
-    due.kind === 'overdue'
-      ? t('overdue')
-      : due.kind === 'today'
-        ? t('today')
-        : due.kind === 'tomorrow'
-          ? `${t('due')} ${t('tomorrow')}`
-          : due.kind === 'date'
-            ? `${t('due')} ${due.label}`
-            : ''
+  const dueText = due.kind === 'none' ? '' : dueLabel(due, t, { prefixed: true })
   const wordCount = text.trim().split(/\s+/).filter(Boolean).length
   const isPending = saveAnswers.isPending || submit.isPending
   const canSubmit = !!item && text.trim().length > 0 && !isPending
@@ -250,31 +234,7 @@ function HomeworkSubmitSheet({ task, onClose }: SheetProps) {
     <Sheet open={!!task} onClose={onClose}>
       <div style={{ padding: '0 16px 4px' }}>
         {submittedOk ? (
-          <div style={{ textAlign: 'center', padding: '36px 10px' }}>
-            <div
-              style={{
-                width: 72,
-                height: 72,
-                borderRadius: 999,
-                background: 'var(--accent-soft)',
-                color: 'var(--accent-ink)',
-                boxShadow: 'var(--glass-highlight), 0 0 0 8px color-mix(in srgb, var(--accent) 10%, transparent)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                margin: '0 auto 16px',
-                animation: 'scale-in var(--spring-bouncy-ms) var(--spring-bouncy)',
-              }}
-            >
-              <span className="ms fill" style={{ fontSize: 36 }}>
-                check
-              </span>
-            </div>
-            <div className="section-title" style={{ marginBottom: 4 }}>
-              {t('submitted_title')}
-            </div>
-            <div style={{ fontSize: 'var(--text-small)', color: 'var(--ink-2)' }}>{t('submitted_sub')}</div>
-          </div>
+          <SuccessState icon="check" title={t('submitted_title')} sub={t('submitted_sub')} />
         ) : (
           <form onSubmit={onSubmit}>
             <div style={{ marginBottom: 18 }}>
@@ -325,14 +285,14 @@ function HomeworkSubmitSheet({ task, onClose }: SheetProps) {
 
             {item ? (
               <>
-                <FieldLabel>{t('notes')}</FieldLabel>
-                <textarea
-                  className="glass-field"
+                <TextArea
+                  label={t('notes')}
                   value={text}
                   onChange={(e) => setText(e.target.value)}
                   placeholder={t('submission_placeholder')}
                   disabled={!isOpenStatus(task.status)}
-                  style={{ minHeight: 120, lineHeight: 1.5, resize: 'vertical', marginBottom: 8 }}
+                  rows={5}
+                  style={{ lineHeight: 1.5, marginBottom: 8 }}
                 />
                 <div
                   style={{
