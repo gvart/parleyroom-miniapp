@@ -1,8 +1,8 @@
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { EmptyState, PageHeader, Pill } from '@/ui'
+import { EmptyState, LessonCard, PageHeader } from '@/ui'
 import { useLessons } from '@/hooks/useLessons'
-import { isClub, lessonDate, lessonTime, todayISO } from '@/lib/lesson'
+import { lessonDate, lessonTime, todayISO } from '@/lib/lesson'
 import { formatMonthYear, formatWeekdayShort } from '@/lib/intl'
 import { BookLessonSheet } from './BookLessonSheet'
 import { LessonActionsSheet } from './LessonActionsSheet'
@@ -176,73 +176,9 @@ export function Calendar() {
                   {h}:00
                 </div>
                 <div style={{ flex: 1 }}>
-                  {inHour.map((l) => {
-                    const live = l.status === 'IN_PROGRESS'
-                    const club = isClub(l)
-                    const teacherName =
-                      l.students.find((s) => s.id === l.teacherId)?.firstName ?? ''
-                    return (
-                      <button
-                        type="button"
-                        key={l.id}
-                        onClick={() => setOpenedLesson(l)}
-                        className="tap"
-                        style={{
-                          display: 'block',
-                          width: '100%',
-                          textAlign: 'left',
-                          cursor: 'pointer',
-                          background: live
-                            ? 'var(--coral-soft)'
-                            : club
-                              ? 'var(--grape-soft)'
-                              : 'var(--glass-bg)',
-                          color: 'var(--ink)',
-                          padding: '10px 14px',
-                          borderRadius: 18,
-                          border: '1px solid var(--glass-border)',
-                          borderLeft: `4px solid ${live ? 'var(--coral-vivid)' : club ? 'var(--grape-vivid)' : 'var(--accent)'}`,
-                          marginBottom: 4,
-                          boxShadow: 'var(--glass-highlight), var(--shadow-1)',
-                          fontFamily: 'inherit',
-                          fontSize: 'inherit',
-                        }}
-                      >
-                        <div
-                          style={{
-                            display: 'flex',
-                            justifyContent: 'space-between',
-                            alignItems: 'center',
-                            marginBottom: 2,
-                          }}
-                        >
-                          <div
-                            style={{
-                              fontSize: 'var(--text-body)',
-                              fontWeight: 800,
-                              overflow: 'hidden',
-                              textOverflow: 'ellipsis',
-                              whiteSpace: 'nowrap',
-                            }}
-                          >
-                            {l.topic}
-                          </div>
-                          {live && (
-                            <Pill tone="live" style={{ fontSize: 'var(--text-label)', padding: '2px 8px' }}>
-                              <span className="live-dot" />
-                              {t('live').toUpperCase()}
-                            </Pill>
-                          )}
-                        </div>
-                        <div style={{ fontSize: 'var(--text-caption)', fontWeight: 600, color: 'var(--ink-2)' }}>
-                          {lessonTime(l.scheduledAt)} · {l.durationMinutes}m ·{' '}
-                          {club
-                            ? `${l.students.length}${l.maxParticipants ? `/${l.maxParticipants}` : ''}`
-                            : teacherName}
-                        </div>
-                      </button>
-                    )
-                  })}
+                  {inHour.map((l) => (
+                    <LessonCard key={l.id} lesson={l} variant="compact" onOpen={setOpenedLesson} />
+                  ))}
                 </div>
               </div>
             )

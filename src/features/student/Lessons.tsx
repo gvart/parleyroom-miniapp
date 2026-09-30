@@ -1,10 +1,9 @@
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Button, EmptyState, PageHeader, Section } from '@/ui'
+import { Button, EmptyState, LessonCard, PageHeader, Section } from '@/ui'
 import { useLessons } from '@/hooks/useLessons'
-import { lessonDate, lessonTime, todayISO, tomorrowISO } from '@/lib/lesson'
+import { lessonDate, todayISO, tomorrowISO } from '@/lib/lesson'
 import type { Lesson } from '@/api/types'
-import { LessonRow } from './LessonRow'
 import { BookLessonSheet } from './BookLessonSheet'
 import { LessonActionsSheet } from './LessonActionsSheet'
 
@@ -30,11 +29,12 @@ export function Lessons() {
       else if (date === tomorrow) out.tomorrow.push(l)
       else if (date > today) out.upcoming.push(l)
     }
-    const byTime = (a: Lesson, b: Lesson) =>
-      lessonTime(a.scheduledAt).localeCompare(lessonTime(b.scheduledAt))
-    out.today.sort(byTime)
-    out.tomorrow.sort(byTime)
-    out.upcoming.sort(byTime)
+    // `today`/`tomorrow` are single-day buckets so sorting by time-of-day is
+    // enough; `upcoming` spans many days and needs the full timestamp.
+    const byDateTime = (a: Lesson, b: Lesson) => a.scheduledAt.localeCompare(b.scheduledAt)
+    out.today.sort(byDateTime)
+    out.tomorrow.sort(byDateTime)
+    out.upcoming.sort(byDateTime)
     return out
   }, [lessonsQuery.data])
 
@@ -72,7 +72,7 @@ export function Lessons() {
               <Section key={g.key} eyebrow={g.eyebrow}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                   {buckets[g.key].map((l) => (
-                    <LessonRow key={l.id} lesson={l} onOpen={setOpenedLesson} />
+                    <LessonCard key={l.id} lesson={l} onOpen={setOpenedLesson} />
                   ))}
                 </div>
               </Section>
