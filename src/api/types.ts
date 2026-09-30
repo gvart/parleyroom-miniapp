@@ -246,10 +246,222 @@ export interface OwnSentence {
   createdAt: string
 }
 
+/* ─── Document blocks (rendered read-only or answered inside a homework item) ─── */
+
+export type RichMark =
+  | { type: 'bold' | 'italic' | 'underline' | 'strike' | 'highlight' }
+  | { type: 'link'; attrs: { href: string } }
+
+export interface RichNode {
+  type:
+    | 'doc'
+    | 'paragraph'
+    | 'heading'
+    | 'bulletList'
+    | 'orderedList'
+    | 'listItem'
+    | 'blockquote'
+    | 'hardBreak'
+    | 'text'
+  attrs?: { level?: number }
+  content?: RichNode[]
+  text?: string
+  marks?: RichMark[]
+}
+
+export interface RichText {
+  type: 'doc'
+  content?: RichNode[]
+}
+
+export type BlockType =
+  | 'heading'
+  | 'rich_text'
+  | 'vocab_table'
+  | 'grammar_box'
+  | 'gap_fill'
+  | 'multiple_choice'
+  | 'error_correction'
+  | 'free_sentences'
+  | 'writing_task'
+  | 'reading'
+  | 'media'
+  | 'exam_part'
+  | 'free_form'
+
+interface BlockBase {
+  id: string
+  interactive: boolean
+}
+
+export interface Option {
+  id: string
+  text: string
+}
+
+export type QuestionKind = 'OPEN' | 'TRUE_FALSE' | 'CHOICE'
+
+export interface Question {
+  id: string
+  kind: QuestionKind
+  question: string
+  options?: Option[]
+  solution?: { sampleAnswer?: string; isTrue?: boolean; correctOptionIds?: string[] }
+}
+
+export interface HeadingBlock extends BlockBase {
+  type: 'heading'
+  text: string
+  level: 1 | 2 | 3
+}
+export interface RichTextBlock extends BlockBase {
+  type: 'rich_text'
+  content: RichText
+}
+export interface VocabTableBlock extends BlockBase {
+  type: 'vocab_table'
+  title?: string | null
+  rows: { id: string; vocabEntryId: string }[]
+}
+export interface GrammarBoxBlock extends BlockBase {
+  type: 'grammar_box'
+  variant: 'TIP' | 'OVERVIEW'
+  title?: string | null
+  content?: RichText | null
+  table?: { headers: string[]; rows: string[][] } | null
+  examples?: string[] | null
+}
+export interface GapFillItem {
+  id: string
+  text: string
+  hint?: string | null
+  solution?: { answers: string[][] }
+}
+export interface GapFillBlock extends BlockBase {
+  type: 'gap_fill'
+  instructions?: string | null
+  wordBox?: string[] | null
+  items: GapFillItem[]
+}
+export interface ChoiceItem {
+  id: string
+  question: string
+  multiple?: boolean
+  options: Option[]
+  solution?: { correctOptionIds: string[] }
+}
+export interface MultipleChoiceBlock extends BlockBase {
+  type: 'multiple_choice'
+  instructions?: string | null
+  items: ChoiceItem[]
+}
+export interface CorrectionItem {
+  id: string
+  sentence: string
+  solution?: { corrected: string; explanation?: string | null }
+}
+export interface ErrorCorrectionBlock extends BlockBase {
+  type: 'error_correction'
+  instructions?: string | null
+  items: CorrectionItem[]
+}
+export interface PromptItem {
+  id: string
+  prompt: string
+  solution?: { sampleAnswer: string }
+}
+export type SentencesPurpose = 'SPEAKING' | 'SENTENCE_BUILDING' | 'USE_WORDS' | 'OTHER'
+export interface FreeSentencesBlock extends BlockBase {
+  type: 'free_sentences'
+  instructions?: string | null
+  /** SPEAKING: answered orally, no written answer expected. */
+  purpose?: SentencesPurpose | null
+  items: PromptItem[]
+}
+export type Register = 'INFORMAL' | 'FORMAL'
+export interface WritingItem {
+  id: string
+  prompt: string
+  register?: Register | null
+  points: string[]
+  minWords?: number | null
+  maxWords?: number | null
+  solution?: { sampleAnswer: string }
+}
+export interface WritingTaskBlock extends BlockBase {
+  type: 'writing_task'
+  instructions?: string | null
+  instructionsTranslation?: { ru?: string | null; uk?: string | null; en?: string | null } | null
+  items: WritingItem[]
+}
+export interface ReadingBlock extends BlockBase {
+  type: 'reading'
+  title?: string | null
+  text: RichText
+  questions: Question[]
+}
+export interface MediaBlock extends BlockBase {
+  type: 'media'
+  kind: 'AUDIO' | 'VIDEO'
+  url?: string | null
+  materialId?: string | null
+  task?: RichText | null
+  questions: Question[]
+}
+export interface ExamPartBlock extends BlockBase {
+  type: 'exam_part'
+  exam: string
+  part: string
+  instructions?: string | null
+  timeMinutes?: number | null
+  content?: RichText | null
+  questions: Question[]
+}
+export interface FreeFormBlock extends BlockBase {
+  type: 'free_form'
+  instructions?: string | null
+  content: RichText
+  items: PromptItem[]
+}
+
+export type Block =
+  | HeadingBlock
+  | RichTextBlock
+  | VocabTableBlock
+  | GrammarBoxBlock
+  | GapFillBlock
+  | MultipleChoiceBlock
+  | ErrorCorrectionBlock
+  | FreeSentencesBlock
+  | WritingTaskBlock
+  | ReadingBlock
+  | MediaBlock
+  | ExamPartBlock
+  | FreeFormBlock
+
+/** A library word referenced by a vocab_table, already filtered to this viewer's display setting. */
+export interface DocumentVocabEntry {
+  id: string
+  lemma: string
+  article: NounArticle | null
+  plural: string | null
+  wordType: WordType
+  forms: string | null
+  government: string | null
+  exampleSentence: string | null
+  level: Level | null
+  display?: VocabDisplaySetting
+  translations: Record<string, string>
+  explanationDe: string | null
+  revealTranslations?: Record<string, string> | null
+}
+
 export type HomeworkStatus = 'OPEN' | 'SUBMITTED' | 'REVIEWED' | 'DONE'
 export type HomeworkOutcome = 'REVIEWED' | 'RETURNED' | 'DONE'
 export type AssignmentItemKind = 'DOCUMENT' | 'MATERIAL' | 'TASK'
 export type HomeworkResponseType = 'TEXT' | 'AUDIO' | 'VIDEO' | 'FILE'
+export type AutoResult = 'CORRECT' | 'INCORRECT' | 'PENDING_REVIEW' | 'UNANSWERED'
+export type GapResult = 'CORRECT' | 'CASE_MISMATCH' | 'WRONG'
 
 export interface PersonRef {
   id: string
@@ -302,23 +514,61 @@ export interface AssignmentItem {
   title: string
   task: string | null
   responseType: HomeworkResponseType | null
+  documentId?: string | null
+  documentRevision?: number | null
+  blocks?: Block[] | null
+  vocab?: DocumentVocabEntry[] | null
+  materialId?: string | null
+  material?: { id: string; name: string; type: string; contentType?: string | null; downloadUrl?: string | null } | null
 }
 
-export interface HomeworkUnitAnswer {
+export interface UnitAddress {
   assignmentItemId: string
-  blockId: string | null
-  itemId: string | null
-  answer: { text?: string | null; uploadIds?: string[] } | null
+  blockId?: string | null
+  itemId?: string | null
+}
+
+export interface AnswerPayload {
+  text?: string | null
+  gaps?: string[] | null
+  optionIds?: string[] | null
+  isTrue?: boolean | null
+  /** MATERIAL/TASK with an AUDIO/VIDEO/FILE response: this unit's uploads. */
+  uploadIds?: string[] | null
+}
+
+export interface HomeworkUnit extends UnitAddress {
+  blockType?: BlockType | null
+  questionKind?: QuestionKind | null
+  check?: 'AUTO' | 'REVIEW'
+  answer?: AnswerPayload | null
+  answeredAt?: string | null
+  autoResult?: AutoResult | null
+  autoScore?: number | null
+  gapResults?: GapResult[] | null
+  /** Teacher override of the auto result; `correct` is the effective verdict shown to the student. */
+  teacherCorrect?: boolean | null
+  correct?: boolean | null
+  comment?: string | null
+}
+
+export interface HomeworkUpload {
+  id: string
+  assignmentItemId: string
+  fileName: string
+  contentType: string
+  size: number
+  downloadUrl: string
+  createdAt: string
 }
 
 /** `GET /homework/{id}` — full homework: [HomeworkSummary] fields plus content and answers. */
-export interface HomeworkDetail {
-  id: string
-  status: HomeworkStatus
+export interface HomeworkDetail extends HomeworkSummary {
   instructions: string | null
   feedback: string | null
   items: AssignmentItem[]
-  units: HomeworkUnitAnswer[]
+  units: HomeworkUnit[]
+  uploads: HomeworkUpload[]
 }
 
 export interface AnswersSavedResponse {
@@ -326,6 +576,13 @@ export interface AnswersSavedResponse {
   lastSavedAt: string | null
   answeredUnits: number
   totalUnits: number
+}
+
+/** `GET /homework/counts` — student's dashboard badges. */
+export interface HomeworkCounts {
+  open: number
+  dueSoon: number
+  returned: number
 }
 
 export type NotificationType =

@@ -463,6 +463,9 @@ interface MockHomeworkSummary {
   updatedAt: string
 }
 
+/** Mutates a fixture's status/outcome after a submit — kept outside the pure `homeworkSummary` fixtures. */
+const MOCK_STATUS_OVERRIDES = new Map<string, Partial<MockHomeworkSummary>>()
+
 function homeworkSummary(over: Partial<MockHomeworkSummary> & { id: string }): MockHomeworkSummary {
   return {
     assignmentId: `a-${over.id}`,
@@ -486,6 +489,7 @@ function homeworkSummary(over: Partial<MockHomeworkSummary> & { id: string }): M
     createdAt: '2026-03-10T00:00:00Z',
     updatedAt: '2026-03-10T00:00:00Z',
     ...over,
+    ...MOCK_STATUS_OVERRIDES.get(over.id),
   }
 }
 
@@ -536,8 +540,44 @@ function homeworkBody() {
         reviewedAt: '2026-03-13T00:00:00Z',
         doneAt: '2026-03-13T00:00:00Z',
       }),
+      homeworkSummary({
+        id: 'h6',
+        title: 'Wochenende in Berlin',
+        dueDate: '2026-04-20',
+        itemCount: 1,
+        totalUnits: 8,
+        createdAt: '2026-03-11T00:00:00Z',
+        updatedAt: '2026-03-11T00:00:00Z',
+      }),
+      homeworkSummary({
+        id: 'h7',
+        title: 'Speaking: Introduce yourself',
+        dueDate: '2026-04-15',
+        createdAt: '2026-03-11T00:00:00Z',
+        updatedAt: '2026-03-11T00:00:00Z',
+      }),
+      homeworkSummary({
+        id: 'h8',
+        title: 'Homework scan: workbook p.12',
+        dueDate: '2026-04-15',
+        createdAt: '2026-03-11T00:00:00Z',
+        updatedAt: '2026-03-11T00:00:00Z',
+      }),
+      homeworkSummary({
+        id: 'h9',
+        title: 'Write: My favourite season',
+        dueDate: '2026-04-10',
+        lastOutcome: 'RETURNED',
+        attempt: 1,
+        answeredUnits: 1,
+        createdAt: '2026-03-02T00:00:00Z',
+        updatedAt: '2026-03-14T00:00:00Z',
+        submittedAt: '2026-03-08T00:00:00Z',
+        reviewedAt: '2026-03-14T00:00:00Z',
+        returnedAt: '2026-03-14T00:00:00Z',
+      }),
     ],
-    total: 5,
+    total: 9,
     page: 1,
     pageSize: 20,
   }
@@ -594,32 +634,228 @@ function practiceStatsBody() {
 
 const mockSentences = new Map<string, unknown[]>()
 
-const MOCK_HOMEWORK_ANSWERS = new Map<string, string>([['h4', 'Alle 10 Sätze im Anhang.']])
+/* --- Rich document fixture (h6): one of every exercise + context block type --- */
+
+const RICH_TIP = {
+  type: 'doc',
+  content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Use haben for most verbs, sein for movement/change of state.' }] }],
+}
+const READING_TEXT = {
+  type: 'doc',
+  content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Anna wacht um sieben Uhr auf. Sie trinkt Kaffee und liest die Zeitung.' }] }],
+}
+
+const MOCK_VOCAB_ENTRIES = [
+  {
+    id: 'voc-1',
+    lemma: 'Gemütlichkeit',
+    article: 'DIE',
+    plural: null,
+    wordType: 'NOUN',
+    forms: null,
+    government: null,
+    exampleSentence: 'In dieser Kneipe herrscht eine echte Gemütlichkeit.',
+    level: 'B1',
+    display: { fields: ['en'], allowTranslationToggle: false },
+    translations: { en: 'coziness' },
+    explanationDe: null,
+    revealTranslations: null,
+  },
+  {
+    id: 'voc-2',
+    lemma: 'Augenblick',
+    article: 'DER',
+    plural: 'Augenblicke',
+    wordType: 'NOUN',
+    forms: null,
+    government: null,
+    exampleSentence: 'Einen Augenblick, bitte.',
+    level: 'B1',
+    display: { fields: ['en'], allowTranslationToggle: false },
+    translations: { en: 'the moment' },
+    explanationDe: null,
+    revealTranslations: null,
+  },
+]
+
+function richDocumentBlocks() {
+  return [
+    { id: 'b-heading', type: 'heading', interactive: false, text: 'Wochenende in Berlin', level: 1 },
+    { id: 'b-rich', type: 'rich_text', interactive: false, content: RICH_TIP },
+    { id: 'b-grammar', type: 'grammar_box', interactive: false, variant: 'TIP', title: 'Perfekt mit haben/sein', content: RICH_TIP, examples: ['Ich habe gegessen.', 'Ich bin gegangen.'] },
+    { id: 'b-vocab', type: 'vocab_table', interactive: false, title: 'Neue Wörter', rows: [{ id: 'r1', vocabEntryId: 'voc-1' }, { id: 'r2', vocabEntryId: 'voc-2' }] },
+    {
+      id: 'b-gap',
+      type: 'gap_fill',
+      interactive: true,
+      instructions: 'Fill in the gaps with haben or sein.',
+      wordBox: ['bin', 'habe'],
+      items: [{ id: 'g1', text: 'Ich ___ gestern ins Kino gegangen.', hint: null }],
+    },
+    {
+      id: 'b-mc',
+      type: 'multiple_choice',
+      interactive: true,
+      instructions: 'Choose the correct answer.',
+      items: [{ id: 'm1', question: 'Welches Hilfsverb passt zu "gehen"?', multiple: false, options: [{ id: 'o1', text: 'haben' }, { id: 'o2', text: 'sein' }] }],
+    },
+    {
+      id: 'b-ec',
+      type: 'error_correction',
+      interactive: true,
+      instructions: 'Correct the sentence.',
+      items: [{ id: 'e1', sentence: 'Er haben ein Buch gelesen.' }],
+    },
+    {
+      id: 'b-fs',
+      type: 'free_sentences',
+      interactive: true,
+      instructions: 'Write one sentence using each word.',
+      purpose: 'USE_WORDS',
+      items: [{ id: 'f1', prompt: 'Gemütlichkeit' }],
+    },
+    {
+      id: 'b-wt',
+      type: 'writing_task',
+      interactive: true,
+      instructions: 'Describe your weekend.',
+      items: [{ id: 'w1', prompt: 'Was hast du am Wochenende gemacht?', register: 'INFORMAL', points: ['Wo warst du?', 'Was hast du gegessen?'], minWords: 40, maxWords: 100 }],
+    },
+    {
+      id: 'b-reading',
+      type: 'reading',
+      interactive: true,
+      title: 'Annas Tag',
+      text: READING_TEXT,
+      questions: [
+        { id: 'q1', kind: 'TRUE_FALSE', question: 'Anna trinkt Tee.' },
+        { id: 'q2', kind: 'OPEN', question: 'Was macht Anna um sieben Uhr?' },
+      ],
+    },
+    {
+      id: 'b-media',
+      type: 'media',
+      interactive: true,
+      kind: 'AUDIO',
+      url: null,
+      task: RICH_TIP,
+      questions: [{ id: 'q3', kind: 'CHOICE', question: 'Worum geht es in der Aufnahme?', options: [{ id: 'c1', text: 'Wetter' }, { id: 'c2', text: 'Reisen' }] }],
+    },
+  ]
+}
+
+/** Every answerable unit address for a homework id, in document order. */
+function unitDefsFor(id: string): Array<{ assignmentItemId: string; blockId?: string; itemId?: string }> {
+  if (id === 'h6') {
+    return [
+      { assignmentItemId: 'ai-h6', blockId: 'b-gap', itemId: 'g1' },
+      { assignmentItemId: 'ai-h6', blockId: 'b-mc', itemId: 'm1' },
+      { assignmentItemId: 'ai-h6', blockId: 'b-ec', itemId: 'e1' },
+      { assignmentItemId: 'ai-h6', blockId: 'b-fs', itemId: 'f1' },
+      { assignmentItemId: 'ai-h6', blockId: 'b-wt', itemId: 'w1' },
+      { assignmentItemId: 'ai-h6', blockId: 'b-reading', itemId: 'q1' },
+      { assignmentItemId: 'ai-h6', blockId: 'b-reading', itemId: 'q2' },
+      { assignmentItemId: 'ai-h6', blockId: 'b-media', itemId: 'q3' },
+    ]
+  }
+  return [{ assignmentItemId: `ai-${id}` }]
+}
+
+function ukey(u: { assignmentItemId: string; blockId?: string | null; itemId?: string | null }): string {
+  return [u.assignmentItemId, u.blockId, u.itemId].filter(Boolean).join(':')
+}
+
+interface MockAnswer {
+  text?: string | null
+  gaps?: string[] | null
+  optionIds?: string[] | null
+  isTrue?: boolean | null
+  uploadIds?: string[] | null
+}
+
+function isAnsweredMock(a: MockAnswer | null | undefined): boolean {
+  if (!a) return false
+  return !!(a.text?.trim() || a.gaps?.some((g) => g.trim()) || a.optionIds?.length || a.isTrue !== undefined || a.uploadIds?.length)
+}
+
+interface MockUpload {
+  id: string
+  assignmentItemId: string
+  fileName: string
+  contentType: string
+  size: number
+  downloadUrl: string
+  createdAt: string
+}
+
+interface MockHomeworkState {
+  answers: Map<string, MockAnswer>
+  uploads: MockUpload[]
+}
+
+const MOCK_HOMEWORK_STATE = new Map<string, MockHomeworkState>()
+const MOCK_UPLOAD_BLOBS = new Map<string, { dataUrl: string; contentType: string }>()
+
+function homeworkState(id: string): MockHomeworkState {
+  let state = MOCK_HOMEWORK_STATE.get(id)
+  if (!state) {
+    state = { answers: new Map(), uploads: [] }
+    if (id === 'h4') state.answers.set('ai-h4', { text: 'Alle 10 Sätze im Anhang.' })
+    if (id === 'h9') state.answers.set('ai-h9', { text: 'Der Sommer ist meine Lieblingsjahreszeit, weil...' })
+    MOCK_HOMEWORK_STATE.set(id, state)
+  }
+  return state
+}
+
+function instructionsFor(id: string): string | null {
+  if (id === 'h6') return 'Read the tip, then complete every exercise below.'
+  if (id === 'h7') return 'Record yourself introducing your family and hobbies (30–60s).'
+  if (id === 'h8') return 'Photograph or scan page 12 of your workbook and upload it here.'
+  return 'Write 150–200 words using at least 4 Perfekt verbs.'
+}
+
+function feedbackFor(id: string): string | null {
+  if (id === 'h5') return 'Very good! Small note on Umlaute.'
+  if (id === 'h9') return 'Good structure, but check your Perfekt endings — see the comment below and try again.'
+  return null
+}
+
+function commentsFor(id: string): Record<string, string> {
+  if (id === 'h9') return { 'ai-h9': 'Careful with "ich bin gegessen" — it should be "ich habe gegessen".' }
+  return {}
+}
 
 function homeworkDetail(id: string) {
   const summary = homeworkBody().homework.find((h) => h.id === id) ?? homeworkSummary({ id })
-  const answer = MOCK_HOMEWORK_ANSWERS.get(id) ?? null
+  const state = homeworkState(id)
+  const comments = commentsFor(id)
+
+  const items =
+    id === 'h6'
+      ? [{ id: 'ai-h6', kind: 'DOCUMENT', title: summary.title, task: null, responseType: null, documentId: 'doc-h6', blocks: richDocumentBlocks(), vocab: MOCK_VOCAB_ENTRIES }]
+      : [
+          {
+            id: `ai-${id}`,
+            kind: 'TASK',
+            title: summary.title,
+            task: instructionsFor(id),
+            responseType: id === 'h7' ? 'AUDIO' : id === 'h8' ? 'FILE' : 'TEXT',
+          },
+        ]
+
+  const units = unitDefsFor(id).map((u) => ({
+    ...u,
+    answer: state.answers.get(ukey(u)) ?? null,
+    comment: comments[ukey(u)] ?? null,
+  }))
+
   return {
     ...summary,
-    instructions: 'Write 150–200 words using at least 4 Perfekt verbs.',
-    feedback: id === 'h5' ? 'Very good! Small note on Umlaute.' : null,
-    items: [
-      {
-        id: `ai-${id}`,
-        kind: 'TASK',
-        title: summary.title,
-        task: 'Write 150–200 words using at least 4 Perfekt verbs.',
-        responseType: 'TEXT',
-      },
-    ],
-    units: [
-      {
-        assignmentItemId: `ai-${id}`,
-        blockId: null,
-        itemId: null,
-        answer: answer ? { text: answer } : null,
-      },
-    ],
+    instructions: instructionsFor(id),
+    feedback: feedbackFor(id),
+    items,
+    units,
+    uploads: state.uploads,
   }
 }
 
@@ -721,7 +957,16 @@ function vocabBody() {
   }
 }
 
+/**
+ * True once `installMockBackend()` has patched `window.fetch` — client-side
+ * navigation can drop the `?mock=1` query param, so callers that need to know
+ * whether the mock is active (e.g. an XHR-based upload that bypasses `fetch`)
+ * should check this instead of re-reading the URL.
+ */
+export let isMockBackendActive = false
+
 export function installMockBackend(): void {
+  isMockBackendActive = true
   const params = new URLSearchParams(window.location.search)
   const role: MockUser['role'] = params.get('role') === 'teacher' ? 'TEACHER' : 'STUDENT'
 
@@ -1162,28 +1407,87 @@ export function installMockBackend(): void {
         201,
       )
     }
+    if (url.endsWith('/api/v1/homework/counts') && method === 'GET') {
+      const all = homeworkBody().homework
+      const today = todayISO()
+      return json({
+        open: all.filter((h) => h.status === 'OPEN').length,
+        dueSoon: all.filter((h) => h.status === 'OPEN' && !!h.dueDate && h.dueDate <= today).length,
+        returned: all.filter((h) => h.lastOutcome === 'RETURNED').length,
+      })
+    }
     const answersMatch = url.match(/\/api\/v1\/homework\/([^/]+)\/answers$/)
     if (answersMatch && method === 'PUT') {
+      const id = answersMatch[1]
       const body = init?.body
         ? (JSON.parse(init.body as string) as {
-            answers: Array<{ assignmentItemId: string; answer?: { text?: string | null } | null }>
+            answers: Array<{ assignmentItemId: string; blockId?: string | null; itemId?: string | null; answer: MockAnswer | null }>
           })
         : { answers: [] }
-      const text = body.answers[0]?.answer?.text
-      if (text !== undefined) {
-        if (text) MOCK_HOMEWORK_ANSWERS.set(answersMatch[1], text)
-        else MOCK_HOMEWORK_ANSWERS.delete(answersMatch[1])
+      const state = homeworkState(id)
+      for (const a of body.answers) {
+        const k = ukey(a)
+        if (a.answer === null || a.answer === undefined) state.answers.delete(k)
+        else state.answers.set(k, a.answer)
       }
+      const defs = unitDefsFor(id)
+      const answeredUnits = defs.filter((u) => isAnsweredMock(state.answers.get(ukey(u)))).length
       return json({
         updatedAt: new Date().toISOString(),
         lastSavedAt: new Date().toISOString(),
-        answeredUnits: MOCK_HOMEWORK_ANSWERS.has(answersMatch[1]) ? 1 : 0,
-        totalUnits: 1,
+        answeredUnits,
+        totalUnits: defs.length,
       })
+    }
+    const uploadFileMatch = url.match(/\/api\/v1\/homework\/([^/]+)\/uploads\/([^/]+)\/file$/)
+    if (uploadFileMatch && method === 'GET') {
+      const stored = MOCK_UPLOAD_BLOBS.get(uploadFileMatch[2])
+      if (!stored) return new Response(null, { status: 404 })
+      const decoded = await original(stored.dataUrl)
+      const blob = await decoded.blob()
+      return new Response(blob, { status: 200, headers: { 'content-type': stored.contentType } })
+    }
+    const uploadCreateMatch = url.match(/\/api\/v1\/homework\/([^/]+)\/items\/([^/]+)\/uploads$/)
+    if (uploadCreateMatch && method === 'POST') {
+      const [, id, itemId] = uploadCreateMatch
+      const form = init?.body instanceof FormData ? init.body : null
+      const file = form?.get('file')
+      if (!(file instanceof Blob)) return json({ detail: 'no file' }, 400)
+      return new Promise<Response>((resolve) => {
+        const reader = new FileReader()
+        reader.onload = () => {
+          const dataUrl = typeof reader.result === 'string' ? reader.result : ''
+          const uploadId = `up-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`
+          MOCK_UPLOAD_BLOBS.set(uploadId, { dataUrl, contentType: file.type || 'application/octet-stream' })
+          const upload: MockUpload = {
+            id: uploadId,
+            assignmentItemId: itemId,
+            fileName: file instanceof File ? file.name : 'upload',
+            contentType: file.type || 'application/octet-stream',
+            size: file.size,
+            downloadUrl: `/api/v1/homework/${id}/uploads/${uploadId}/file`,
+            createdAt: new Date().toISOString(),
+          }
+          homeworkState(id).uploads.push(upload)
+          resolve(json(upload, 201))
+        }
+        reader.onerror = () => resolve(json({ detail: 'upload failed' }, 500))
+        reader.readAsDataURL(file)
+      })
+    }
+    const uploadDeleteMatch = url.match(/\/api\/v1\/homework\/([^/]+)\/items\/([^/]+)\/uploads\/([^/]+)$/)
+    if (uploadDeleteMatch && method === 'DELETE') {
+      const [, id, , uploadId] = uploadDeleteMatch
+      const state = homeworkState(id)
+      state.uploads = state.uploads.filter((u) => u.id !== uploadId)
+      MOCK_UPLOAD_BLOBS.delete(uploadId)
+      return new Response(null, { status: 204 })
     }
     const submitMatch = url.match(/\/api\/v1\/homework\/([^/]+)\/submit$/)
     if (submitMatch && method === 'POST') {
-      return json({ ...homeworkDetail(submitMatch[1]), status: 'SUBMITTED' })
+      const id = submitMatch[1]
+      MOCK_STATUS_OVERRIDES.set(id, { status: 'SUBMITTED', lastOutcome: null, submittedAt: new Date().toISOString() })
+      return json(homeworkDetail(id))
     }
     const homeworkDetailMatch = url.match(/\/api\/v1\/homework\/([^/]+)$/)
     if (homeworkDetailMatch && method === 'GET') {

@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import { useLocation } from 'react-router-dom'
 import { TabBar, type TabDef } from '@/ui'
+import { useKeyboardOpen } from '@/hooks/useKeyboardOpen'
 
 interface AppShellProps {
   tabs: TabDef[]
@@ -12,6 +13,9 @@ function isFullscreen(pathname: string): boolean {
   if (pathname.startsWith('/vocab/practice/session')) return true
   // /lessons/:id/live
   if (/^\/lessons\/[^/]+\/live$/.test(pathname)) return true
+  // /homework/:id — a long document needs the vertical room, and its own
+  // sticky Submit bar replaces the tab bar as the way back (ScreenHeader).
+  if (/^\/homework\/[^/]+$/.test(pathname)) return true
   return false
 }
 
@@ -29,6 +33,10 @@ const BOTTOM_INSET =
 export function AppShell({ tabs, children }: AppShellProps) {
   const { pathname } = useLocation()
   const fullscreen = isFullscreen(pathname)
+  // Any screen's floating tab bar would otherwise sit on top of the on-screen
+  // keyboard (it doesn't resize the layout viewport — see useKeyboardAwareLayout)
+  // and cover whatever the keyboard itself doesn't already cover.
+  const keyboardOpen = useKeyboardOpen()
   return (
     <div
       style={{
@@ -46,7 +54,7 @@ export function AppShell({ tabs, children }: AppShellProps) {
       >
         {children}
       </main>
-      {!fullscreen && <TabBar tabs={tabs} />}
+      {!fullscreen && !keyboardOpen && <TabBar tabs={tabs} />}
     </div>
   )
 }

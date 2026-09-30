@@ -5,6 +5,7 @@ import { STUDENT_TABS, TEACHER_TABS } from './tabs'
 import { Home } from '@/features/student/Home'
 import { Lessons } from '@/features/student/Lessons'
 import { Homework } from '@/features/student/Homework'
+import { HomeworkDetail } from '@/features/student/homework/HomeworkDetail'
 import { Vocab } from '@/features/student/Vocab'
 import { PracticeHome } from '@/features/student/practice/PracticeHome'
 import { PracticeSession } from '@/features/student/practice/PracticeSession'
@@ -56,6 +57,7 @@ export function RoleRouter() {
         <Route path="/lessons" element={<Lessons />} />
         <Route path="/lessons/:id/live" element={<LessonLive />} />
         <Route path="/homework" element={<Homework />} />
+        <Route path="/homework/:id" element={<HomeworkDetail />} />
         <Route path="/materials" element={<StudentMaterials />} />
         <Route path="/vocab" element={<Vocab />} />
         <Route path="/vocab/practice" element={<PracticeHome />} />
