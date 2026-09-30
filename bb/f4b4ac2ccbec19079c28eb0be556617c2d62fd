@@ -1,0 +1,42 @@
+src/hooks/useBackButton.ts
+  s_4985e1aeba0736::t_69c24bdd3edb16 21
+  s_4985e1aeba0736::t_ea37d6134d33f3 1-3,5-20,22-36
+  s_4985e1aeba0736::t_05c1bdc964b0ce 4
+src/hooks/useKeyboardAwareLayout.ts
+  s_4985e1aeba0736::t_c0c0560a8fed03 1-56
+src/App.tsx
+  s_4985e1aeba0736::t_ab558b62705d61 5,8
+src/ui/ScreenHeader.tsx
+  s_4985e1aeba0736::t_8b642a18d9baa9 1-37
+src/ui/SuccessState.tsx
+  s_4985e1aeba0736::t_c76027c48427fa 1-46
+src/lib/haptics.ts
+  s_4985e1aeba0736::t_43c4df6570b17e 1-25
+src/styles.css
+  s_4985e1aeba0736::t_acb008066644d6 100-102
+  s_4985e1aeba0736::t_2622cd0963f277 782-783,786,791
+  s_4985e1aeba0736::t_6c63f2db54a5b0 155-200
+src/ui/LessonCard.tsx
+  s_4985e1aeba0736::t_f0005bc2f00e06 1-232
+src/ui/index.ts
+  s_4985e1aeba0736::t_e296d694fa99ff 7,11,16
+src/ui/Button.tsx
+  s_4985e1aeba0736::t_10343f0742d757 1-2
+  s_4985e1aeba0736::t_c4fca4cbe88424 37,49-52,54
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "bbf4b4ac2ccbec19079c28eb0be556617c2d62fd",
+  "prompts": {},
+  "sessions": {
+    "s_4985e1aeba0736": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "67d7b6f0-b72a-461c-a3eb-bc1269097f4b",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Vladlen Gladis <vladlen.gladis@deliveryhero.com>"
+    }
+  }
+}
