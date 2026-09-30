@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { TONE_VARS, type Tone } from '@/ui'
 import type { CardIntervals, PracticeRating } from '@/api/types'
+import { formatDurationShort } from '@/lib/intl'
 
 interface RatingDef {
   rating: PracticeRating
@@ -16,19 +17,10 @@ const RATINGS: RatingDef[] = [
   { rating: 'EASY', labelKey: 'easy', icon: 'bolt', tone: 'sky' },
 ]
 
-/** "12m", "3d" — compact, until-next-review shorthand; not translated (same idea as a countdown digit). */
+/** "10 мин", "1 Std.", "3 days" — localized, until-next-review shorthand. */
 function intervalHint(intervals: CardIntervals | null | undefined, rating: PracticeRating): string | null {
   const iv = intervals?.[rating]
-  if (!iv) return null
-  const minutes = Math.max(1, Math.round(iv.seconds / 60))
-  if (minutes < 60) return `${minutes}m`
-  const hours = Math.round(minutes / 60)
-  if (hours < 24) return `${hours}h`
-  const days = Math.round(hours / 24)
-  if (days < 30) return `${days}d`
-  const months = Math.round(days / 30)
-  if (months < 12) return `${months}mo`
-  return `${Math.round(months / 12)}y`
+  return iv ? formatDurationShort(iv.seconds) : null
 }
 
 /** The four FSRS grades as thumb-zone buttons, with the next-interval hint per grade when known. */
