@@ -2,6 +2,7 @@ import { apiFetch } from './client'
 import type {
   AnswersSavedResponse,
   AuthResponse,
+  AvailableSlotsResponse,
   FolderTreeNode,
   Goal,
   GoalPage,
@@ -9,6 +10,7 @@ import type {
   HomeworkDetail,
   HomeworkPage,
   HomeworkStatus,
+  JoinLessonResponse,
   Lesson,
   LessonMaterialList,
   LessonType,
@@ -20,6 +22,7 @@ import type {
   MaterialType,
   NativeLanguage,
   NotificationPage,
+  OpenClub,
   StartLessonResponse,
   TelegramLink,
   UserProfile,
@@ -233,7 +236,17 @@ export const api = {
     apiFetch<Lesson>(`/api/v1/lessons/${id}/content`, { method: 'PATCH', body }),
 
   joinLesson: (id: string) =>
-    apiFetch<void>(`/api/v1/lessons/${id}/join`, { method: 'POST' }),
+    apiFetch<JoinLessonResponse>(`/api/v1/lessons/${id}/join`, { method: 'POST' }),
+
+  withdrawJoinRequest: (id: string) =>
+    apiFetch<void>(`/api/v1/lessons/${id}/join`, { method: 'DELETE' }),
+
+  openClubs: () => apiFetch<OpenClub[]>('/api/v1/lessons/open-clubs'),
+
+  availableSlots: (
+    teacherId: string,
+    query: { from: string; to: string; durationMinutes: number },
+  ) => apiFetch<AvailableSlotsResponse>(`/api/v1/teachers/${teacherId}/available-slots${qs(query)}`),
 
   acceptJoinRequest: (lessonId: string, studentId: string) =>
     apiFetch<void>(
@@ -255,6 +268,9 @@ export const api = {
 
   rejectReschedule: (id: string) =>
     apiFetch<void>(`/api/v1/lessons/${id}/reschedule/reject`, { method: 'POST' }),
+
+  withdrawReschedule: (id: string) =>
+    apiFetch<Lesson>(`/api/v1/lessons/${id}/reschedule/withdraw`, { method: 'POST' }),
 
   materials: (
     query: {

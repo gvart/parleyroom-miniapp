@@ -10,6 +10,8 @@ function useLessonMutation<TVars, TResult>(
     onSuccess: () => {
       void qc.invalidateQueries({ queryKey: ['lessons'] })
       void qc.invalidateQueries({ queryKey: ['notifications'] })
+      // Cancel/reschedule/accept free up or take a slot — refresh any slot pickers.
+      void qc.invalidateQueries({ queryKey: ['available-slots'] })
     },
   })
 }
@@ -69,4 +71,8 @@ export function useAcceptReschedule() {
 
 export function useRejectReschedule() {
   return useLessonMutation((id: string) => api.rejectReschedule(id))
+}
+
+export function useWithdrawReschedule() {
+  return useLessonMutation((id: string) => api.withdrawReschedule(id))
 }

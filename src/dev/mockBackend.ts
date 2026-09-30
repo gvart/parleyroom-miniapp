@@ -15,6 +15,12 @@ function todayISO(): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
 }
 
+function addDaysISO(offsetDays: number): string {
+  const d = new Date()
+  d.setDate(d.getDate() + offsetDays)
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+}
+
 // A lesson's `teacher` is a separate field from `students` on the real backend
 // (LessonResponse.teacher / LessonResponse.students) — the teacher is never a
 // member of `students`. Keep mocks matching that shape.
@@ -39,6 +45,205 @@ const sampleStudentsList = [
   localeConfirmedAt: '2026-02-01T00:00:00Z' as string | null,
   createdAt: '2026-02-01T00:00:00Z',
 }))
+
+interface MockPendingReschedule {
+  newScheduledAt: string
+  note: string | null
+  requestedBy: string
+}
+
+interface MockLesson {
+  id: string
+  title: string
+  topic: string
+  type: string
+  scheduledAt: string
+  durationMinutes: number
+  teacherId: string
+  teacher: { id: string; firstName: string; lastName: string }
+  status: string
+  level: string | null
+  maxParticipants: number | null
+  students: Array<{ id: string; firstName: string; lastName: string; status: string }>
+  startedAt: string | null
+  pendingReschedule: MockPendingReschedule | null
+  createdBy: string
+  createdAt: string
+  updatedAt: string
+}
+
+// Mutable (statuses/pendingReschedule change via cancel/reschedule mocks below) so
+// the Calendar's reschedule/cancel flows are demoable against `?mock=1`.
+const studentLessonsList: MockLesson[] = [
+  {
+    id: 'l1',
+    title: 'Perfekt vs. Präteritum',
+    topic: 'Perfekt vs. Präteritum',
+    type: 'ONE_ON_ONE',
+    scheduledAt: `${todayISO()}T09:30:00Z`,
+    durationMinutes: 60,
+    teacherId: 't1',
+    teacher: TEACHER_REAL,
+    status: 'CONFIRMED',
+    level: 'B1',
+    maxParticipants: null,
+    students: [{ id: 'u-mock', firstName: 'Lina', lastName: 'Weber', status: 'CONFIRMED' }],
+    startedAt: null,
+    pendingReschedule: null,
+    createdBy: 't1',
+    createdAt: '2026-03-10T00:00:00Z',
+    updatedAt: '2026-03-10T00:00:00Z',
+  },
+  {
+    id: 'l2',
+    title: 'Reisevokabular',
+    topic: 'Reisevokabular',
+    type: 'ONE_ON_ONE',
+    scheduledAt: `${todayISO()}T11:00:00Z`,
+    durationMinutes: 45,
+    teacherId: 't1',
+    teacher: TEACHER_REAL,
+    status: 'CONFIRMED',
+    level: 'A2',
+    maxParticipants: null,
+    students: [{ id: 'u-mock', firstName: 'Lina', lastName: 'Weber', status: 'CONFIRMED' }],
+    startedAt: null,
+    pendingReschedule: null,
+    createdBy: 't1',
+    createdAt: '2026-03-10T00:00:00Z',
+    updatedAt: '2026-03-10T00:00:00Z',
+  },
+  {
+    id: 'l3',
+    title: 'Konversationsclub',
+    topic: 'Konversationsclub',
+    type: 'SPEAKING_CLUB',
+    scheduledAt: `${addDaysISO(1)}T17:00:00Z`,
+    durationMinutes: 60,
+    teacherId: 't1',
+    teacher: TEACHER_REAL,
+    status: 'CONFIRMED',
+    level: 'B1',
+    maxParticipants: 6,
+    students: [
+      { id: 'u-mock', firstName: 'Lina', lastName: 'Weber', status: 'CONFIRMED' },
+      { id: 's2', firstName: 'Mateo', lastName: 'Alves', status: 'CONFIRMED' },
+    ],
+    startedAt: null,
+    pendingReschedule: null,
+    createdBy: 't1',
+    createdAt: '2026-03-10T00:00:00Z',
+    updatedAt: '2026-03-10T00:00:00Z',
+  },
+  {
+    id: 'l4',
+    title: 'Konjunktiv II',
+    topic: 'Konjunktiv II',
+    type: 'ONE_ON_ONE',
+    scheduledAt: `${addDaysISO(2)}T14:00:00Z`,
+    durationMinutes: 60,
+    teacherId: 't1',
+    teacher: TEACHER_REAL,
+    status: 'CONFIRMED',
+    level: 'B1',
+    maxParticipants: null,
+    students: [{ id: 'u-mock', firstName: 'Lina', lastName: 'Weber', status: 'CONFIRMED' }],
+    startedAt: null,
+    pendingReschedule: { newScheduledAt: `${addDaysISO(3)}T16:00:00Z`, note: null, requestedBy: 't1' },
+    createdBy: 't1',
+    createdAt: '2026-03-10T00:00:00Z',
+    updatedAt: '2026-03-10T00:00:00Z',
+  },
+]
+
+interface MockOpenClub {
+  id: string
+  title: string
+  type: string
+  scheduledAt: string
+  durationMinutes: number
+  topic: string
+  level: string | null
+  teacher: { id: string; firstName: string; lastName: string }
+  maxParticipants: number | null
+  takenSpots: number
+  myStatus: string | null
+  /** Mock-only: whether a fresh join resolves straight to CONFIRMED. */
+  autoAccept: boolean
+}
+
+const openClubsList: MockOpenClub[] = [
+  {
+    id: 'oc1',
+    title: 'Konversationsclub',
+    type: 'SPEAKING_CLUB',
+    scheduledAt: `${addDaysISO(2)}T17:00:00Z`,
+    durationMinutes: 60,
+    topic: 'Alltag & Reisen',
+    level: 'B1',
+    teacher: TEACHER_REAL,
+    maxParticipants: 6,
+    takenSpots: 2,
+    myStatus: null,
+    autoAccept: false,
+  },
+  {
+    id: 'oc2',
+    title: 'Lesezirkel',
+    type: 'READING_CLUB',
+    scheduledAt: `${addDaysISO(3)}T18:30:00Z`,
+    durationMinutes: 45,
+    topic: 'Der Prozess, Kapitel 2',
+    level: 'B2',
+    teacher: TEACHER_REAL,
+    maxParticipants: 5,
+    takenSpots: 3,
+    myStatus: 'REQUESTED',
+    autoAccept: false,
+  },
+  {
+    id: 'oc3',
+    title: 'Konversationsclub',
+    type: 'SPEAKING_CLUB',
+    scheduledAt: `${addDaysISO(1)}T17:00:00Z`,
+    durationMinutes: 60,
+    topic: 'Beruf & Karriere',
+    level: 'B1',
+    teacher: TEACHER_REAL,
+    maxParticipants: 4,
+    takenSpots: 4,
+    myStatus: 'CONFIRMED',
+    autoAccept: true,
+  },
+  {
+    id: 'oc4',
+    title: 'Lesezirkel',
+    type: 'READING_CLUB',
+    scheduledAt: `${addDaysISO(4)}T18:30:00Z`,
+    durationMinutes: 45,
+    topic: 'Kurzgeschichten',
+    level: 'A2',
+    teacher: TEACHER_REAL,
+    maxParticipants: 6,
+    takenSpots: 6,
+    myStatus: null,
+    autoAccept: false,
+  },
+  {
+    id: 'oc5',
+    title: 'Konversationsclub',
+    type: 'SPEAKING_CLUB',
+    scheduledAt: `${addDaysISO(5)}T17:00:00Z`,
+    durationMinutes: 60,
+    topic: 'Nachrichten diskutieren',
+    level: null,
+    teacher: TEACHER_REAL,
+    maxParticipants: null,
+    takenSpots: 3,
+    myStatus: 'REJECTED',
+    autoAccept: false,
+  },
+]
 
 function lessonsBody(role: MockUser['role']) {
   const today = todayISO()
@@ -115,51 +320,10 @@ function lessonsBody(role: MockUser['role']) {
     }
   }
   return {
-    lessons: [
-      {
-        id: 'l1',
-        title: 'Perfekt vs. Präteritum',
-        topic: 'Perfekt vs. Präteritum',
-        type: 'ONE_ON_ONE',
-        scheduledAt: `${today}T09:30:00Z`,
-        durationMinutes: 60,
-        teacherId: 't1',
-        teacher: TEACHER_REAL,
-        status: 'CONFIRMED',
-        level: 'B1',
-        maxParticipants: null,
-        students: [
-          { id: 'u-mock', firstName: 'Lina', lastName: 'Weber', status: 'CONFIRMED' },
-        ],
-        startedAt: null,
-        createdBy: 't1',
-        createdAt: '2026-03-10T00:00:00Z',
-        updatedAt: '2026-03-10T00:00:00Z',
-      },
-      {
-        id: 'l2',
-        title: 'Reisevokabular',
-        topic: 'Reisevokabular',
-        type: 'ONE_ON_ONE',
-        scheduledAt: `${today}T11:00:00Z`,
-        durationMinutes: 45,
-        teacherId: 't1',
-        teacher: TEACHER_REAL,
-        status: 'CONFIRMED',
-        level: 'A2',
-        maxParticipants: null,
-        students: [
-          { id: 'u-mock', firstName: 'Lina', lastName: 'Weber', status: 'CONFIRMED' },
-        ],
-        startedAt: null,
-        createdBy: 't1',
-        createdAt: '2026-03-10T00:00:00Z',
-        updatedAt: '2026-03-10T00:00:00Z',
-      },
-    ],
-    total: 2,
+    lessons: studentLessonsList,
+    total: studentLessonsList.length,
     page: 1,
-    pageSize: 20,
+    pageSize: 100,
   }
 }
 
@@ -641,6 +805,12 @@ export function installMockBackend(): void {
     const lessonActionMatch = url.match(/\/api\/v1\/lessons\/([^/]+)\/(accept|cancel)$/)
     if (lessonActionMatch && method === 'POST') {
       const [, id, action] = lessonActionMatch
+      const existing = studentLessonsList.find((l) => l.id === id)
+      if (existing) {
+        existing.status = action === 'accept' ? 'CONFIRMED' : 'CANCELLED'
+        existing.updatedAt = new Date().toISOString()
+        return json(existing)
+      }
       return json({
         id,
         title: 'Updated',
@@ -663,6 +833,81 @@ export function installMockBackend(): void {
     const completeMatch = url.match(/\/api\/v1\/lessons\/([^/]+)\/complete$/)
     if (completeMatch && method === 'POST') {
       return new Response(null, { status: 204 })
+    }
+    const rescheduleActionMatch = url.match(/\/api\/v1\/lessons\/([^/]+)\/reschedule\/(accept|reject|withdraw)$/)
+    if (rescheduleActionMatch && method === 'POST') {
+      const [, id, action] = rescheduleActionMatch
+      const lesson = studentLessonsList.find((l) => l.id === id)
+      if (lesson) {
+        if (action === 'accept' && lesson.pendingReschedule) {
+          lesson.scheduledAt = lesson.pendingReschedule.newScheduledAt
+        }
+        lesson.pendingReschedule = null
+        lesson.updatedAt = new Date().toISOString()
+      }
+      if (action === 'reject') return new Response(null, { status: 200 })
+      return json(lesson ?? {})
+    }
+    const rescheduleMatch = url.match(/\/api\/v1\/lessons\/([^/]+)\/reschedule$/)
+    if (rescheduleMatch && method === 'POST') {
+      const body = init?.body
+        ? (JSON.parse(init.body as string) as { newScheduledAt: string; note?: string | null })
+        : { newScheduledAt: new Date().toISOString() }
+      const lesson = studentLessonsList.find((l) => l.id === rescheduleMatch[1])
+      if (lesson) {
+        lesson.pendingReschedule = {
+          newScheduledAt: body.newScheduledAt,
+          note: body.note ?? null,
+          requestedBy: 'u-mock',
+        }
+      }
+      return new Response(null, { status: 201 })
+    }
+    const joinMatch = url.match(/\/api\/v1\/lessons\/([^/]+)\/join$/)
+    if (joinMatch && method === 'POST') {
+      const club = openClubsList.find((c) => c.id === joinMatch[1])
+      if (!club) return json({ detail: 'Lesson not found', code: 'NOT_FOUND' }, 404)
+      if (club.myStatus === 'CONFIRMED' || club.myStatus === 'REQUESTED') {
+        return json({ detail: 'Already pending or joined', code: 'ALREADY_PARTICIPANT' }, 409)
+      }
+      if (club.maxParticipants != null && club.takenSpots >= club.maxParticipants) {
+        return json({ detail: 'Club is full', code: 'CLUB_FULL' }, 409)
+      }
+      club.myStatus = club.autoAccept ? 'CONFIRMED' : 'REQUESTED'
+      club.takenSpots += 1
+      return json({ status: club.myStatus }, 201)
+    }
+    if (joinMatch && method === 'DELETE') {
+      const club = openClubsList.find((c) => c.id === joinMatch[1])
+      if (!club || club.myStatus !== 'REQUESTED') {
+        return json({ detail: 'Nothing pending', code: 'JOIN_REQUEST_NOT_FOUND' }, 404)
+      }
+      club.myStatus = null
+      club.takenSpots = Math.max(0, club.takenSpots - 1)
+      return new Response(null, { status: 204 })
+    }
+    if (url.endsWith('/api/v1/lessons/open-clubs') && method === 'GET') {
+      return json(openClubsList.map(({ autoAccept: _autoAccept, ...club }) => club))
+    }
+    const slotsMatch = url.match(/\/api\/v1\/teachers\/([^/]+)\/available-slots/)
+    if (slotsMatch && method === 'GET') {
+      const sp = new URL(url, 'http://x').searchParams
+      const date = (sp.get('from') ?? `${todayISO()}T00:00:00Z`).slice(0, 10)
+      const durationMinutes = Number(sp.get('durationMinutes') ?? '60')
+      const busyHours = new Set(
+        studentLessonsList
+          .filter((l) => l.scheduledAt.slice(0, 10) === date && l.status !== 'CANCELLED')
+          .map((l) => Number(l.scheduledAt.slice(11, 13))),
+      )
+      const minHour = date === todayISO() ? new Date().getUTCHours() + 1 : 0
+      const slots: Array<{ start: string; end: string }> = []
+      for (let h = 9; h < 18; h++) {
+        if (h < minHour || busyHours.has(h)) continue
+        const start = new Date(`${date}T${String(h).padStart(2, '0')}:00:00Z`)
+        const end = new Date(start.getTime() + durationMinutes * 60_000)
+        slots.push({ start: start.toISOString(), end: end.toISOString() })
+      }
+      return json({ slots })
     }
     const contentMatch = url.match(/\/api\/v1\/lessons\/([^/]+)\/content$/)
     if (contentMatch && method === 'PATCH') {
@@ -701,7 +946,7 @@ export function installMockBackend(): void {
             durationMinutes?: number
           })
         : null
-      const created = {
+      const created: MockLesson = {
         id: `l-${Date.now()}`,
         title: body?.title ?? 'New lesson',
         topic: body?.topic ?? 'New lesson',
@@ -717,10 +962,12 @@ export function installMockBackend(): void {
           { id: 'u-mock', firstName: 'Lina', lastName: 'Weber', status: 'REQUESTED' },
         ],
         startedAt: null,
+        pendingReschedule: null,
         createdBy: 'u-mock',
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       }
+      if (role === 'STUDENT') studentLessonsList.push(created)
       return json(created, 201)
     }
     if (url.includes('/api/v1/lessons')) {

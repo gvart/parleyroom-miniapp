@@ -60,3 +60,7 @@ export function clubLabelKey(lesson: Lesson): string | null {
   if (lesson.type === 'READING_CLUB') return 'type_reading_club'
   return null
 }
+
+/** Booking/reschedule length chips — slot availability is computed per duration. */
+export const LESSON_DURATIONS = [30, 45, 60, 90]
+export const DEFAULT_LESSON_DURATION = 60
