@@ -43,6 +43,24 @@ export function useSubmitHomework() {
   })
 }
 
+export function useHomeworkCounts() {
+  return useQuery({
+    queryKey: ['homework', 'counts'],
+    queryFn: () => api.homeworkCounts(),
+  })
+}
+
+export function useDeleteHomeworkUpload() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: ({ id, itemId, uploadId }: { id: string; itemId: string; uploadId: string }) =>
+      api.deleteHomeworkUpload(id, itemId, uploadId),
+    onSuccess: (_data, { id }) => {
+      void qc.invalidateQueries({ queryKey: ['homework', 'detail', id] })
+    },
+  })
+}
+
 export function useCreateAssignment() {
   const qc = useQueryClient()
   return useMutation({

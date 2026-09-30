@@ -1,5 +1,6 @@
 import { apiFetch } from './client'
 import type {
+  AnswerPayload,
   AnswersSavedResponse,
   ArticleCheckResult,
   AuthResponse,
@@ -8,6 +9,7 @@ import type {
   Goal,
   GoalPage,
   GoalStatus,
+  HomeworkCounts,
   HomeworkDetail,
   HomeworkPage,
   HomeworkStatus,
@@ -89,7 +91,8 @@ export interface CreateSentenceRequest {
 
 export interface HomeworkQuery {
   studentId?: string
-  status?: HomeworkStatus
+  status?: HomeworkStatus | HomeworkStatus[]
+  sort?: 'due' | 'submitted' | 'created'
   page?: number
   pageSize?: number
 }
@@ -98,7 +101,7 @@ export interface HomeworkAnswerInput {
   assignmentItemId: string
   blockId?: string | null
   itemId?: string | null
-  answer: { text?: string | null; uploadIds?: string[] } | null
+  answer: AnswerPayload | null
 }
 
 export interface SaveHomeworkAnswersRequest {
@@ -199,6 +202,8 @@ export const api = {
   homework: (query: HomeworkQuery = {}) =>
     apiFetch<HomeworkPage>(`/api/v1/homework${qs({ ...query })}`),
 
+  homeworkCounts: () => apiFetch<HomeworkCounts>('/api/v1/homework/counts'),
+
   getHomework: (id: string) => apiFetch<HomeworkDetail>(`/api/v1/homework/${id}`),
 
   saveHomeworkAnswers: (id: string, body: SaveHomeworkAnswersRequest) =>
@@ -209,6 +214,11 @@ export const api = {
 
   submitHomework: (id: string) =>
     apiFetch<HomeworkDetail>(`/api/v1/homework/${id}/submit`, { method: 'POST' }),
+
+  deleteHomeworkUpload: (id: string, itemId: string, uploadId: string) =>
+    apiFetch<void>(`/api/v1/homework/${id}/items/${itemId}/uploads/${uploadId}`, {
+      method: 'DELETE',
+    }),
 
   createAssignment: (body: CreateAssignmentRequest) =>
     apiFetch<unknown>('/api/v1/assignments', { method: 'POST', body }),

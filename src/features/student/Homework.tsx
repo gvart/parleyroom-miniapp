@@ -1,27 +1,10 @@
-import { useEffect, useMemo, useState, type FormEvent } from 'react'
+import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import {
-  Banner,
-  Button,
-  Card,
-  EmptyState,
-  PageHeader,
-  Pill,
-  Segmented,
-  Sheet,
-  StatChip,
-  SuccessState,
-  TextArea,
-  type PillTone,
-} from '@/ui'
-import {
-  useHomework,
-  useHomeworkDetail,
-  useSaveHomeworkAnswers,
-  useSubmitHomework,
-} from '@/hooks/useHomework'
-import { computeDue, dueLabel, isDoneStatus, isOpenStatus, isReviewStatus, type DueInfo } from '@/lib/homework'
-import type { HomeworkSummary, HomeworkStatus } from '@/api/types'
+import { useNavigate } from 'react-router-dom'
+import { Card, EmptyState, PageHeader, Pill, Segmented, StatChip, type PillTone } from '@/ui'
+import { useHomework } from '@/hooks/useHomework'
+import { computeDue, dueLabel, isDoneStatus, isOpenStatus, isReviewStatus, isReworkStatus, type DueInfo } from '@/lib/homework'
+import type { HomeworkStatus } from '@/api/types'
 
 type Tab = 'open' | 'review' | 'done'
 
@@ -59,9 +42,9 @@ function statusLabel(status: HomeworkStatus, t: ReturnType<typeof useTranslation
 
 export function Homework() {
   const { t } = useTranslation()
+  const navigate = useNavigate()
   const homeworkQuery = useHomework()
   const [tab, setTab] = useState<Tab>('open')
-  const [openTask, setOpenTask] = useState<HomeworkSummary | null>(null)
 
   const groups = useMemo(() => {
     const all = homeworkQuery.data?.homework ?? []
@@ -123,11 +106,12 @@ export function Homework() {
               const due = computeDue(h.dueDate)
               const tone = dueTone(due)
               const sLabel = statusLabel(h.status, t)
+              const rework = isReworkStatus(h)
               return (
                 <button
                   type="button"
                   key={h.id}
-                  onClick={() => setOpenTask(h)}
+                  onClick={() => navigate(`/homework/${h.id}`)}
                   className="row-btn"
                 >
                   <span className="icon-tile" style={TILE[tab]}>
@@ -140,6 +124,7 @@ export function Homework() {
                       {h.title}
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      {rework && <Pill tone="live">{t('hw_returned')}</Pill>}
                       {(due.kind !== 'none' || tab === 'open') && (
                         <Pill tone={tone}>{dueLabel(due, t, { prefixed: true })}</Pill>
                       )}
@@ -171,163 +156,6 @@ export function Homework() {
           sub={t('empty_stack_sub')}
         />
       )}
-
-      <HomeworkSubmitSheet task={openTask} onClose={() => setOpenTask(null)} />
     </div>
-  )
-}
-
-interface SheetProps {
-  task: HomeworkSummary | null
-  onClose: () => void
-}
-
-function HomeworkSubmitSheet({ task, onClose }: SheetProps) {
-  const { t } = useTranslation()
-  const detailQuery = useHomeworkDetail(task?.id ?? null)
-  const saveAnswers = useSaveHomeworkAnswers()
-  const submit = useSubmitHomework()
-  const [text, setText] = useState('')
-  const [submittedOk, setSubmittedOk] = useState(false)
-
-  const detail = detailQuery.data
-  const item = detail?.items.find((i) => i.kind === 'TASK' && i.responseType === 'TEXT') ?? null
-
-  useEffect(() => {
-    if (task) setSubmittedOk(false)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [task?.id])
-
-  useEffect(() => {
-    if (!item) return
-    const existing = detail?.units.find((u) => u.assignmentItemId === item.id)
-    setText(existing?.answer?.text ?? '')
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [item?.id, detail?.units])
-
-  if (!task) return null
-
-  const due = computeDue(task.dueDate)
-  const dueText = due.kind === 'none' ? '' : dueLabel(due, t, { prefixed: true })
-  const wordCount = text.trim().split(/\s+/).filter(Boolean).length
-  const isPending = saveAnswers.isPending || submit.isPending
-  const canSubmit = !!item && text.trim().length > 0 && !isPending
-  const submitError = saveAnswers.error ?? submit.error
-
-  async function onSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault()
-    if (!task || !item || !canSubmit) return
-    try {
-      await saveAnswers.mutateAsync({
-        id: task.id,
-        body: { answers: [{ assignmentItemId: item.id, answer: { text: text.trim() } }] },
-      })
-      await submit.mutateAsync(task.id)
-      setSubmittedOk(true)
-      setTimeout(onClose, 1200)
-    } catch {
-      /* error surfaces via submitError */
-    }
-  }
-
-  return (
-    <Sheet open={!!task} onClose={onClose}>
-      <div style={{ padding: '0 16px 4px' }}>
-        {submittedOk ? (
-          <SuccessState icon="check" title={t('submitted_title')} sub={t('submitted_sub')} />
-        ) : (
-          <form onSubmit={onSubmit}>
-            <div style={{ marginBottom: 18 }}>
-              {dueText && (
-                <div className="eyebrow" style={{ marginBottom: 6 }}>
-                  {dueText}
-                </div>
-              )}
-              <h2 className="section-title" style={{ margin: 0 }}>
-                {task.title}
-              </h2>
-            </div>
-
-            {detail?.instructions && (
-              <div
-                style={{
-                  fontSize: 'var(--text-body)',
-                  color: 'var(--ink-2)',
-                  lineHeight: 1.5,
-                  marginBottom: 16,
-                  padding: '12px 14px',
-                  borderRadius: 18,
-                }}
-                className="glass-inner"
-              >
-                {detail.instructions}
-              </div>
-            )}
-
-            {detail?.feedback && (
-              <div
-                style={{
-                  fontSize: 'var(--text-body)',
-                  color: 'var(--ink-2)',
-                  lineHeight: 1.5,
-                  marginBottom: 16,
-                  padding: '12px 14px',
-                  borderRadius: 18,
-                }}
-                className="glass-inner"
-              >
-                <div className="eyebrow" style={{ marginBottom: 4 }}>
-                  {t('teacher_feedback')}
-                </div>
-                {detail.feedback}
-              </div>
-            )}
-
-            {item ? (
-              <>
-                <TextArea
-                  label={t('notes')}
-                  value={text}
-                  onChange={(e) => setText(e.target.value)}
-                  placeholder={t('submission_placeholder')}
-                  disabled={!isOpenStatus(task.status)}
-                  rows={5}
-                  style={{ lineHeight: 1.5, marginBottom: 8 }}
-                />
-                <div
-                  style={{
-                    fontSize: 'var(--text-caption)',
-                    fontWeight: 700,
-                    color: 'var(--ink-3)',
-                    textAlign: 'right',
-                    marginBottom: 18,
-                  }}
-                >
-                  {t('words_count', { count: wordCount })}
-                </div>
-              </>
-            ) : (
-              !detailQuery.isLoading && (
-                <div style={{ marginBottom: 18 }}>
-                  <Banner tone="info">{t('homework_unsupported')}</Banner>
-                </div>
-              )
-            )}
-
-            {submitError && (
-              <Banner tone="error" style={{ marginBottom: 12 }}>
-                {submitError instanceof Error ? submitError.message : t('submit_failed')}
-              </Banner>
-            )}
-
-            {item && isOpenStatus(task.status) && (
-              <Button type="submit" block disabled={!canSubmit} loading={isPending} leadingIcon="send">
-                {t('ok_submit')}
-              </Button>
-            )}
-          </form>
-        )}
-      </div>
-    </Sheet>
   )
 }

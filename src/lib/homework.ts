@@ -1,5 +1,5 @@
 import type { TFunction } from 'i18next'
-import type { HomeworkStatus } from '@/api/types'
+import type { HomeworkOutcome, HomeworkStatus } from '@/api/types'
 import { todayISO, tomorrowISO } from './lesson'
 import { formatShortDate } from './intl'
 
@@ -47,4 +47,9 @@ export function isReviewStatus(s: HomeworkStatus): boolean {
 
 export function isDoneStatus(s: HomeworkStatus): boolean {
   return s === 'DONE'
+}
+
+/** OPEN after the teacher returned it for changes — the student still has to act. */
+export function isReworkStatus(h: { status: HomeworkStatus; lastOutcome: HomeworkOutcome | null }): boolean {
+  return h.status === 'OPEN' && h.lastOutcome === 'RETURNED'
 }
