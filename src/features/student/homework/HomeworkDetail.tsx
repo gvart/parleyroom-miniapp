@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState, type FocusEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate, useParams } from 'react-router-dom'
 import { Banner, Button, ScreenHeader, Sheet, SuccessState } from '@/ui'
@@ -10,12 +10,25 @@ import {
 } from '@/hooks/useHomework'
 import { computeDue, dueLabel, isOpenStatus, isReworkStatus } from '@/lib/homework'
 import { hapticSuccess } from '@/lib/haptics'
+import { useKeyboardOpen } from '@/hooks/useKeyboardOpen'
 import type { HomeworkAnswerInput } from '@/api/endpoints'
 import { addressOf, answersFromUnits, unitKey, type AnswerMap, type UnitAnswer } from './lib/answers'
 import { uploadHomeworkFile } from './lib/upload'
 import { HomeworkItems } from './HomeworkItems'
 
 const AUTOSAVE_DELAY_MS = 900
+
+// This screen is a fullscreen AppShell route (no floating tab bar, no top
+// safe-area padding from AppShell), so it manages both itself — same pattern
+// as LessonLive.
+const TOP_INSET =
+  'calc(var(--tg-viewport-safe-area-inset-top, env(safe-area-inset-top)) + var(--tg-viewport-content-safe-area-inset-top, 0px))'
+const BOTTOM_INSET =
+  'calc(var(--tg-viewport-safe-area-inset-bottom, env(safe-area-inset-bottom)) + var(--tg-viewport-content-safe-area-inset-bottom, 0px))'
+// Approximate rendered height of the sticky Submit bar below (button + its
+// padding), used both for the page's own bottom padding and for reserving
+// scroll room above the bar when a field near the bottom is focused.
+const SUBMIT_BAR_SPACE = 96
 
 /** Full-screen homework detail: view, answer, autosave, submit, feedback, resubmit. */
 export function HomeworkDetail() {
@@ -33,6 +46,8 @@ export function HomeworkDetail() {
   const [saveState, setSaveState] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle')
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [justSubmitted, setJustSubmitted] = useState(false)
+  const [fieldFocused, setFieldFocused] = useState(false)
+  const keyboardOpen = useKeyboardOpen()
 
   const pending = useRef<Map<string, UnitAnswer | null>>(new Map())
   const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
@@ -46,6 +61,25 @@ export function HomeworkDetail() {
       setSeededId(hw.id)
     }
   }, [hw, seededId])
+
+  // useKeyboardAwareLayout's focusin handler scrolls the focused field into
+  // view, but the layout viewport never shrinks for an open keyboard (that's
+  // the whole reason `--keyboard-inset` exists) — so without this, a field
+  // near the bottom can still land under the keyboard, or under this
+  // screen's own sticky Submit bar when the keyboard is closed. Reserve that
+  // space as scroll padding on `#root` — the app's actual scroll container
+  // (html/body are locked to prevent the whole mini app from dragging; see
+  // styles.css) — while this screen is mounted.
+  const editableNow = isOpenStatus(hw?.status ?? 'SUBMITTED')
+  useEffect(() => {
+    if (!editableNow) return
+    const scroller = document.getElementById('root')
+    if (!scroller) return
+    scroller.style.scrollPaddingBottom = `calc(var(--keyboard-inset, 0px) + ${SUBMIT_BAR_SPACE}px)`
+    return () => {
+      scroller.style.removeProperty('scroll-padding-bottom')
+    }
+  }, [editableNow])
 
   const flush = useCallback(() => {
     if (!hw || pending.current.size === 0) return
@@ -142,7 +176,7 @@ export function HomeworkDetail() {
 
   if (detailQuery.isLoading || !hw) {
     return (
-      <div>
+      <div style={{ paddingTop: TOP_INSET }}>
         <ScreenHeader title={t('homework')} />
         <div style={{ padding: '0 16px', display: 'flex', flexDirection: 'column', gap: 12 }}>
           {[0, 1].map((i) => (
@@ -159,8 +193,26 @@ export function HomeworkDetail() {
   const due = computeDue(hw.dueDate)
   const dueText = due.kind === 'none' ? '' : dueLabel(due, t, { prefixed: true })
 
+  // Show the sticky Submit bar only when there's no keyboard (or a focused
+  // field) to cover — see the effect above for how the space it needs back
+  // gets reserved during scroll-into-view while it's hidden.
+  const showSubmitBar = editable && !keyboardOpen && !fieldFocused
+
+  // Only an actual text field toggles the bar — a button click also bubbles
+  // a focus event, and we don't want the Submit bar hiding itself mid-tap.
+  const onFieldFocus = (e: FocusEvent) => {
+    if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) setFieldFocused(true)
+  }
+  const onFieldBlur = (e: FocusEvent) => {
+    if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) setFieldFocused(false)
+  }
+
   return (
-    <div style={{ paddingBottom: editable ? 180 : 24 }}>
+    <div
+      style={{ paddingTop: TOP_INSET, paddingBottom: editable ? SUBMIT_BAR_SPACE + 40 : 24 }}
+      onFocus={onFieldFocus}
+      onBlur={onFieldBlur}
+    >
       <ScreenHeader title={hw.title} />
 
       <div style={{ padding: '0 16px 16px', display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -217,16 +269,15 @@ export function HomeworkDetail() {
         )}
       </div>
 
-      {editable && (
+      {showSubmitBar && (
         <div
           style={{
             position: 'fixed',
             left: 0,
             right: 0,
-            // Sits just above the floating tab bar (AppShell reserves 104px + its
-            // own safe-area inset for it), then lifts further above an open keyboard.
-            bottom:
-              'calc(104px + var(--tg-viewport-safe-area-inset-bottom, env(safe-area-inset-bottom)) + var(--tg-viewport-content-safe-area-inset-bottom, 0px) + var(--keyboard-inset, 0px))',
+            // No floating tab bar on this fullscreen route — just clear the
+            // safe area. Hidden entirely (above) while a keyboard could cover it.
+            bottom: BOTTOM_INSET,
             padding: '10px 16px 14px',
             background: 'linear-gradient(to top, var(--bg) 65%, transparent)',
             zIndex: 40,
