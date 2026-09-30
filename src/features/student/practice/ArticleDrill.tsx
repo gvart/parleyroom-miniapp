@@ -90,6 +90,15 @@ export function ArticleDrill({ word, onCheck, onNext }: {
           {ARTICLES.map((a) => {
             const isAnswer = !!result && a === result.correctArticle
             const isWrongPick = !!result && chosen === a && !correct
+            const muted = !!result && !isAnswer && !isWrongPick
+            // Before answering: gender colours (der/die/das). After: unambiguous
+            // solid success/danger — a gender tone (e.g. die's own coral) must
+            // never double as the "correct" or "wrong" signal.
+            const style = isAnswer
+              ? { background: 'var(--leaf-vivid)', color: 'var(--on-accent)' }
+              : isWrongPick
+                ? { background: 'var(--coral-vivid)', color: 'var(--on-coral-ink)' }
+                : { background: TONE_VARS[ARTICLE_TONE[a]].soft, color: TONE_VARS[ARTICLE_TONE[a]].ink }
             return (
               <button
                 type="button"
@@ -97,19 +106,22 @@ export function ArticleDrill({ word, onCheck, onNext }: {
                 disabled={!!chosen}
                 onClick={() => pick(a)}
                 className="rate-btn"
-                style={{
-                  background: TONE_VARS[ARTICLE_TONE[a]].soft,
-                  color: TONE_VARS[ARTICLE_TONE[a]].ink,
-                  opacity: result && !isAnswer && !isWrongPick ? 0.4 : 1,
-                  boxShadow: isAnswer
-                    ? '0 0 0 2px var(--leaf-vivid)'
-                    : isWrongPick
-                      ? '0 0 0 2px var(--coral-vivid)'
-                      : undefined,
-                }}
+                style={{ ...style, opacity: muted ? 0.4 : 1 }}
               >
-                <span style={{ fontSize: 'var(--text-lead)' }} lang="de">
-                  {a.toLowerCase()}
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }}>
+                  {isAnswer && (
+                    <span className="ms fill" style={{ fontSize: 16 }} aria-hidden="true">
+                      check
+                    </span>
+                  )}
+                  {isWrongPick && (
+                    <span className="ms fill" style={{ fontSize: 16 }} aria-hidden="true">
+                      close
+                    </span>
+                  )}
+                  <span style={{ fontSize: 'var(--text-lead)' }} lang="de">
+                    {a.toLowerCase()}
+                  </span>
                 </span>
               </button>
             )
