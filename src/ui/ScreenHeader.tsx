@@ -11,23 +11,27 @@ interface ScreenHeaderProps {
 }
 
 /**
- * Sub-screen header: in-page back button (works in every environment,
- * including browser dev) plus Telegram's native Back Button while mounted.
- * Tab roots never render this, so the native button stays hidden there.
+ * Sub-screen header: arms Telegram's native Back Button while mounted, and
+ * renders an in-page back button only as a fallback where the native one
+ * isn't available (browser dev, platforms without BackButton support) —
+ * never both, so real Telegram never shows two back arrows. Tab roots never
+ * render this, so the native button stays hidden there.
  */
 export function ScreenHeader({ title, onBack, action }: ScreenHeaderProps) {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const back = useCallback(() => (onBack ? onBack() : navigate(-1)), [onBack, navigate])
-  useBackButton(back)
+  const nativeBackArmed = useBackButton(back)
 
   return (
     <div style={{ padding: '12px 16px 18px', display: 'flex', alignItems: 'center', gap: 12 }}>
-      <button type="button" onClick={back} className="ico-btn" aria-label={t('back')}>
-        <span className="ms" style={{ fontSize: 20 }} aria-hidden="true">
-          arrow_back
-        </span>
-      </button>
+      {!nativeBackArmed && (
+        <button type="button" onClick={back} className="ico-btn" aria-label={t('back')}>
+          <span className="ms" style={{ fontSize: 20 }} aria-hidden="true">
+            arrow_back
+          </span>
+        </button>
+      )}
       <div className="section-title" style={{ flex: 1, minWidth: 0 }}>
         {title}
       </div>
