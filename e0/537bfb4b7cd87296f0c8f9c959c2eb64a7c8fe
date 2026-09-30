@@ -1,0 +1,80 @@
+src/i18n/en.json
+  s_4985e1aeba0736::t_96178166e54383 379-449
+src/features/student/homework/answer/InteractiveBlock.tsx
+  s_4985e1aeba0736::t_f6e31db5a511a3 449
+  s_4985e1aeba0736::t_29a00e18688b88 402
+  s_4985e1aeba0736::t_598279804e24d2 1-401,403-448,450-543
+src/i18n/de.json
+  s_4985e1aeba0736::t_a88b7b21fbbdf6 379-449
+src/lib/homework.ts
+  s_4985e1aeba0736::t_0d472c386eba2c 51-55
+  s_4985e1aeba0736::t_4e2a8a4f1e57ab 2
+src/i18n/ru.json
+  s_4985e1aeba0736::t_54aa8efe38480b 385-455
+src/styles.css
+  s_4985e1aeba0736::t_be51e045ceaab4 1117-1247
+src/features/student/Homework.tsx
+  s_4985e1aeba0736::t_6e4822cacb0fdd 1,3-7,45,109,114,127
+src/layout/RoleRouter.tsx
+  s_4985e1aeba0736::t_26a3cf01a27d17 8
+  s_4985e1aeba0736::t_29d3b28b8880f3 60
+src/api/types.ts
+  s_4985e1aeba0736::t_b14667aa0d3f83 249-458,463-464
+  s_4985e1aeba0736::t_6d3dc76a1ed998 517-522,525,527-528,531-552,554-563,567-568,578-583
+  s_4985e1aeba0736::t_ef35664a835f80 584
+src/features/student/homework/HomeworkDetail.tsx
+  s_4985e1aeba0736::t_46b1f46775f671 213-214
+  s_e80b13a75ccf8e::t_2025bbfda18cdb 1-212,215-266
+src/api/endpoints.ts
+  s_4985e1aeba0736::t_85dd47deab43cc 3,12,94-95,104,205-206,218-222
+src/features/student/homework/HomeworkItems.tsx
+  s_4985e1aeba0736::t_601f917f00af1c 1-157
+src/features/student/homework/answer/AudioRecorder.tsx
+  s_4985e1aeba0736::t_f1ef5cff3da4ef 1-119
+src/features/student/homework/answer/MediaAnswer.tsx
+  s_4985e1aeba0736::t_36714c259b397f 1-183
+src/features/student/homework/answer/ReadOnlyBlock.tsx
+  s_4985e1aeba0736::t_45d9a1075b69a8 1-359
+src/features/student/homework/answer/RichView.tsx
+  s_4985e1aeba0736::t_7e18c8f80d2946 1-58
+src/features/student/homework/answer/VocabTableView.tsx
+  s_4985e1aeba0736::t_1e60814ec049a9 1-46
+src/features/student/homework/answer/parts.tsx
+  s_4985e1aeba0736::t_5e6f69a75b4432 1-135
+src/features/student/homework/lib/answers.ts
+  s_4985e1aeba0736::t_5c0020cf1207cd 1-25
+src/features/student/homework/lib/authedFile.ts
+  s_4985e1aeba0736::t_9059a06f30194f 1-49
+src/features/student/homework/lib/blocks.ts
+  s_4985e1aeba0736::t_0b086f903ff6c3 1-62
+src/features/student/homework/lib/richText.ts
+  s_4985e1aeba0736::t_62646f2d71fa37 1-35
+src/features/student/homework/lib/upload.ts
+  s_4985e1aeba0736::t_4e12b8551bc0dc 1-48
+src/hooks/useHomework.ts
+  s_4985e1aeba0736::t_e5adf06f7f3f81 46-63
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "e0537bfb4b7cd87296f0c8f9c959c2eb64a7c8fe",
+  "prompts": {},
+  "sessions": {
+    "s_4985e1aeba0736": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "67d7b6f0-b72a-461c-a3eb-bc1269097f4b",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Vladlen Gladis <vladlen.gladis@deliveryhero.com>"
+    },
+    "s_e80b13a75ccf8e": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "228ef895-aa60-4981-8e58-06bedaa006e5",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Vladlen Gladis <vladlen.gladis@deliveryhero.com>"
+    }
+  }
+}

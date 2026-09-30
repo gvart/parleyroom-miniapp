@@ -1,0 +1,33 @@
+src/hooks/useKeyboardOpen.ts
+  s_4985e1aeba0736::t_3c19aed5e213b3 1-20
+src/features/student/homework/HomeworkDetail.tsx
+  s_4985e1aeba0736::t_2510de2926d72d 272,278-280
+  s_4985e1aeba0736::t_4094d87ed20026 70-72,76-78,80
+  s_4985e1aeba0736::t_5335982505f272 201-202,204-205,207-209,213-214
+  s_4985e1aeba0736::t_7428f575b1f354 65-69,73-75,79,81-83
+  s_4985e1aeba0736::t_8f2bdabb598c8b 203,206
+  s_4985e1aeba0736::t_66b53622b73915 196-200,211-212,215
+  s_4985e1aeba0736::t_6d5fb3803f7407 179
+  s_4985e1aeba0736::t_22e681cb0043ac 49-50
+  s_4985e1aeba0736::t_84c64533052502 1
+  s_4985e1aeba0736::t_56b8d6977d92af 13,21-32
+src/layout/AppShell.tsx
+  s_4985e1aeba0736::t_3c293d6f3b7aa0 36-39,57
+  s_4985e1aeba0736::t_bf52a63a8fa61f 4,16-18
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "4a0024ccfe3fdfe64beea2d5c04cd2b064e045c2",
+  "prompts": {},
+  "sessions": {
+    "s_4985e1aeba0736": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "67d7b6f0-b72a-461c-a3eb-bc1269097f4b",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Vladlen Gladis <vladlen.gladis@deliveryhero.com>"
+    }
+  }
+}
