@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { api, type LessonsQuery } from '@/api/endpoints'
-import { addDaysISO } from '@/lib/lesson'
+import { endOfDayISODateTime, startOfDayISODateTime } from '@/lib/lesson'
 
 // The backend returns the first `pageSize` lessons ascending with no default
 // window, so an unbounded call silently drops upcoming lessons once a
@@ -9,8 +9,8 @@ import { addDaysISO } from '@/lib/lesson'
 export function useLessons(query: LessonsQuery = {}) {
   const resolved: LessonsQuery = {
     ...query,
-    from: query.from ?? addDaysISO(-30),
-    to: query.to ?? addDaysISO(90),
+    from: query.from ?? startOfDayISODateTime(-30),
+    to: query.to ?? endOfDayISODateTime(90),
     pageSize: query.pageSize ?? 100,
   }
   return useQuery({

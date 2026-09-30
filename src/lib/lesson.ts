@@ -27,14 +27,25 @@ export function tomorrowISO(): string {
   return `${y}-${m}-${d}`
 }
 
-/** ISO date `offsetDays` from today (negative = past). Used to window `/lessons` queries. */
-export function addDaysISO(offsetDays: number): string {
-  const now = new Date()
-  now.setDate(now.getDate() + offsetDays)
-  const y = now.getFullYear()
-  const m = String(now.getMonth() + 1).padStart(2, '0')
-  const d = String(now.getDate()).padStart(2, '0')
-  return `${y}-${m}-${d}`
+// Full ISO datetimes (not just a date) `offsetDays` from today — the backend
+// parses `from`/`to` query params with `OffsetDateTime::parse`, which rejects
+// a bare "YYYY-MM-DD" and 500s. `Date#toISOString` always emits a 'Z' offset,
+// which `OffsetDateTime::parse` accepts.
+
+/** Local start-of-day, `offsetDays` from today (negative = past). */
+export function startOfDayISODateTime(offsetDays: number): string {
+  const d = new Date()
+  d.setHours(0, 0, 0, 0)
+  d.setDate(d.getDate() + offsetDays)
+  return d.toISOString()
+}
+
+/** Local end-of-day, `offsetDays` from today (negative = past). */
+export function endOfDayISODateTime(offsetDays: number): string {
+  const d = new Date()
+  d.setHours(23, 59, 59, 999)
+  d.setDate(d.getDate() + offsetDays)
+  return d.toISOString()
 }
 
 /** "Today" / "Tomorrow" / "Wed 8 Oct" — date-aware label for a lesson's scheduled date. */
