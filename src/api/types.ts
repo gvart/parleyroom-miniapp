@@ -188,6 +188,64 @@ export interface VocabularyPage {
   pageSize: number
 }
 
+export type PracticeMode = 'DE_TO_MEANING' | 'MEANING_TO_DE' | 'ARTICLE'
+export type PracticeRating = 'AGAIN' | 'HARD' | 'GOOD' | 'EASY'
+
+/** When the card would be due next for each grade; ARTICLE cards don't get one. */
+export type CardIntervals = Partial<Record<PracticeRating, { dueAt: string; seconds: number }>>
+
+export interface PracticeCard {
+  mode: PracticeMode
+  isNew: boolean
+  word: VocabularyWord
+  intervals?: CardIntervals | null
+}
+
+/** `GET /practice/queue` — due cards first, then new ones within the daily limit. */
+export interface PracticeQueue {
+  mode: PracticeMode
+  cards: PracticeCard[]
+  dueCount: number
+  newCount: number
+  newLimit: number
+  newIntroducedToday: number
+}
+
+export interface PracticeStats {
+  dueNow: number
+  dueToday: number
+  newAvailable: number
+  newTotal: number
+  newLimit: number
+  newIntroducedToday: number
+  reviewedToday: number
+  sentencesToday: number
+  sentenceLimit: number
+  aiAvailable: boolean
+}
+
+export interface ArticleCheckResult {
+  correct: boolean
+  correctArticle: NounArticle
+  rating: PracticeRating
+  word: VocabularyWord
+}
+
+export interface SentenceFeedback {
+  isCorrect: boolean
+  corrected: string
+  explanation: string
+  usesWord: boolean
+}
+
+export interface OwnSentence {
+  id: string
+  studentVocabId: string
+  sentence: string
+  feedback: SentenceFeedback | null
+  createdAt: string
+}
+
 export type HomeworkStatus = 'OPEN' | 'SUBMITTED' | 'REVIEWED' | 'DONE'
 export type HomeworkOutcome = 'REVIEWED' | 'RETURNED' | 'DONE'
 export type AssignmentItemKind = 'DOCUMENT' | 'MATERIAL' | 'TASK'

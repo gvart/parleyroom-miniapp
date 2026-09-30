@@ -28,3 +28,15 @@ export function formatWeekdayShort(date: Date): string {
 export function formatMonthYearFromIso(iso: string): string {
   return formatMonthYear(new Date(iso))
 }
+
+/** "10 мин" / "1 Std." / "3 days" — compact localized duration for a rating's next-interval hint. */
+export function formatDurationShort(seconds: number): string {
+  const minutes = Math.max(1, Math.round(seconds / 60))
+  const [value, unit]: [number, 'minute' | 'hour' | 'day' | 'month' | 'year'] =
+    minutes < 60 ? [minutes, 'minute']
+      : minutes < 60 * 24 ? [Math.round(minutes / 60), 'hour']
+        : minutes < 60 * 24 * 30 ? [Math.round(minutes / 1440), 'day']
+          : minutes < 60 * 24 * 365 ? [Math.round(minutes / 43_200), 'month']
+            : [Math.round(minutes / 525_600), 'year']
+  return new Intl.NumberFormat(activeIntlLocale(), { style: 'unit', unit, unitDisplay: 'short' }).format(value)
+}
