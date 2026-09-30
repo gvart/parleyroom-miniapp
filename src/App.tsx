@@ -2,8 +2,10 @@ import { AuthGate } from '@/auth/AuthGate'
 import { BlobBackground } from '@/layout/BlobBackground'
 import { ThemeProvider } from '@/layout/ThemeProvider'
 import { RoleRouter } from '@/layout/RoleRouter'
+import { useKeyboardAwareLayout } from '@/hooks/useKeyboardAwareLayout'
 
 export function App() {
+  useKeyboardAwareLayout()
   return (
     <ThemeProvider>
       <BlobBackground />

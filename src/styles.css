@@ -97,6 +97,9 @@
 
   /* Opaque tint for the goo indicator (alpha threshold needs opaque fill). */
   --goo-fill: color-mix(in srgb, var(--accent) 26%, #FFFFFF);
+
+  /* Height of the on-screen keyboard, kept live by useKeyboardAwareLayout. */
+  --keyboard-inset: 0px;
 }
 
 :root.dark,
@@ -147,6 +150,52 @@
   --shadow-2: 0 2px 6px rgba(0, 0, 0, 0.35), 0 26px 52px -18px rgba(0, 0, 0, 0.7);
 
   --goo-fill: color-mix(in srgb, var(--accent) 30%, #0F2219);
+}
+
+/* ═══════════════════════════════════════════
+   Accent presets — ported from parley-room-portal/src/index.css. Default
+   ("leaf") lives in :root/:root.dark above; these override it under
+   [data-accent] (set by ThemeProvider from the Appearance screen).
+   ═══════════════════════════════════════════ */
+:root[data-accent="sky"] {
+  --accent: var(--sky-vivid);
+  --accent-face: #0767A8; --on-accent: #FFFFFF; --accent-base: #04466F;
+  --accent-ink: #075E99; --accent-soft: rgba(28, 176, 246, 0.18); --accent-glow: rgba(28, 176, 246, 0.45);
+}
+:root.dark[data-accent="sky"] {
+  --accent-face: #3CBDF8; --on-accent: #002338; --accent-base: #0A7DB8;
+  --accent-ink: #6CCBFA; --accent-soft: rgba(60, 189, 248, 0.2); --accent-glow: rgba(60, 189, 248, 0.4);
+  --blob-1: #1D7FD6;
+}
+:root[data-accent="sunny"] {
+  --accent: var(--sunny-vivid);
+  --accent-face: #8F5F00; --on-accent: #FFFFFF; --accent-base: #5E3E00;
+  --accent-ink: #7A5200; --accent-soft: rgba(255, 200, 0, 0.22); --accent-glow: rgba(255, 200, 0, 0.5);
+}
+:root.dark[data-accent="sunny"] {
+  --accent-face: #FFC81F; --on-accent: #2A1C00; --accent-base: #B98800;
+  --accent-ink: #FFD84D; --accent-soft: rgba(255, 200, 31, 0.18); --accent-glow: rgba(255, 200, 31, 0.38);
+  --blob-1: #C99400;
+}
+:root[data-accent="grape"] {
+  --accent: var(--grape-vivid);
+  --accent-face: #7038C8; --on-accent: #FFFFFF; --accent-base: #4B2090;
+  --accent-ink: #6A32C0; --accent-soft: rgba(165, 96, 240, 0.16); --accent-glow: rgba(165, 96, 240, 0.45);
+}
+:root.dark[data-accent="grape"] {
+  --accent-face: #B584F5; --on-accent: #1C0840; --accent-base: #7A48C4;
+  --accent-ink: #D2B0FB; --accent-soft: rgba(181, 132, 245, 0.2); --accent-glow: rgba(181, 132, 245, 0.4);
+  --blob-1: #7A3FD6;
+}
+:root[data-accent="coral"] {
+  --accent: var(--coral-vivid);
+  --accent-face: #B42D1D; --on-accent: #FFFFFF; --accent-base: #7A1C10;
+  --accent-ink: #A82818; --accent-soft: rgba(255, 107, 90, 0.16); --accent-glow: rgba(255, 107, 90, 0.45);
+}
+:root.dark[data-accent="coral"] {
+  --accent-face: #FF8070; --on-accent: #2E0803; --accent-base: #C4473A;
+  --accent-ink: #FF9E92; --accent-soft: rgba(255, 128, 112, 0.2); --accent-glow: rgba(255, 128, 112, 0.4);
+  --blob-1: #D64A3A;
 }
 
 /* ─── Base ─── */
@@ -730,14 +779,16 @@ html.bg-paused .blob {
   position: relative;
   width: calc(100% - 16px);
   max-width: 520px;
-  max-height: 86dvh;
+  /* Shrink above the keyboard so the grabber + form stay fully reachable. */
+  max-height: calc(86dvh - var(--keyboard-inset, 0px));
   overflow-y: auto;
   overscroll-behavior: contain;
-  margin: 0 auto calc(8px + var(--tg-viewport-safe-area-inset-bottom, env(safe-area-inset-bottom)));
+  margin: 0 auto calc(8px + var(--keyboard-inset, 0px) + var(--tg-viewport-safe-area-inset-bottom, env(safe-area-inset-bottom)));
   padding: 0 0 20px;
   border-radius: var(--radius-chrome);
   color: var(--ink);
   animation: sheet-in var(--spring-gentle-ms) var(--spring-gentle);
+  transition: max-height 200ms var(--ease), margin-bottom 200ms var(--ease);
 }
 .sheet-grabber {
   width: 40px;
