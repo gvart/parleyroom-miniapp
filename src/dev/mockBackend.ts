@@ -543,6 +543,57 @@ function homeworkBody() {
   }
 }
 
+/** Mock next-review timings for the four grades (DE_TO_MEANING / MEANING_TO_DE cards). */
+function mockIntervals() {
+  const now = Date.now()
+  return {
+    AGAIN: { dueAt: new Date(now + 10 * 60_000).toISOString(), seconds: 600 },
+    HARD: { dueAt: new Date(now + 60 * 60_000).toISOString(), seconds: 3_600 },
+    GOOD: { dueAt: new Date(now + 24 * 60 * 60_000).toISOString(), seconds: 86_400 },
+    EASY: { dueAt: new Date(now + 3 * 24 * 60 * 60_000).toISOString(), seconds: 259_200 },
+  }
+}
+
+function practiceQueueBody(mode: string) {
+  const all = vocabBody().words
+  // ARTICLE only makes sense for nouns.
+  const words = mode === 'ARTICLE' ? all.filter((w) => w.article) : all
+  const cards = words.map((w) => ({
+    mode,
+    isNew: w.status === 'NEW',
+    word: w,
+    intervals: mode === 'ARTICLE' ? null : mockIntervals(),
+  }))
+  return {
+    mode,
+    cards,
+    dueCount: words.filter((w) => w.status === 'REVIEW').length,
+    newCount: words.filter((w) => w.status === 'NEW').length,
+    newLimit: 10,
+    newIntroducedToday: 0,
+  }
+}
+
+function practiceStatsBody() {
+  const words = vocabBody().words
+  const dueNow = words.filter((w) => w.status === 'REVIEW').length
+  const newAvailable = words.filter((w) => w.status === 'NEW').length
+  return {
+    dueNow,
+    dueToday: dueNow,
+    newAvailable,
+    newTotal: newAvailable,
+    newLimit: 10,
+    newIntroducedToday: 0,
+    reviewedToday: 3,
+    sentencesToday: 0,
+    sentenceLimit: 5,
+    aiAvailable: true,
+  }
+}
+
+const mockSentences = new Map<string, unknown[]>()
+
 const MOCK_HOMEWORK_ANSWERS = new Map<string, string>([['h4', 'Alle 10 Sätze im Anhang.']])
 
 function homeworkDetail(id: string) {
@@ -1008,6 +1059,44 @@ export function installMockBackend(): void {
         status: body.rating === 'AGAIN' ? 'REVIEW' : 'LEARNED',
         reps: (match?.reps ?? 0) + 1,
       })
+    }
+    const articleMatch = url.match(/\/api\/v1\/vocabulary\/([^/]+)\/article$/)
+    if (articleMatch && method === 'POST') {
+      const body = init?.body ? (JSON.parse(init.body as string) as { article?: string }) : {}
+      const word = vocabBody().words.find((w) => w.id === articleMatch[1]) ?? vocabWord({ id: articleMatch[1] })
+      const correctArticle = word.article ?? 'DIE'
+      const correct = body.article === correctArticle
+      return json({ correct, correctArticle, rating: correct ? 'GOOD' : 'AGAIN', word })
+    }
+    const sentencesMatch = url.match(/\/api\/v1\/vocabulary\/([^/]+)\/sentences$/)
+    if (sentencesMatch && method === 'POST') {
+      const body = init?.body ? (JSON.parse(init.body as string) as { sentence?: string }) : {}
+      const sentence = body.sentence ?? ''
+      const created = {
+        id: `sent-${Date.now()}`,
+        studentVocabId: sentencesMatch[1],
+        sentence,
+        feedback: {
+          isCorrect: true,
+          corrected: sentence,
+          explanation: 'Nice sentence!',
+          usesWord: true,
+        },
+        createdAt: new Date().toISOString(),
+      }
+      const list = mockSentences.get(sentencesMatch[1]) ?? []
+      mockSentences.set(sentencesMatch[1], [created, ...list])
+      return json(created, 201)
+    }
+    if (sentencesMatch && method === 'GET') {
+      return json(mockSentences.get(sentencesMatch[1]) ?? [])
+    }
+    if (url.includes('/api/v1/practice/queue')) {
+      const sp = new URL(url, 'http://x').searchParams
+      return json(practiceQueueBody(sp.get('mode') ?? 'DE_TO_MEANING'))
+    }
+    if (url.includes('/api/v1/practice/stats')) {
+      return json(practiceStatsBody())
     }
     if (url.includes('/api/v1/vocabulary')) {
       const sp = new URL(url, 'http://x').searchParams

@@ -1,4 +1,6 @@
+import type { TFunction } from 'i18next'
 import type { VocabularyWord, WordType } from '@/api/types'
+import { computeDue, dueLabel } from './homework'
 
 /** Article + lemma, e.g. "der Augenblick". */
 export function vocabHeadword(word: VocabularyWord): string {
@@ -30,4 +32,10 @@ const WORD_TYPE_LABEL_KEY: Record<WordType, string> = {
 
 export function wordTypeLabelKey(type: WordType): string {
   return WORD_TYPE_LABEL_KEY[type]
+}
+
+/** "Overdue" / "Today" / "Wed 8 Oct" for a word's next SRS due date, or null when not scheduled. */
+export function vocabDueLabel(due: string | null, t: TFunction): string | null {
+  if (!due) return null
+  return dueLabel(computeDue(due.slice(0, 10)), t)
 }

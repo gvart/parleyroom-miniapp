@@ -1,6 +1,7 @@
 import { apiFetch } from './client'
 import type {
   AnswersSavedResponse,
+  ArticleCheckResult,
   AuthResponse,
   AvailableSlotsResponse,
   FolderTreeNode,
@@ -22,15 +23,23 @@ import type {
   MaterialType,
   NativeLanguage,
   NotificationPage,
+  NounArticle,
   OpenClub,
+  OwnSentence,
+  PracticeMode,
+  PracticeQueue,
+  PracticeRating,
+  PracticeStats,
   StartLessonResponse,
   TelegramLink,
   UserProfile,
   UserList,
   VideoAccess,
   VocabularyPage,
+  VocabularyWord,
   VocabStatus,
 } from './types'
+export type { PracticeMode, PracticeRating } from './types'
 
 export interface UpdateProfileRequest {
   firstName?: string | null
@@ -56,13 +65,26 @@ export interface VocabularyQuery {
   pageSize?: number
 }
 
-export type PracticeRating = 'AGAIN' | 'HARD' | 'GOOD' | 'EASY'
-export type PracticeMode = 'DE_TO_MEANING' | 'MEANING_TO_DE' | 'ARTICLE'
-
 export interface ReviewVocabularyWordRequest {
   rating: PracticeRating
   mode: PracticeMode
   responseMs?: number | null
+}
+
+export interface PracticeQueueQuery {
+  mode: PracticeMode
+  topicId?: string
+  lessonId?: string
+  limit?: number
+}
+
+export interface ArticleCheckRequest {
+  article: NounArticle
+  responseMs?: number | null
+}
+
+export interface CreateSentenceRequest {
+  sentence: string
 }
 
 export interface HomeworkQuery {
@@ -159,7 +181,20 @@ export const api = {
     apiFetch<VocabularyPage>(`/api/v1/vocabulary${qs({ ...query })}`),
 
   reviewVocabularyWord: (id: string, body: ReviewVocabularyWordRequest) =>
-    apiFetch<unknown>(`/api/v1/vocabulary/${id}/review`, { method: 'POST', body }),
+    apiFetch<VocabularyWord>(`/api/v1/vocabulary/${id}/review`, { method: 'POST', body }),
+
+  practiceQueue: (query: PracticeQueueQuery) =>
+    apiFetch<PracticeQueue>(`/api/v1/practice/queue${qs({ ...query })}`),
+
+  practiceStats: () => apiFetch<PracticeStats>('/api/v1/practice/stats'),
+
+  checkArticle: (id: string, body: ArticleCheckRequest) =>
+    apiFetch<ArticleCheckResult>(`/api/v1/vocabulary/${id}/article`, { method: 'POST', body }),
+
+  wordSentences: (id: string) => apiFetch<OwnSentence[]>(`/api/v1/vocabulary/${id}/sentences`),
+
+  createSentence: (id: string, body: CreateSentenceRequest) =>
+    apiFetch<OwnSentence>(`/api/v1/vocabulary/${id}/sentences`, { method: 'POST', body }),
 
   homework: (query: HomeworkQuery = {}) =>
     apiFetch<HomeworkPage>(`/api/v1/homework${qs({ ...query })}`),

@@ -9,7 +9,7 @@ interface AppShellProps {
 
 // Routes that take over the whole viewport and should hide the floating tab bar.
 function isFullscreen(pathname: string): boolean {
-  if (pathname.startsWith('/vocab/review')) return true
+  if (pathname.startsWith('/vocab/practice/session')) return true
   // /lessons/:id/live
   if (/^\/lessons\/[^/]+\/live$/.test(pathname)) return true
   return false

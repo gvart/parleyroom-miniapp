@@ -3,7 +3,8 @@ import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { Card, EmptyState, PageHeader, Pill, type PillTone, Ring } from '@/ui'
 import { useVocab } from '@/hooks/useVocab'
-import { vocabHeadword, vocabMeaning, wordTypeLabelKey } from '@/lib/vocab'
+import { usePracticeStats } from '@/hooks/usePractice'
+import { vocabDueLabel, vocabHeadword, vocabMeaning, wordTypeLabelKey } from '@/lib/vocab'
 import type { VocabStatus } from '@/api/types'
 
 type Filter = 'all' | VocabStatus
@@ -35,20 +36,22 @@ export function Vocab() {
   const navigate = useNavigate()
   const [filter, setFilter] = useState<Filter>('all')
   const vocabQuery = useVocab(filter === 'all' ? {} : { status: filter })
-  const reviewDueQuery = useVocab({ status: 'REVIEW' })
+  const statsQuery = usePracticeStats()
 
   const words = vocabQuery.data?.words ?? []
-  const reviewDueCount = reviewDueQuery.data?.words.length ?? 0
-  const reviewMinutes = Math.max(1, Math.round(reviewDueCount * 0.4))
+  const dueCount = statsQuery.data?.dueNow ?? 0
+  const newCount = statsQuery.data?.newAvailable ?? 0
+  const practiceCount = dueCount + newCount
+  const reviewMinutes = Math.max(1, Math.round(practiceCount * 0.4))
 
   return (
     <div>
       <PageHeader eyebrow={t('vocab')} title={t('your_glossary')} />
 
-      {reviewDueCount > 0 && (
+      {practiceCount > 0 && (
         <div style={{ padding: '0 16px 16px' }}>
           <Card
-            onClick={() => navigate('/vocab/review')}
+            onClick={() => navigate('/vocab/practice')}
             className="tap"
             style={{
               cursor: 'pointer',
@@ -56,12 +59,12 @@ export function Vocab() {
             }}
           >
             <div style={{ display: 'flex', gap: 14, alignItems: 'center' }}>
-              <Ring value={100} size={56} tone="grape" label={reviewDueCount} />
+              <Ring value={100} size={56} tone="grape" label={practiceCount} />
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ fontSize: 'var(--text-card-title)', fontWeight: 800, marginBottom: 2 }}>
-                  {reviewDueCount === 1
+                  {practiceCount === 1
                     ? t('review_count_singular')
-                    : t('review_count_plural', { count: reviewDueCount })}
+                    : t('review_count_plural', { count: practiceCount })}
                 </div>
                 <div style={{ fontSize: 'var(--text-small)', color: 'var(--ink-2)' }}>
                   {t('review_minutes_estimate', { minutes: reviewMinutes })}
@@ -144,7 +147,8 @@ export function Vocab() {
                 >
                   <Pill tone={STATUS_TONE[w.status]}>{t(STATUS_LABEL_KEY[w.status])}</Pill>
                   <div style={{ fontSize: 'var(--text-label)', fontWeight: 700, color: 'var(--ink-3)' }}>
-                    {t(wordTypeLabelKey(w.wordType))} · {w.addedAt.slice(5, 10)}
+                    {t(wordTypeLabelKey(w.wordType))}
+                    {vocabDueLabel(w.due, t) ? ` · ${vocabDueLabel(w.due, t)}` : ` · ${w.addedAt.slice(5, 10)}`}
                   </div>
                 </div>
               </div>

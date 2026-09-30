@@ -6,7 +6,8 @@ import { Home } from '@/features/student/Home'
 import { Lessons } from '@/features/student/Lessons'
 import { Homework } from '@/features/student/Homework'
 import { Vocab } from '@/features/student/Vocab'
-import { VocabReview } from '@/features/student/VocabReview'
+import { PracticeHome } from '@/features/student/practice/PracticeHome'
+import { PracticeSession } from '@/features/student/practice/PracticeSession'
 import { Goals } from '@/features/student/Goals'
 import { Calendar } from '@/features/student/Calendar'
 import { LessonLive } from '@/features/student/LessonLive'
@@ -57,7 +58,8 @@ export function RoleRouter() {
         <Route path="/homework" element={<Homework />} />
         <Route path="/materials" element={<StudentMaterials />} />
         <Route path="/vocab" element={<Vocab />} />
-        <Route path="/vocab/review" element={<VocabReview />} />
+        <Route path="/vocab/practice" element={<PracticeHome />} />
+        <Route path="/vocab/practice/session" element={<PracticeSession />} />
         <Route path="/goals" element={<Goals />} />
         <Route path="/calendar" element={<Calendar />} />
         <Route path="/notifications" element={<Notifications />} />
