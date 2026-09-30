@@ -1,4 +1,5 @@
-import type { ButtonHTMLAttributes, CSSProperties, ReactNode } from 'react'
+import type { ButtonHTMLAttributes, CSSProperties, MouseEventHandler, ReactNode } from 'react'
+import { haptic } from '@/lib/haptics'
 
 export type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'ghost'
 export type ButtonSize = 'md' | 'sm'
@@ -33,6 +34,7 @@ export function Button({
   children,
   style,
   className,
+  onClick,
   ...rest
 }: ButtonProps) {
   const classes = [
@@ -44,8 +46,12 @@ export function Button({
     .filter(Boolean)
     .join(' ')
   const iconSize = size === 'md' ? 20 : 17
+  const handleClick: MouseEventHandler<HTMLButtonElement> = (event) => {
+    if ((variant === 'primary' || variant === 'danger') && !disabled && !loading) haptic('light')
+    onClick?.(event)
+  }
   return (
-    <button {...rest} disabled={disabled || loading} className={classes} style={style}>
+    <button {...rest} disabled={disabled || loading} className={classes} style={style} onClick={handleClick}>
       {leadingIcon && (
         <span className="ms fill" style={{ fontSize: iconSize }} aria-hidden="true">
           {leadingIcon}

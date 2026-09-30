@@ -7,7 +7,7 @@ import {
   useCancelLesson,
   useJoinLesson,
 } from '@/hooks/useLessonActions'
-import { isClub, lessonTime } from '@/lib/lesson'
+import { clubLabelKey, isClub, lessonTime } from '@/lib/lesson'
 import { formatShortDate } from '@/lib/intl'
 import type { Lesson } from '@/api/types'
 import { RescheduleSheet } from './RescheduleSheet'
@@ -72,7 +72,7 @@ export function LessonActionsSheet({ open, lesson, onClose }: Props) {
                 {t('live')}
               </Pill>
             )}
-            {club && <Pill tone="violet">{lesson.type === 'SPEAKING_CLUB' ? 'SC' : 'RC'}</Pill>}
+            {club && <Pill tone="violet">{t(clubLabelKey(lesson) ?? '')}</Pill>}
             {lesson.pendingReschedule && <Pill tone="warn">{t('reschedule_pending')}</Pill>}
             {enrolled && club && <Pill tone="accent">{t('pill_joined')}</Pill>}
           </div>

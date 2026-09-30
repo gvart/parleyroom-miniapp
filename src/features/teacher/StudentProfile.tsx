@@ -1,7 +1,8 @@
-import { useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate, useParams } from 'react-router-dom'
 import { Avatar, Button, Card, Pill, Ring, Section, StatChip } from '@/ui'
+import { useBackButton } from '@/hooks/useBackButton'
 import { useUsers } from '@/hooks/useCreateLesson'
 import { useLessons } from '@/hooks/useLessons'
 import { useHomework } from '@/hooks/useHomework'
@@ -38,6 +39,8 @@ export function StudentProfile() {
   const updateNativeLanguage = useUpdateStudentNativeLanguage()
   const [assignHwOpen, setAssignHwOpen] = useState(false)
   const [assignGoalOpen, setAssignGoalOpen] = useState(false)
+  const goBack = useCallback(() => navigate(-1), [navigate])
+  const nativeBackArmed = useBackButton(goBack)
 
   const student = usersQuery.data?.users.find((u) => u.id === id)
 
@@ -61,17 +64,19 @@ export function StudentProfile() {
   if (!student) {
     return (
       <div style={{ padding: '40px 30px', textAlign: 'center' }}>
-        <button
-          type="button"
-          onClick={() => navigate(-1)}
-          className="ico-btn"
-          aria-label={t('back')}
-          style={{ margin: '0 auto 18px' }}
-        >
-          <span className="ms" style={{ fontSize: 20 }}>
-            arrow_back
-          </span>
-        </button>
+        {!nativeBackArmed && (
+          <button
+            type="button"
+            onClick={goBack}
+            className="ico-btn"
+            aria-label={t('back')}
+            style={{ margin: '0 auto 18px' }}
+          >
+            <span className="ms" style={{ fontSize: 20 }}>
+              arrow_back
+            </span>
+          </button>
+        )}
         <div className="section-title">
           {t('student_not_found')}
         </div>
@@ -89,18 +94,15 @@ export function StudentProfile() {
 
   return (
     <div>
-      <div style={{ padding: '8px 16px 0' }}>
-        <button
-          type="button"
-          onClick={() => navigate(-1)}
-          className="ico-btn"
-          aria-label={t('back')}
-        >
-          <span className="ms" style={{ fontSize: 20 }}>
-            arrow_back
-          </span>
-        </button>
-      </div>
+      {!nativeBackArmed && (
+        <div style={{ padding: '8px 16px 0' }}>
+          <button type="button" onClick={goBack} className="ico-btn" aria-label={t('back')}>
+            <span className="ms" style={{ fontSize: 20 }}>
+              arrow_back
+            </span>
+          </button>
+        </div>
+      )}
 
       <div style={{ padding: '16px 16px 20px', textAlign: 'center' }}>
         <div style={{ display: 'inline-flex' }}>

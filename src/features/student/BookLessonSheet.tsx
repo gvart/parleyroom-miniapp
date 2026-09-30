@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState, type FormEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '@/auth/AuthGate'
-import { Banner, Button, Sheet, TextField } from '@/ui'
+import { Banner, Button, Sheet, SuccessState, TextField } from '@/ui'
 import { useCreateLesson, useUsers } from '@/hooks/useCreateLesson'
 import { useLessons } from '@/hooks/useLessons'
 import { todayISO } from '@/lib/lesson'
@@ -121,33 +121,11 @@ export function BookLessonSheet({ open, onClose, defaultDate }: BookLessonSheetP
   return (
     <Sheet open={open} onClose={onClose}>
       {submitted ? (
-        <div style={{ textAlign: 'center', padding: '28px 20px' }}>
-          <div
-            style={{
-              width: 72,
-              height: 72,
-              borderRadius: 999,
-              background: 'var(--accent-soft)',
-              color: 'var(--accent-ink)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              margin: '0 auto 14px',
-              boxShadow: 'var(--glass-highlight), 0 0 0 8px color-mix(in srgb, var(--accent) 10%, transparent)',
-              animation: 'scale-in var(--spring-bouncy-ms) var(--spring-bouncy)',
-            }}
-          >
-            <span className="ms fill" style={{ fontSize: 36 }}>
-              check
-            </span>
-          </div>
-          <div className="section-title" style={{ marginBottom: 4 }}>
-            {isTeacher ? t('lesson_created_title') : t('request_sent_title')}
-          </div>
-          <div style={{ fontSize: 'var(--text-small)', color: 'var(--ink-2)' }}>
-            {isTeacher ? t('lesson_created_sub') : t('request_sent_sub')}
-          </div>
-        </div>
+        <SuccessState
+          icon="check"
+          title={isTeacher ? t('lesson_created_title') : t('request_sent_title')}
+          sub={isTeacher ? t('lesson_created_sub') : t('request_sent_sub')}
+        />
       ) : (
         <form onSubmit={submit} style={{ padding: '0 20px 4px' }}>
           <div className="section-title" style={{ marginBottom: 18 }}>

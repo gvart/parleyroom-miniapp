@@ -16,6 +16,7 @@ import { ProfileEdit } from '@/features/shared/ProfileEdit'
 import { ChangePassword } from '@/features/shared/ChangePassword'
 import { InterfaceLanguage } from '@/features/shared/InterfaceLanguage'
 import { TranslationLanguage } from '@/features/shared/TranslationLanguage'
+import { Appearance } from '@/features/shared/Appearance'
 import { TeacherHome } from '@/features/teacher/TeacherHome'
 import { TeacherStudents } from '@/features/teacher/Students'
 import { StudentProfile } from '@/features/teacher/StudentProfile'
@@ -40,6 +41,7 @@ export function RoleRouter() {
           <Route path="/settings/profile" element={<ProfileEdit />} />
           <Route path="/settings/password" element={<ChangePassword />} />
           <Route path="/settings/language" element={<InterfaceLanguage />} />
+          <Route path="/settings/appearance" element={<Appearance />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </AppShell>
@@ -63,6 +65,7 @@ export function RoleRouter() {
         <Route path="/settings/profile" element={<ProfileEdit />} />
         <Route path="/settings/password" element={<ChangePassword />} />
         <Route path="/settings/language" element={<InterfaceLanguage />} />
+        <Route path="/settings/appearance" element={<Appearance />} />
         <Route path="/settings/translation-language" element={<TranslationLanguage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

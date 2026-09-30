@@ -1,13 +1,11 @@
 import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useNavigate } from 'react-router-dom'
-import { Card, EmptyState } from '@/ui'
+import { Card, EmptyState, ScreenHeader } from '@/ui'
 import { useMarkNotificationsViewed, useNotifications } from '@/hooks/useNotifications'
 import { notificationIcon, notificationText, relativeTime } from '@/lib/notifications'
 
 export function Notifications() {
   const { t } = useTranslation()
-  const navigate = useNavigate()
   const notificationsQuery = useNotifications()
   const markViewed = useMarkNotificationsViewed()
 
@@ -25,28 +23,7 @@ export function Notifications() {
 
   return (
     <div>
-      <div
-        style={{
-          padding: '12px 16px 18px',
-          display: 'flex',
-          alignItems: 'center',
-          gap: 12,
-        }}
-      >
-        <button
-          type="button"
-          onClick={() => navigate(-1)}
-          className="ico-btn"
-          aria-label={t('back')}
-        >
-          <span className="ms" style={{ fontSize: 20 }}>
-            arrow_back
-          </span>
-        </button>
-        <div className="section-title">
-          {t('notifications')}
-        </div>
-      </div>
+      <ScreenHeader title={t('notifications')} />
 
       <div style={{ padding: '0 16px' }}>
         {items.length === 0 ? (

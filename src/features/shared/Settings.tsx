@@ -17,6 +17,7 @@ export function Settings() {
   const accountItems: SettingsItem[] = [
     { icon: 'person', label: t('edit_profile'), to: '/settings/profile' },
     { icon: 'language', label: t('interface_language_title'), to: '/settings/language' },
+    { icon: 'palette', label: t('appearance_title'), to: '/settings/appearance' },
   ]
   if (user.role === 'STUDENT') {
     accountItems.push({

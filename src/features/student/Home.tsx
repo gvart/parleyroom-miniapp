@@ -5,9 +5,9 @@ import { useLessons } from '@/hooks/useLessons'
 import { useHomework } from '@/hooks/useHomework'
 import { useNotifications } from '@/hooks/useNotifications'
 import { useGoals } from '@/hooks/useGoals'
-import { Card, PageHeader, Pill, Ring, Section, type PillTone, type Tone } from '@/ui'
-import { lessonTime } from '@/lib/lesson'
-import { computeDue, isDoneStatus } from '@/lib/homework'
+import { Card, LessonCard, PageHeader, Pill, Ring, Section, type PillTone, type Tone } from '@/ui'
+import { isLessonParticipant } from '@/lib/lesson'
+import { computeDue, dueLabel, isDoneStatus } from '@/lib/homework'
 
 const GOAL_TONES: Tone[] = ['leaf', 'grape', 'sunny']
 
@@ -27,12 +27,16 @@ export function Home() {
   const dueHomework = (homeworkQuery.data?.homework ?? [])
     .filter((h) => !isDoneStatus(h.status))
     .slice(0, 3)
-  const nextLesson = lessons.find(
-    (l) => l.status === 'CONFIRMED' || l.status === 'IN_PROGRESS',
-  )
-  const live = nextLesson?.status === 'IN_PROGRESS'
-  const teacherFirstName = nextLesson?.students.find((s) => s.id === nextLesson.teacherId)
-    ?.firstName
+  const now = new Date().toISOString()
+  // My own upcoming lesson — not another student's blank busy slot — soonest first.
+  const nextLesson = lessons
+    .filter(
+      (l) =>
+        (l.status === 'CONFIRMED' || l.status === 'IN_PROGRESS') &&
+        isLessonParticipant(l, user.id) &&
+        (l.status === 'IN_PROGRESS' || l.scheduledAt >= now),
+    )
+    .sort((a, b) => a.scheduledAt.localeCompare(b.scheduledAt))[0]
 
   const sectionLink = (label: string, to: string) => (
     <button type="button" onClick={() => navigate(to)} className="link-action">
@@ -63,66 +67,60 @@ export function Home() {
         }
       />
 
+      <div style={{ padding: '0 16px 20px', display: 'flex', gap: 10 }}>
+        <button
+          type="button"
+          onClick={() => navigate('/lessons')}
+          className="card tap"
+          style={{
+            flex: 1,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 10,
+            padding: '12px 14px',
+            cursor: 'pointer',
+            border: 0,
+            textAlign: 'left',
+            font: 'inherit',
+            color: 'inherit',
+          }}
+        >
+          <span className="icon-tile" style={{ width: 36, height: 36, borderRadius: 12 }}>
+            <span className="ms fill" style={{ fontSize: 18 }} aria-hidden="true">
+              event_note
+            </span>
+          </span>
+          <span style={{ fontSize: 'var(--text-small)', fontWeight: 800 }}>{t('lessons')}</span>
+        </button>
+        <button
+          type="button"
+          onClick={() => navigate('/materials')}
+          className="card tap"
+          style={{
+            flex: 1,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 10,
+            padding: '12px 14px',
+            cursor: 'pointer',
+            border: 0,
+            textAlign: 'left',
+            font: 'inherit',
+            color: 'inherit',
+          }}
+        >
+          <span className="icon-tile" style={{ width: 36, height: 36, borderRadius: 12 }}>
+            <span className="ms fill" style={{ fontSize: 18 }} aria-hidden="true">
+              collections_bookmark
+            </span>
+          </span>
+          <span style={{ fontSize: 'var(--text-small)', fontWeight: 800 }}>{t('tab_library')}</span>
+        </button>
+      </div>
+
       {nextLesson ? (
         <div style={{ padding: '0 16px 24px' }}>
-          <Card className={`animate-in${live ? ' lesson-live' : ''}`} style={{ padding: 22 }}>
-            <div
-              style={{
-                position: 'relative',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                gap: 8,
-                flexWrap: 'wrap',
-              }}
-            >
-              <span className="eyebrow">{live ? t('room_live') : t('next_lesson')}</span>
-              <span className={`countdown-chip${live ? ' is-live' : ''}`}>
-                {live ? (
-                  <span className="live-dot" aria-hidden="true" />
-                ) : (
-                  <span className="ms" style={{ fontSize: 16 }} aria-hidden="true">
-                    schedule
-                  </span>
-                )}
-                {t('today')} · {lessonTime(nextLesson.scheduledAt)}
-              </span>
-            </div>
-            <h2 className="page-h1" style={{ position: 'relative', marginTop: 14 }}>
-              {nextLesson.topic}
-            </h2>
-            {teacherFirstName && (
-              <div
-                style={{
-                  position: 'relative',
-                  marginTop: 8,
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: 6,
-                  fontSize: 'var(--text-small)',
-                  fontWeight: 700,
-                  color: 'var(--ink-2)',
-                }}
-              >
-                <span className="ms" style={{ fontSize: 18 }} aria-hidden="true">
-                  person
-                </span>
-                {teacherFirstName}
-              </div>
-            )}
-            <div style={{ position: 'relative', marginTop: 20 }}>
-              <button
-                type="button"
-                className={`btn-primary${live ? ' join-live' : ''}`}
-                onClick={() => navigate(`/lessons/${nextLesson.id}/live`)}
-              >
-                <span className="ms fill" style={{ fontSize: 20 }} aria-hidden="true">
-                  {live ? 'videocam' : 'play_arrow'}
-                </span>
-                {live ? t('join_now') : t('start_lesson')}
-              </button>
-            </div>
-          </Card>
+          <LessonCard lesson={nextLesson} variant="hero" />
         </div>
       ) : (
         !lessonsQuery.isLoading && (
@@ -174,16 +172,7 @@ export function Home() {
               const due = computeDue(h.dueDate)
               const tone: PillTone =
                 due.kind === 'overdue' ? 'live' : due.kind === 'today' ? 'warn' : 'neutral'
-              const dueText =
-                due.kind === 'overdue'
-                  ? t('overdue')
-                  : due.kind === 'today'
-                    ? t('today')
-                    : due.kind === 'tomorrow'
-                      ? t('tomorrow')
-                      : due.kind === 'date'
-                        ? due.label
-                        : t('due')
+              const dueText = dueLabel(due, t)
               return (
                 <button
                   type="button"

@@ -9,7 +9,7 @@ import {
 } from 'react'
 import { useLaunchParams, useRawInitData } from '@telegram-apps/sdk-react'
 import { useTranslation } from 'react-i18next'
-import { ApiError, setApiToken } from '@/api/client'
+import { ApiError, setApiToken, setUnauthorizedHandler } from '@/api/client'
 import { api } from '@/api/endpoints'
 import type { UserProfile } from '@/api/types'
 import i18n, { DEFAULT_LOCALE, normalizeLocale } from '@/i18n'
@@ -45,6 +45,9 @@ export function AuthGate({ children }: { children: ReactNode }) {
   const rawInitData = useRawInitData() ?? ''
   const launchParams = useLaunchParams()
   const [status, setStatus] = useState<Status>({ kind: 'checking' })
+  // Bumped to re-run the bootstrap effect below (e.g. after a 401) without
+  // depending on `rawInitData`, which won't change between attempts.
+  const [retryGen, setRetryGen] = useState(0)
 
   // Pre-login default: Telegram's `language_code` if it's ru/de/en, else 'ru'.
   // Only applies on a genuinely first run — a previously cached/chosen
@@ -100,12 +103,25 @@ export function AuthGate({ children }: { children: ReactNode }) {
     // `t` intentionally excluded — it changes identity on every language switch,
     // and re-running the auth bootstrap on a language change would be wrong.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [rawInitData])
+  }, [rawInitData, retryGen])
 
   const signOut = useCallback(() => {
     setApiToken(null)
     sessionStorage.removeItem(TOKEN_KEY)
     setStatus({ kind: 'checking' })
+  }, [])
+
+  // Any authenticated request that comes back 401 clears the (stale) token
+  // and re-runs the Telegram sign-in once, so an expired session recovers
+  // without the user having to reopen the mini app.
+  useEffect(() => {
+    setUnauthorizedHandler(() => {
+      setApiToken(null)
+      sessionStorage.removeItem(TOKEN_KEY)
+      setStatus({ kind: 'checking' })
+      setRetryGen((g) => g + 1)
+    })
+    return () => setUnauthorizedHandler(null)
   }, [])
 
   const refreshUser = useCallback(async () => {

@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next'
-import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/auth/AuthGate'
 import { useUpdateProfile } from '@/hooks/useUpdateProfile'
+import { ScreenHeader } from '@/ui'
 import type { NativeLanguage } from '@/api/types'
 
 const LANGS: Array<{ code: NativeLanguage; labelKey: string }> = [
@@ -12,7 +12,6 @@ const LANGS: Array<{ code: NativeLanguage; labelKey: string }> = [
 
 export function TranslationLanguage() {
   const { t } = useTranslation()
-  const navigate = useNavigate()
   const { user, refreshUser } = useAuth()
   const updateProfile = useUpdateProfile()
   const current = user.nativeLanguage ?? 'ru'
@@ -25,21 +24,7 @@ export function TranslationLanguage() {
 
   return (
     <div>
-      <div style={{ padding: '12px 16px 18px', display: 'flex', alignItems: 'center', gap: 12 }}>
-        <button
-          type="button"
-          onClick={() => navigate('/settings')}
-          className="ico-btn"
-          aria-label={t('back')}
-        >
-          <span className="ms" style={{ fontSize: 20 }}>
-            arrow_back
-          </span>
-        </button>
-        <div className="section-title">
-          {t('translation_language_title')}
-        </div>
-      </div>
+      <ScreenHeader title={t('translation_language_title')} />
 
       <div style={{ padding: '0 16px 18px' }}>
         <div style={{ fontSize: 'var(--text-lead)', color: 'var(--ink-2)' }}>{t('translation_language_sub')}</div>

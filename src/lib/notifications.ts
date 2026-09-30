@@ -3,7 +3,8 @@ import type { Notification, NotificationType } from '@/api/types'
 import { activeIntlLocale } from './intl'
 
 export function notificationIcon(type: NotificationType): string {
-  if (type.startsWith('LESSON') || type.startsWith('RESCHEDULE') || type.startsWith('JOIN')) {
+  if (type.startsWith('HOMEWORK')) return 'edit_note'
+  if (type.startsWith('LESSON') || type.startsWith('RESCHEDULE') || type.startsWith('JOIN') || type === 'CLUB_JOINED') {
     return 'videocam'
   }
   if (type.startsWith('VOCAB')) return 'menu_book'
@@ -17,6 +18,8 @@ const NOTIF_KEY: Record<NotificationType, string> = {
   LESSON_REQUESTED: 'notif_lesson_requested',
   LESSON_ACCEPTED: 'notif_lesson_accepted',
   LESSON_CANCELLED: 'notif_lesson_cancelled',
+  LESSON_MOVED: 'notif_lesson_moved',
+  LESSON_BOOKED: 'notif_lesson_booked',
   LESSON_STARTED: 'notif_lesson_started',
   LESSON_COMPLETED: 'notif_lesson_completed',
   RESCHEDULE_REQUESTED: 'notif_reschedule_requested',
@@ -25,10 +28,15 @@ const NOTIF_KEY: Record<NotificationType, string> = {
   JOIN_REQUESTED: 'notif_join_requested',
   JOIN_ACCEPTED: 'notif_join_accepted',
   JOIN_REJECTED: 'notif_join_rejected',
+  CLUB_JOINED: 'notif_club_joined',
   VOCAB_REVIEW_DUE: 'notif_vocab_review_due',
   MATERIAL_SHARED: 'notif_material_shared',
   FOLDER_SHARED: 'notif_folder_shared',
   MATERIAL_ATTACHED_TO_LESSON: 'notif_material_attached',
+  HOMEWORK_ASSIGNED: 'notif_homework_assigned',
+  HOMEWORK_SUBMITTED: 'notif_homework_submitted',
+  HOMEWORK_REVIEWED: 'notif_homework_reviewed',
+  HOMEWORK_RETURNED: 'notif_homework_returned',
 }
 
 export function notificationText(n: Notification, t: TFunction): string {
