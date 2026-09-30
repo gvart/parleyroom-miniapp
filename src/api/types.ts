@@ -544,7 +544,10 @@ export interface HomeworkUnit extends UnitAddress {
   answer?: AnswerPayload | null
   answeredAt?: string | null
   autoResult?: AutoResult | null
+  autoScore?: number | null
   gapResults?: GapResult[] | null
+  /** Teacher override of the auto result; `correct` is the effective verdict shown to the student. */
+  teacherCorrect?: boolean | null
   correct?: boolean | null
   comment?: string | null
 }
