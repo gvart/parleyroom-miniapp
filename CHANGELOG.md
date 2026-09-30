@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.23.0](https://github.com/gvart/parleyroom-miniapp/compare/v1.22.0...v1.23.0) (2026-09-30)
+
+
+### Features
+
+* **calendar:** usable calendar tab with slot booking and open clubs ([#59](https://github.com/gvart/parleyroom-miniapp/issues/59)) ([f65497b](https://github.com/gvart/parleyroom-miniapp/commit/f65497bd11d183f4ce0e4c907a1211ee7112a899))
+* **homework:** full exercise renderer, uploads, autosave, resubmit ([#61](https://github.com/gvart/parleyroom-miniapp/issues/61)) ([2caa621](https://github.com/gvart/parleyroom-miniapp/commit/2caa62197daeb949bfa4249c93c6552ce723ec8c))
+* **miniapp:** mini-foundation — shell, keyboard, theme, nav ([#57](https://github.com/gvart/parleyroom-miniapp/issues/57)) ([b718572](https://github.com/gvart/parleyroom-miniapp/commit/b718572976adeff80d3222f72c67eb6c187bd525))
+* **miniapp:** mini-words — four-mode vocabulary practice ([#60](https://github.com/gvart/parleyroom-miniapp/issues/60)) ([4e0e044](https://github.com/gvart/parleyroom-miniapp/commit/4e0e0446749fb0d6c4c1f29e497fe7278e80e802))
+
+
+### Bug Fixes
+
+* **lessons:** send full ISO datetimes for lesson ranges ([#62](https://github.com/gvart/parleyroom-miniapp/issues/62)) ([3053056](https://github.com/gvart/parleyroom-miniapp/commit/305305637931bc597524b4b338f26baa5069a013))
+
 ## [1.22.0](https://github.com/gvart/parleyroom-miniapp/compare/v1.21.1...v1.22.0) (2026-09-29)
 
 
