@@ -1,0 +1,37 @@
+src/hooks/useLessons.ts
+  s_4985e1aeba0736::t_fa6495102ff278 3,5-8,10,12-15,17-18
+  s_4985e1aeba0736::t_30e784d81796ac 11
+src/lib/lesson.ts
+  s_4985e1aeba0736::t_444514d694dcab 1,3,30-51
+  s_4985e1aeba0736::t_8d4b748e67f528 52
+src/features/student/Home.tsx
+  s_4985e1aeba0736::t_f1ae6f543e64ab 70-120,123
+  s_4985e1aeba0736::t_5bce70c87afaa5 175
+  s_4985e1aeba0736::t_28c77035c3016a 8-10,30-39
+src/features/student/Calendar.tsx
+  s_4985e1aeba0736::t_7ddd222ab36d78 3,5
+  s_4985e1aeba0736::t_5250c670959f3b 179-181
+src/features/student/LessonActionsSheet.tsx
+  s_4985e1aeba0736::t_67bbc884b90ced 10
+  s_4985e1aeba0736::t_8131eeb04d746b 75
+src/features/student/Lessons.tsx
+  s_4985e1aeba0736::t_aaf19607b3d309 32-37
+  s_4985e1aeba0736::t_215a097d4f3629 75
+  s_4985e1aeba0736::t_83481c5a1224f4 3,5
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "e001136354d0da075a94b5ea22affa5683a89962",
+  "prompts": {},
+  "sessions": {
+    "s_4985e1aeba0736": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "67d7b6f0-b72a-461c-a3eb-bc1269097f4b",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Vladlen Gladis <vladlen.gladis@deliveryhero.com>"
+    }
+  }
+}
