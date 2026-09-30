@@ -1,5 +1,10 @@
-import { ApiError, API_BASE, getApiToken } from '@/api/client'
+import { apiFetch, ApiError, API_BASE, getApiToken } from '@/api/client'
+import { isMockBackendActive } from '@/dev/mockBackend'
 import type { HomeworkUpload } from '@/api/types'
+
+// The dev mock (src/dev/mockBackend.ts) only patches `window.fetch`, not
+// `XMLHttpRequest` — route through `apiFetch` there so uploads work against
+// the mock; the real backend still gets XHR upload-progress events below.
 
 /**
  * `POST /homework/{id}/items/{itemId}/uploads` via XMLHttpRequest instead of
@@ -13,6 +18,15 @@ export function uploadHomeworkFile(
   fileName: string,
   onProgress?: (pct: number) => void,
 ): Promise<HomeworkUpload> {
+  if (isMockBackendActive) {
+    const form = new FormData()
+    form.append('file', file, fileName)
+    onProgress?.(50)
+    return apiFetch<HomeworkUpload>(`/api/v1/homework/${id}/items/${itemId}/uploads`, { method: 'POST', body: form }).then((res) => {
+      onProgress?.(100)
+      return res
+    })
+  }
   return new Promise((resolve, reject) => {
     const form = new FormData()
     form.append('file', file, fileName)

@@ -160,7 +160,7 @@ export function HomeworkDetail() {
   const dueText = due.kind === 'none' ? '' : dueLabel(due, t, { prefixed: true })
 
   return (
-    <div style={{ paddingBottom: editable ? 96 : 24 }}>
+    <div style={{ paddingBottom: editable ? 180 : 24 }}>
       <ScreenHeader title={hw.title} />
 
       <div style={{ padding: '0 16px 16px', display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -223,9 +223,13 @@ export function HomeworkDetail() {
             position: 'fixed',
             left: 0,
             right: 0,
-            bottom: 'calc(env(safe-area-inset-bottom, 0px) + var(--keyboard-inset, 0px))',
+            // Sits just above the floating tab bar (AppShell reserves 104px + its
+            // own safe-area inset for it), then lifts further above an open keyboard.
+            bottom:
+              'calc(104px + var(--tg-viewport-safe-area-inset-bottom, env(safe-area-inset-bottom)) + var(--tg-viewport-content-safe-area-inset-bottom, 0px) + var(--keyboard-inset, 0px))',
             padding: '10px 16px 14px',
-            background: 'linear-gradient(to top, var(--bg) 55%, transparent)',
+            background: 'linear-gradient(to top, var(--bg) 65%, transparent)',
+            zIndex: 40,
           }}
         >
           <Button block leadingIcon="send" onClick={() => setConfirmOpen(true)}>
