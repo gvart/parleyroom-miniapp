@@ -48,12 +48,15 @@ export function uploadHomeworkFile(
         }
       } else {
         let detail: string | null = null
+        let code: string | null = null
         try {
-          detail = (JSON.parse(xhr.responseText) as { detail?: string })?.detail ?? null
+          const body = JSON.parse(xhr.responseText) as { detail?: string; code?: string }
+          detail = body?.detail ?? null
+          code = body?.code ?? null
         } catch {
           /* non-JSON error body */
         }
-        reject(new ApiError(xhr.status, detail))
+        reject(new ApiError(xhr.status, detail, code))
       }
     }
     xhr.onerror = () => reject(new Error('network error'))
