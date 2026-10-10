@@ -66,6 +66,7 @@ interface MockLesson {
   maxParticipants: number | null
   students: Array<{ id: string; firstName: string; lastName: string; status: string }>
   startedAt: string | null
+  offline: boolean
   pendingReschedule: MockPendingReschedule | null
   createdBy: string
   createdAt: string
@@ -89,6 +90,7 @@ const studentLessonsList: MockLesson[] = [
     maxParticipants: null,
     students: [{ id: 'u-mock', firstName: 'Lina', lastName: 'Weber', status: 'CONFIRMED' }],
     startedAt: null,
+    offline: false,
     pendingReschedule: null,
     createdBy: 't1',
     createdAt: '2026-03-10T00:00:00Z',
@@ -108,6 +110,7 @@ const studentLessonsList: MockLesson[] = [
     maxParticipants: null,
     students: [{ id: 'u-mock', firstName: 'Lina', lastName: 'Weber', status: 'CONFIRMED' }],
     startedAt: null,
+    offline: false,
     pendingReschedule: null,
     createdBy: 't1',
     createdAt: '2026-03-10T00:00:00Z',
@@ -130,6 +133,7 @@ const studentLessonsList: MockLesson[] = [
       { id: 's2', firstName: 'Mateo', lastName: 'Alves', status: 'CONFIRMED' },
     ],
     startedAt: null,
+    offline: false,
     pendingReschedule: null,
     createdBy: 't1',
     createdAt: '2026-03-10T00:00:00Z',
@@ -149,7 +153,29 @@ const studentLessonsList: MockLesson[] = [
     maxParticipants: null,
     students: [{ id: 'u-mock', firstName: 'Lina', lastName: 'Weber', status: 'CONFIRMED' }],
     startedAt: null,
+    offline: false,
     pendingReschedule: { newScheduledAt: `${addDaysISO(3)}T16:00:00Z`, note: null, requestedBy: 't1' },
+    createdBy: 't1',
+    createdAt: '2026-03-10T00:00:00Z',
+    updatedAt: '2026-03-10T00:00:00Z',
+  },
+  {
+    // Offline (in-person) lesson: no video room — video-token answers 409 LESSON_OFFLINE.
+    id: 'l5',
+    title: 'Café-Gespräch',
+    topic: 'Café-Gespräch',
+    type: 'ONE_ON_ONE',
+    scheduledAt: `${addDaysISO(1)}T10:00:00Z`,
+    durationMinutes: 60,
+    teacherId: 't1',
+    teacher: TEACHER_REAL,
+    status: 'CONFIRMED',
+    level: 'B1',
+    maxParticipants: null,
+    students: [{ id: 'u-mock', firstName: 'Lina', lastName: 'Weber', status: 'CONFIRMED' }],
+    startedAt: null,
+    offline: true,
+    pendingReschedule: null,
     createdBy: 't1',
     createdAt: '2026-03-10T00:00:00Z',
     updatedAt: '2026-03-10T00:00:00Z',
@@ -266,6 +292,7 @@ function lessonsBody(role: MockUser['role']) {
             { id: 's1', firstName: 'Lina', lastName: 'Weber', status: 'CONFIRMED' },
           ],
           startedAt: null,
+          offline: false,
           rawNotes: null,
           createdBy: 'u-mock',
           createdAt: '2026-03-10T00:00:00Z',
@@ -287,6 +314,7 @@ function lessonsBody(role: MockUser['role']) {
             { id: 's2', firstName: 'Mateo', lastName: 'Alves', status: 'CONFIRMED' },
           ],
           startedAt: null,
+          offline: true,
           rawNotes: null,
           createdBy: 'u-mock',
           createdAt: '2026-03-10T00:00:00Z',
@@ -308,13 +336,37 @@ function lessonsBody(role: MockUser['role']) {
             { id: 's4', firstName: 'Yuki', lastName: 'Tanaka', status: 'REQUESTED' },
           ],
           startedAt: null,
+          offline: false,
           rawNotes: null,
           createdBy: 's4',
           createdAt: '2026-03-10T00:00:00Z',
           updatedAt: '2026-03-10T00:00:00Z',
         },
+        {
+          // Offline lesson inside the start window — shows the "start in portal" hint.
+          id: 'tl4',
+          title: 'Café-Gespräch',
+          topic: 'Café-Gespräch',
+          type: 'ONE_ON_ONE',
+          scheduledAt: new Date(Date.now() + 10 * 60_000).toISOString(),
+          durationMinutes: 60,
+          teacherId: 'u-mock',
+          teacher: TEACHER_MOCK,
+          status: 'CONFIRMED',
+          level: 'B2',
+          maxParticipants: null,
+          students: [
+            { id: 's3', firstName: 'Priya', lastName: 'Shah', status: 'CONFIRMED' },
+          ],
+          startedAt: null,
+          offline: true,
+          rawNotes: null,
+          createdBy: 'u-mock',
+          createdAt: '2026-03-10T00:00:00Z',
+          updatedAt: '2026-03-10T00:00:00Z',
+        },
       ],
-      total: 3,
+      total: 4,
       page: 1,
       pageSize: 20,
     }
@@ -325,6 +377,10 @@ function lessonsBody(role: MockUser['role']) {
     page: 1,
     pageSize: 100,
   }
+}
+
+function findMockLesson(id: string): { offline: boolean } | undefined {
+  return [...studentLessonsList, ...lessonsBody('TEACHER').lessons].find((l) => l.id === id)
 }
 
 interface MockNotification {
@@ -1090,8 +1146,21 @@ export function installMockBackend(): void {
         nativeLanguage: body.nativeLanguage,
       })
     }
+    const startMatch = url.match(/\/api\/v1\/lessons\/([^/]+)\/start$/)
+    if (startMatch && method === 'POST') {
+      // Offline lessons still go IN_PROGRESS but get no video room.
+      return json({
+        document: null,
+        videoRoom: findMockLesson(startMatch[1])?.offline
+          ? null
+          : { roomName: `mock-room-${startMatch[1]}`, accessToken: 'mock-access-token', url: 'mock://livekit' },
+      })
+    }
     const videoTokenMatch = url.match(/\/api\/v1\/lessons\/([^/]+)\/video-token$/)
     if (videoTokenMatch && method === 'POST') {
+      if (findMockLesson(videoTokenMatch[1])?.offline) {
+        return json({ detail: 'Lesson is offline', code: 'LESSON_OFFLINE' }, 409)
+      }
       return json({
         roomName: `mock-room-${videoTokenMatch[1]}`,
         accessToken: 'mock-access-token',
@@ -1121,6 +1190,7 @@ export function installMockBackend(): void {
         maxParticipants: null,
         students: [],
         startedAt: null,
+        offline: false,
         createdBy: 'u-mock',
         createdAt: '2026-03-10T00:00:00Z',
         updatedAt: new Date().toISOString(),
@@ -1224,6 +1294,7 @@ export function installMockBackend(): void {
         maxParticipants: null,
         students: [],
         startedAt: new Date().toISOString(),
+        offline: false,
         rawNotes: body.rawNotes ?? null,
         createdBy: 'u-mock',
         createdAt: '2026-03-10T00:00:00Z',
@@ -1258,6 +1329,7 @@ export function installMockBackend(): void {
           { id: 'u-mock', firstName: 'Lina', lastName: 'Weber', status: 'REQUESTED' },
         ],
         startedAt: null,
+        offline: false,
         pendingReschedule: null,
         createdBy: 'u-mock',
         createdAt: new Date().toISOString(),

@@ -1,3 +1,4 @@
+import type { CSSProperties } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/auth/AuthGate'
@@ -22,10 +23,24 @@ export function LessonCard({ lesson, variant = 'row', onOpen }: LessonCardProps)
   return <RowCard lesson={lesson} onOpen={onOpen} />
 }
 
+/** "In person" badge for offline lessons (no video room). */
+export function InPersonPill({ style }: { style?: CSSProperties }) {
+  const { t } = useTranslation()
+  return (
+    <Pill tone="info" style={style}>
+      <span className="ms" style={{ fontSize: 14 }} aria-hidden="true">
+        location_on
+      </span>
+      {t('in_person')}
+    </Pill>
+  )
+}
+
 function HeroCard({ lesson }: { lesson: Lesson }) {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const live = lesson.status === 'IN_PROGRESS'
+  const offline = lesson.offline
 
   return (
     <Card className={`animate-in${live ? ' lesson-live' : ''}`} style={{ padding: 22 }}>
@@ -39,7 +54,7 @@ function HeroCard({ lesson }: { lesson: Lesson }) {
           flexWrap: 'wrap',
         }}
       >
-        <span className="eyebrow">{live ? t('room_live') : t('next_lesson')}</span>
+        <span className="eyebrow">{live && !offline ? t('room_live') : t('next_lesson')}</span>
         <span className={`countdown-chip${live ? ' is-live' : ''}`}>
           {live ? (
             <span className="live-dot" aria-hidden="true" />
@@ -54,37 +69,43 @@ function HeroCard({ lesson }: { lesson: Lesson }) {
       <h2 className="page-h1" style={{ position: 'relative', marginTop: 14 }}>
         {lesson.topic}
       </h2>
-      {lesson.teacher.firstName && (
-        <div
-          style={{
-            position: 'relative',
-            marginTop: 8,
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: 6,
-            fontSize: 'var(--text-small)',
-            fontWeight: 700,
-            color: 'var(--ink-2)',
-          }}
-        >
-          <span className="ms" style={{ fontSize: 18 }} aria-hidden="true">
-            person
-          </span>
-          {lesson.teacher.firstName}
+      {(lesson.teacher.firstName || offline) && (
+        <div style={{ position: 'relative', marginTop: 8, display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+          {lesson.teacher.firstName && (
+            <div
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 6,
+                fontSize: 'var(--text-small)',
+                fontWeight: 700,
+                color: 'var(--ink-2)',
+              }}
+            >
+              <span className="ms" style={{ fontSize: 18 }} aria-hidden="true">
+                person
+              </span>
+              {lesson.teacher.firstName}
+            </div>
+          )}
+          {offline && <InPersonPill />}
         </div>
       )}
-      <div style={{ position: 'relative', marginTop: 20 }}>
-        <button
-          type="button"
-          className={`btn-primary${live ? ' join-live' : ''}`}
-          onClick={() => navigate(`/lessons/${lesson.id}/live`)}
-        >
-          <span className="ms fill" style={{ fontSize: 20 }} aria-hidden="true">
-            {live ? 'videocam' : 'play_arrow'}
-          </span>
-          {live ? t('join_now') : t('start_lesson')}
-        </button>
-      </div>
+      {/* Offline lessons have no video room — nothing to start or join from here. */}
+      {!offline && (
+        <div style={{ position: 'relative', marginTop: 20 }}>
+          <button
+            type="button"
+            className={`btn-primary${live ? ' join-live' : ''}`}
+            onClick={() => navigate(`/lessons/${lesson.id}/live`)}
+          >
+            <span className="ms fill" style={{ fontSize: 20 }} aria-hidden="true">
+              {live ? 'videocam' : 'play_arrow'}
+            </span>
+            {live ? t('join_now') : t('start_lesson')}
+          </button>
+        </div>
+      )}
     </Card>
   )
 }
@@ -135,7 +156,7 @@ function RowCard({ lesson, onOpen }: { lesson: Lesson; onOpen?: (lesson: Lesson)
         </div>
         <div style={{ width: 1, alignSelf: 'stretch', background: 'var(--hair)' }} />
         <div style={{ flex: 1, minWidth: 0 }}>
-          {(live || requested || club || hasPendingReschedule || canJoin) && (
+          {(live || requested || club || lesson.offline || hasPendingReschedule || canJoin) && (
             <div style={{ display: 'flex', gap: 6, alignItems: 'center', marginBottom: 4, flexWrap: 'wrap' }}>
               {live && (
                 <Pill tone="live">
@@ -145,6 +166,7 @@ function RowCard({ lesson, onOpen }: { lesson: Lesson; onOpen?: (lesson: Lesson)
               )}
               {requested && <Pill tone="warn">{t('review')}</Pill>}
               {club && <Pill tone="violet">{t(clubLabelKey(lesson) ?? '')}</Pill>}
+              {lesson.offline && <InPersonPill />}
               {hasPendingReschedule && <Pill tone="warn">{t('reschedule_pending')}</Pill>}
               {canJoin && <Pill tone="accent">{t('join_available')}</Pill>}
             </div>
@@ -214,12 +236,15 @@ function CompactCard({ lesson, onOpen }: { lesson: Lesson; onOpen?: (lesson: Les
         >
           {lesson.topic}
         </div>
-        {live && (
-          <Pill tone="live" style={{ fontSize: 'var(--text-label)', padding: '2px 8px' }}>
-            <span className="live-dot" />
-            {t('live').toUpperCase()}
-          </Pill>
-        )}
+        <div style={{ display: 'flex', gap: 4, flexShrink: 0 }}>
+          {lesson.offline && <InPersonPill style={{ fontSize: 'var(--text-label)', padding: '2px 8px' }} />}
+          {live && (
+            <Pill tone="live" style={{ fontSize: 'var(--text-label)', padding: '2px 8px' }}>
+              <span className="live-dot" />
+              {t('live').toUpperCase()}
+            </Pill>
+          )}
+        </div>
       </div>
       <div style={{ fontSize: 'var(--text-caption)', fontWeight: 600, color: 'var(--ink-2)' }}>
         {lessonTime(lesson.scheduledAt)} · {lesson.durationMinutes}m ·{' '}
