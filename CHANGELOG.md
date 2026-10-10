@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.25.0](https://github.com/gvart/parleyroom-miniapp/compare/v1.24.0...v1.25.0) (2026-10-10)
+
+
+### Features
+
+* **brand:** make brand name and logo configurable per build ([#65](https://github.com/gvart/parleyroom-miniapp/issues/65)) ([7fd0953](https://github.com/gvart/parleyroom-miniapp/commit/7fd09535808142ce51fffb2839f1825ab4dc8a87))
+
 ## [1.24.0](https://github.com/gvart/parleyroom-miniapp/compare/v1.23.0...v1.24.0) (2026-10-10)
 
 
