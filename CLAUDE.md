@@ -2,7 +2,7 @@
 
 The Telegram Mini App front-door for **Parleyroom**. Students get the full learning loop (book, reschedule, join shared lessons, live video, reflect, vocab SRS, homework, goals, materials with in-app JWT preview). Teachers get a working management surface (today timeline with start-lesson CTA, request acceptance, student profile with assign-homework / assign-goal / submission review, start & complete live lessons, material upload).
 
-Production: Cloudflare Pages, project `parleyroom-miniapp`, served at `https://miniapp.rosehub.eu`. Backend at `https://api.rosehub.eu` (env var `VITE_API_BASE_URL`).
+Production: Cloudflare Pages, project `parleyroom-miniapp`, served at `https://miniapp.sprachrobbe.com`. Backend at `https://api.sprachrobbe.com` (env var `VITE_API_BASE_URL`).
 
 ## Stack
 
