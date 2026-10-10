@@ -1,0 +1,31 @@
+.env.production.example
+  s_962b7701e7c735::t_ead727599a90cd 6-11
+.github/workflows/ci.yml
+  s_962b7701e7c735::t_ead727599a90cd 30-31
+src/auth/AuthGate.tsx
+  s_962b7701e7c735::t_ead727599a90cd 14,179-185,187
+src/lib/brand.ts
+  s_962b7701e7c735::t_ead727599a90cd 1-17
+vite.config.ts
+  s_962b7701e7c735::t_ead727599a90cd 2,5-19,27
+src/vite-env.d.ts
+  s_962b7701e7c735::t_ead727599a90cd 2-8
+.github/workflows/release.yml
+  s_962b7701e7c735::t_ead727599a90cd 35-36
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "6cb181c7f6914209cddc05674d04eea1ea0e0aa6",
+  "prompts": {},
+  "sessions": {
+    "s_962b7701e7c735": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "266d6af2-869f-4939-933b-0f5d5d92323a",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Vladlen Gladis <vladlen.gladis@deliveryhero.com>"
+    }
+  }
+}
