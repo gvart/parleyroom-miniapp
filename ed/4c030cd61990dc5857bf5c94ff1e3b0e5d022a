@@ -1,0 +1,49 @@
+src/features/student/LessonLive.tsx
+  s_18b07bb0396451::t_a3832b5cf7c8af 37-100
+src/features/student/LessonActionsSheet.tsx
+  s_18b07bb0396451::t_9275f489ee345f 5
+  s_18b07bb0396451::t_5b2645fe792f6f 50-51
+  s_18b07bb0396451::t_459258c2f37428 115
+src/dev/mockBackend.ts
+  s_18b07bb0396451::t_0edcfb16196737 162-182
+  s_18b07bb0396451::t_3e5839fc7f06f4 317
+  s_18b07bb0396451::t_54cded0984075e 382-385
+  s_18b07bb0396451::t_76341364d6cbd1 1149-1158,1161-1163
+  s_18b07bb0396451::t_20c424112ded2a 345-367,369
+  s_18b07bb0396451::t_72645406eb98eb 69,93,113,136,156,295,339,1193,1297,1332
+src/features/teacher/TeacherHome.tsx
+  s_18b07bb0396451::t_27b28b436599eb 9
+  s_18b07bb0396451::t_96d51989779626 48-49,358-362,369-373
+src/ui/LessonCard.tsx
+  s_18b07bb0396451::t_a905649abfc756 26-38,43,104,246
+  s_18b07bb0396451::t_79b2254ea130e3 105,247
+  s_18b07bb0396451::t_533e58deaf1e88 1
+  s_18b07bb0396451::t_8582fd9d8bea21 92-93
+  s_18b07bb0396451::t_4df652d325702e 57,72-91,94-103,106,159,169,239-245
+src/ui/index.ts
+  s_18b07bb0396451::t_a9e2f394c40643 7
+src/api/types.ts
+  s_18b07bb0396451::t_7a0db5e05206a4 82-83,94-95
+src/i18n/de.json
+  s_18b07bb0396451::t_4f6da6c3897f75 511-516
+src/i18n/en.json
+  s_18b07bb0396451::t_00153fe7cc5b6b 511-516
+src/i18n/ru.json
+  s_18b07bb0396451::t_4fb913d42c8a71 517-522
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "ed4c030cd61990dc5857bf5c94ff1e3b0e5d022a",
+  "prompts": {},
+  "sessions": {
+    "s_18b07bb0396451": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "2bd228f4-0742-4e79-9f6c-b599bc9978a1",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Vladlen Gladis <vladlen.gladis@deliveryhero.com>"
+    }
+  }
+}
