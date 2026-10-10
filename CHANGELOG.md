@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.24.0](https://github.com/gvart/parleyroom-miniapp/compare/v1.23.0...v1.24.0) (2026-10-10)
+
+
+### Features
+
+* **lessons:** support offline (in-person) lessons ([#63](https://github.com/gvart/parleyroom-miniapp/issues/63)) ([9ccd4b1](https://github.com/gvart/parleyroom-miniapp/commit/9ccd4b1c0d8432fb415728a33308fc1b80404130))
+
 ## [1.23.0](https://github.com/gvart/parleyroom-miniapp/compare/v1.22.0...v1.23.0) (2026-09-30)
 
 
