@@ -11,6 +11,7 @@ import { useLaunchParams, useRawInitData } from '@telegram-apps/sdk-react'
 import { useTranslation } from 'react-i18next'
 import { ApiError, setApiToken, setUnauthorizedHandler } from '@/api/client'
 import { api } from '@/api/endpoints'
+import { brand } from '@/lib/brand'
 import type { UserProfile } from '@/api/types'
 import i18n, { DEFAULT_LOCALE, normalizeLocale } from '@/i18n'
 import { FirstRunLocalePicker } from '@/features/shared/FirstRunLocalePicker'
@@ -175,11 +176,15 @@ export function AuthGate({ children }: { children: ReactNode }) {
 function BrandLockup() {
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-      <span className="brand-mark font-headline" aria-hidden="true">
-        P
-      </span>
+      {brand.logoUrl ? (
+        <img src={brand.logoUrl} alt="" style={{ width: 40, height: 40, borderRadius: 14, objectFit: 'contain' }} />
+      ) : (
+        <span className="brand-mark font-headline" aria-hidden="true">
+          {brand.mark}
+        </span>
+      )}
       <span className="font-headline" style={{ fontSize: 24 }}>
-        Parley<span style={{ color: 'var(--accent-ink)' }}>room</span>
+        {brand.wordmark.head}<span style={{ color: 'var(--accent-ink)' }}>{brand.wordmark.accent}</span>
       </span>
     </div>
   )
