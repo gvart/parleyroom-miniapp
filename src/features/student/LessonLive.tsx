@@ -34,6 +34,70 @@ function statusMessageKey(status: LiveKitStatus): string | null {
 }
 
 export function LessonLive() {
+  const { id } = useParams<{ id: string }>()
+  const lessonsQuery = useLessons()
+  const lesson = lessonsQuery.data?.lessons.find((l) => l.id === id)
+
+  // Wait for the lesson so an offline one never mounts the room (no LiveKit,
+  // no video-token — the backend would answer 409 LESSON_OFFLINE anyway).
+  if (lessonsQuery.isLoading) return null
+  if (lesson?.offline) return <InPersonLesson />
+  return <LiveRoom />
+}
+
+function InPersonLesson() {
+  const { t } = useTranslation()
+  const navigate = useNavigate()
+  const { user } = useAuth()
+  const isTeacher = user.role === 'TEACHER' || user.role === 'ADMIN'
+
+  return (
+    <div
+      style={{
+        position: 'fixed',
+        inset: 0,
+        zIndex: 100,
+        color: 'var(--ink)',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        padding: '30px 16px',
+      }}
+    >
+      <div
+        className="card animate-in"
+        style={{
+          padding: '32px 24px',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          textAlign: 'center',
+          gap: 12,
+        }}
+      >
+        <span
+          className="icon-tile"
+          style={{ width: 76, height: 76, borderRadius: 26, background: 'var(--sky-soft)', color: 'var(--sky-ink)' }}
+        >
+          <span className="ms fill" style={{ fontSize: 40 }} aria-hidden="true">
+            location_on
+          </span>
+        </span>
+        <h1 className="page-h1" style={{ marginTop: 6 }}>
+          {t('offline_lesson_title')}
+        </h1>
+        <p className="page-sub" style={{ margin: 0, maxWidth: 300 }}>
+          {t(isTeacher ? 'offline_lesson_sub_teacher' : 'offline_lesson_sub_student')}
+        </p>
+        <Button leadingIcon="arrow_back" onClick={() => navigate(-1)} style={{ marginTop: 12 }}>
+          {t('back')}
+        </Button>
+      </div>
+    </div>
+  )
+}
+
+function LiveRoom() {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const { id } = useParams<{ id: string }>()

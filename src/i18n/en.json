@@ -508,5 +508,10 @@
   "live_status_unavailable": "Live video unavailable in preview mode. Open from a real lesson to connect.",
   "live_status_error": "Could not connect to the lesson room.",
   "live_status_disconnected": "Call ended.",
-  "live_elapsed": "Live · {{time}}"
+  "live_elapsed": "Live · {{time}}",
+  "in_person": "In person",
+  "offline_lesson_title": "This lesson is in person",
+  "offline_lesson_sub_student": "No video call for this one — meet your teacher at the agreed place.",
+  "offline_lesson_sub_teacher": "In-person lessons are started and completed in the web portal.",
+  "start_in_portal": "Start in portal"
 }

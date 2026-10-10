@@ -79,6 +79,8 @@ export interface Lesson {
   maxParticipants: number | null
   students: LessonStudent[]
   startedAt: string | null
+  /** In-person lesson: no video room; `video-token` returns 409 LESSON_OFFLINE. */
+  offline: boolean
   pendingReschedule?: PendingReschedule | null
   /** Teacher-only; null for students. */
   rawNotes?: string | null
@@ -89,7 +91,8 @@ export interface Lesson {
 
 export interface StartLessonResponse {
   document: unknown
-  videoRoom: VideoAccess
+  /** Null for offline (in-person) lessons. */
+  videoRoom: VideoAccess | null
 }
 
 export interface LessonPage {

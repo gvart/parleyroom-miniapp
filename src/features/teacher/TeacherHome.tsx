@@ -6,7 +6,7 @@ import { useLessons } from '@/hooks/useLessons'
 import { useUsers } from '@/hooks/useCreateLesson'
 import { useNotifications } from '@/hooks/useNotifications'
 import { useAcceptLesson, useCancelLesson } from '@/hooks/useLessonActions'
-import { Avatar, Button, Card, EmptyState, PageHeader, Pill, Section, StatChip } from '@/ui'
+import { Avatar, Button, Card, EmptyState, InPersonPill, PageHeader, Pill, Section, StatChip } from '@/ui'
 import { isClub, lessonDate, lessonTime, todayISO } from '@/lib/lesson'
 import type { Lesson, UserProfile } from '@/api/types'
 
@@ -45,7 +45,8 @@ export function TeacherHome() {
     [all, today],
   )
   const requests = useMemo(() => all.filter((l) => l.status === 'REQUEST'), [all])
-  const live = todayLessons.find((l) => l.status === 'IN_PROGRESS')
+  // The live card is a video-call shortcut — in-person lessons have no room.
+  const live = todayLessons.find((l) => l.status === 'IN_PROGRESS' && !l.offline)
   const students = useMemo(
     () => (usersQuery.data?.users ?? []).filter((u) => u.role === 'STUDENT').slice(0, 8),
     [usersQuery.data],
@@ -354,12 +355,22 @@ function TimelineRow({ lesson, onClick }: TimelineRowProps) {
             ? `${lesson.students.length}${lesson.maxParticipants ? `/${lesson.maxParticipants}` : ''} · ${lesson.topic}`
             : lesson.topic}
         </div>
+        {lesson.offline && (
+          <div style={{ marginTop: 4 }}>
+            <InPersonPill />
+          </div>
+        )}
       </div>
       {live ? (
         <Pill tone="live">
           <span className="live-dot" />
           {t('live')}
         </Pill>
+      ) : startable && lesson.offline ? (
+        // In-person lessons are started from the web portal, not via video here.
+        <span style={{ fontSize: 'var(--text-caption)', fontWeight: 700, color: 'var(--ink-3)', flexShrink: 0 }}>
+          {t('start_in_portal')}
+        </span>
       ) : startable ? (
         <Button
           size="sm"

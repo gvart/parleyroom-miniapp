@@ -508,5 +508,10 @@
   "live_status_unavailable": "Live-Video im Vorschaumodus nicht verfügbar. Öffne eine echte Stunde, um dich zu verbinden.",
   "live_status_error": "Verbindung zum Stundenraum konnte nicht hergestellt werden.",
   "live_status_disconnected": "Anruf beendet.",
-  "live_elapsed": "Live · {{time}}"
+  "live_elapsed": "Live · {{time}}",
+  "in_person": "Vor Ort",
+  "offline_lesson_title": "Diese Stunde findet vor Ort statt",
+  "offline_lesson_sub_student": "Kein Videoanruf nötig — triff deine Lehrkraft am vereinbarten Ort.",
+  "offline_lesson_sub_teacher": "Präsenzstunden werden im Webportal gestartet und abgeschlossen.",
+  "start_in_portal": "Im Portal starten"
 }

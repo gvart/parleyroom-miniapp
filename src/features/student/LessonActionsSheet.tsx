@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/auth/AuthGate'
-import { Banner, Button, Pill, Sheet } from '@/ui'
+import { Banner, Button, InPersonPill, Pill, Sheet } from '@/ui'
 import {
   useAcceptReschedule,
   useCancelLesson,
@@ -47,7 +47,8 @@ export function LessonActionsSheet({ open, lesson, onClose }: Props) {
   const canReschedule = lesson.status === 'CONFIRMED' && !pendingReschedule
   const canCancel =
     lesson.status !== 'CANCELLED' && lesson.status !== 'COMPLETED'
-  const canJoinLive = lesson.status === 'IN_PROGRESS'
+  // Offline (in-person) lessons have no video room to join.
+  const canJoinLive = lesson.status === 'IN_PROGRESS' && !lesson.offline
 
   async function handleJoin() {
     if (!lesson) return
@@ -111,6 +112,7 @@ export function LessonActionsSheet({ open, lesson, onClose }: Props) {
               </Pill>
             )}
             {club && <Pill tone="violet">{t(clubLabelKey(lesson) ?? '')}</Pill>}
+            {lesson.offline && <InPersonPill />}
             {lesson.pendingReschedule && <Pill tone="warn">{t('reschedule_pending')}</Pill>}
             {enrolled && club && <Pill tone="accent">{t('pill_joined')}</Pill>}
           </div>
