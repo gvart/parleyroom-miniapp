@@ -1,0 +1,33 @@
+src/features/student/homework/HomeworkItems.tsx
+  s_70e7ee9f92bd28::t_1139665ed294ff 6
+src/features/student/homework/answer/MediaAnswer.tsx
+  s_70e7ee9f92bd28::t_c1078e9132285d 6
+src/features/student/homework/answer/ReadOnlyBlock.tsx
+  s_70e7ee9f92bd28::t_79c1c3f24fbb8a 3
+src/features/teacher/StudentProfile.tsx
+  s_70e7ee9f92bd28::t_98549357037b40 109
+src/features/teacher/Students.tsx
+  s_70e7ee9f92bd28::t_a0b3f571ce8e92 76
+src/features/teacher/TeacherHome.tsx
+  s_70e7ee9f92bd28::t_29224b2f27ac49 193
+src/lib/authedFile.ts
+  s_70e7ee9f92bd28::t_1a109c31afc32d 7-8,16-20
+src/ui/Avatar.tsx
+  s_70e7ee9f92bd28::t_8fe4685c296815 1-3,20-28,36,46,53,55,57
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "9626c208dbca32a0e45dc68b7ee4c522fd1428c9",
+  "prompts": {},
+  "sessions": {
+    "s_70e7ee9f92bd28": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "015a4b79-1a93-4081-8a97-5e5a60d7eb05",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Vladlen Gladis <vladlen.gladis@deliveryhero.com>"
+    }
+  }
+}
