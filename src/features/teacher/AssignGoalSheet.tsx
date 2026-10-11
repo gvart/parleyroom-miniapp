@@ -2,6 +2,7 @@ import { useEffect, useState, type FormEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Banner, Button, Sheet, SuccessState, TextField } from '@/ui'
 import { useCreateGoal } from '@/hooks/useGoals'
+import { errorMessage } from '@/lib/errors'
 
 interface Props {
   open: boolean
@@ -88,7 +89,7 @@ export function AssignGoalSheet({ open, studentId, studentName, onClose, onDone 
           {create.error && (
             <div style={{ marginBottom: 12 }}>
               <Banner tone="error">
-                {create.error instanceof Error ? create.error.message : t('assign_failed')}
+                {errorMessage(create.error, t, 'assign_failed')}
               </Banner>
             </div>
           )}

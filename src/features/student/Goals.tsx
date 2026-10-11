@@ -13,6 +13,7 @@ import {
   useUpdateGoalProgress,
 } from '@/hooks/useGoals'
 import type { Goal } from '@/api/types'
+import { errorMessage } from '@/lib/errors'
 
 const TONES: Tone[] = ['leaf', 'grape', 'sunny', 'coral', 'sky', 'accent']
 const PROGRESS_STEPS = [0, 25, 50, 75, 100] as const
@@ -153,7 +154,7 @@ function GoalCard({ goal, tone }: { goal: Goal; tone: Tone }) {
 
           {anyError && (
             <Banner tone="error">
-              {anyError instanceof Error ? anyError.message : t('action_failed')}
+              {errorMessage(anyError, t, 'action_failed')}
             </Banner>
           )}
 
@@ -293,7 +294,7 @@ function NewGoalSheet({ open, onClose, onCreated }: NewGoalProps) {
         {create.error && (
           <div style={{ marginBottom: 12 }}>
             <Banner tone="error">
-              {create.error instanceof Error ? create.error.message : t('create_failed')}
+              {errorMessage(create.error, t, 'create_failed')}
             </Banner>
           </div>
         )}

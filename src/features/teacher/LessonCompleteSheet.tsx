@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { Banner, Button, Sheet, SuccessState, TextArea } from '@/ui'
 import { useCompleteLesson, useUpdateLessonContent } from '@/hooks/useLessonActions'
 import type { Lesson } from '@/api/types'
+import { errorMessage } from '@/lib/errors'
 
 interface Props {
   open: boolean
@@ -85,7 +86,7 @@ export function LessonCompleteSheet({ open, lesson, onClose, onDone }: Props) {
           {error && (
             <div style={{ marginBottom: 12 }}>
               <Banner tone="error">
-                {error instanceof Error ? error.message : t('complete_failed')}
+                {errorMessage(error, t, 'complete_failed')}
               </Banner>
             </div>
           )}

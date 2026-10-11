@@ -5,6 +5,7 @@ import { useAuth } from '@/auth/AuthGate'
 import { Avatar, Banner, Button, Card, ScreenHeader } from '@/ui'
 import { useUpdateProfile } from '@/hooks/useUpdateProfile'
 import { useDeleteAvatar, useUploadAvatar } from '@/hooks/useAvatar'
+import { errorMessage } from '@/lib/errors'
 
 export function ProfileEdit() {
   const { t } = useTranslation()
@@ -33,7 +34,7 @@ export function ProfileEdit() {
       await uploadAvatar.mutateAsync(file)
       await refreshUser()
     } catch (err) {
-      setAvatarError(err instanceof Error ? err.message : t('upload_failed'))
+      setAvatarError(errorMessage(err, t, 'upload_failed'))
     }
   }
 
@@ -43,7 +44,7 @@ export function ProfileEdit() {
       await deleteAvatar.mutateAsync()
       await refreshUser()
     } catch (err) {
-      setAvatarError(err instanceof Error ? err.message : t('remove_failed'))
+      setAvatarError(errorMessage(err, t, 'remove_failed'))
     }
   }
 
@@ -166,9 +167,7 @@ export function ProfileEdit() {
 
         {updateProfile.error && (
           <Banner tone="error" style={{ marginTop: 12 }}>
-            {updateProfile.error instanceof Error
-              ? updateProfile.error.message
-              : t('save_failed')}
+            {errorMessage(updateProfile.error, t, 'save_failed')}
           </Banner>
         )}
 

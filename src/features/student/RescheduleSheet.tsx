@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { useQueryClient } from '@tanstack/react-query'
 import { Banner, Button, Sheet, SuccessState, TextArea } from '@/ui'
 import { useRequestReschedule } from '@/hooks/useLessonActions'
-import { hasErrorCode } from '@/lib/errors'
+import { errorMessage, hasErrorCode } from '@/lib/errors'
 import { lessonDate, lessonTime } from '@/lib/lesson'
 import { formatShortDate } from '@/lib/intl'
 import { SlotPicker } from './SlotPicker'
@@ -116,9 +116,7 @@ export function RescheduleSheet({ open, lesson, onClose, onDone }: Props) {
               <Banner tone="error">
                 {hasErrorCode(request.error, ...AVAILABILITY_ERROR_CODES)
                   ? t('slot_unavailable_error')
-                  : request.error instanceof Error
-                    ? request.error.message
-                    : t('reschedule_failed')}
+                  : errorMessage(request.error, t, 'reschedule_failed')}
               </Banner>
             </div>
           )}

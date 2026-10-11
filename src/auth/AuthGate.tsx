@@ -16,6 +16,7 @@ import type { UserProfile } from '@/api/types'
 import i18n, { DEFAULT_LOCALE, normalizeLocale } from '@/i18n'
 import { FirstRunLocalePicker } from '@/features/shared/FirstRunLocalePicker'
 import { Button } from '@/ui'
+import { errorMessage } from '@/lib/errors'
 
 const TOKEN_KEY = 'parleyroom.access'
 
@@ -92,7 +93,7 @@ export function AuthGate({ children }: { children: ReactNode }) {
         }
         setStatus({
           kind: 'error',
-          message: err instanceof Error ? err.message : t('unknown_error'),
+          message: errorMessage(err, t, 'unknown_error'),
         })
       }
     }
@@ -271,7 +272,7 @@ function LinkForm({ rawInitData, isSubmitting, onStart, onError, onSuccess }: Li
       const user = await api.me()
       onSuccess(auth.accessToken, user)
     } catch (err) {
-      onError(err instanceof Error ? err.message : t('link_failed'))
+      onError(errorMessage(err, t, 'link_failed'))
     }
   }
 

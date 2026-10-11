@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { Banner, Button, Card, ScreenHeader } from '@/ui'
 import { useChangePassword } from '@/hooks/usePasswordChange'
+import { errorMessage } from '@/lib/errors'
 
 function strengthOf(p: string): number {
   let s = 0
@@ -168,7 +169,7 @@ export function ChangePassword() {
 
         {change.error && (
           <Banner tone="error" style={{ marginTop: 12 }}>
-            {change.error instanceof Error ? change.error.message : t('update_failed')}
+            {errorMessage(change.error, t, 'update_failed')}
           </Banner>
         )}
 

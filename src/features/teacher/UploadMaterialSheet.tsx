@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { Banner, Button, Sheet } from '@/ui'
 import { useCreateMaterial } from '@/hooks/useCreateMaterial'
 import type { MaterialType } from '@/api/types'
+import { errorMessage } from '@/lib/errors'
 
 const TYPES: Array<{ key: MaterialType; labelKey: string; accept: string }> = [
   { key: 'PDF', labelKey: 'pdf', accept: 'application/pdf' },
@@ -75,7 +76,7 @@ export function UploadMaterialSheet({ open, onClose }: Props) {
       })
       onClose()
     } catch (err) {
-      setError(err instanceof Error ? err.message : t('upload_failed'))
+      setError(errorMessage(err, t, 'upload_failed'))
     }
   }
 
