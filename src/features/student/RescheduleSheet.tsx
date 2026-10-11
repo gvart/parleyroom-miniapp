@@ -92,7 +92,7 @@ export function RescheduleSheet({ open, lesson, onClose, onDone }: Props) {
 
           <div style={{ marginBottom: 18 }}>
             <SlotPicker
-              teacherId={lesson.teacherId}
+              teacherId={lesson.teacherId ?? undefined}
               date={date}
               onDateChange={changeDate}
               durationMinutes={lesson.durationMinutes}

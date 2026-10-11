@@ -347,6 +347,7 @@
   "settings_group_privacy": "Datenschutz",
   "edit_profile": "Profil bearbeiten",
   "role_teacher": "Lehrer",
+  "former_teacher": "Ehemalige Lehrkraft",
   "role_student": "Schüler",
   "level_label_value": "Niveau {{level}}",
   "learning_german": "Lernt Deutsch",
@@ -553,5 +554,9 @@
   "error_code_CLUB_FULL": "Dieser Club ist ausgebucht.",
   "error_code_NOT_TEACHERS_STUDENT": "Nur Lernende dieser Lehrkraft können dem Club beitreten.",
   "error_code_AVATAR_INVALID": "Es werden nur JPG-, PNG-, WebP- oder GIF-Bilder bis 5 MB unterstützt.",
-  "error_code_FILE_TOO_LARGE": "Die Datei ist zu groß."
+  "error_code_FILE_TOO_LARGE": "Die Datei ist zu groß.",
+  "error_code_LESSON_WITHOUT_TEACHER": "Diese Stunde hat keine Lehrkraft mehr, deshalb ist das nicht möglich.",
+  "error_code_VOCAB_ENTRY_WITHOUT_TEACHER": "Dieses Wort hat keine Lehrkraft mehr und kann nicht geändert werden.",
+  "error_code_FOLDER_WITHOUT_TEACHER": "Dieser Ordner hat keine Lehrkraft mehr und kann nicht geändert werden.",
+  "error_code_MATERIAL_WITHOUT_TEACHER": "Dieses Material hat keine Lehrkraft mehr und kann nicht geändert werden."
 }

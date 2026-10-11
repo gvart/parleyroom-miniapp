@@ -347,6 +347,7 @@
   "settings_group_privacy": "Privacy",
   "edit_profile": "Edit profile",
   "role_teacher": "Teacher",
+  "former_teacher": "Former teacher",
   "role_student": "Student",
   "level_label_value": "Level {{level}}",
   "learning_german": "Learning German",
@@ -553,5 +554,9 @@
   "error_code_CLUB_FULL": "This club is full.",
   "error_code_NOT_TEACHERS_STUDENT": "Only your teacher's students can join this club.",
   "error_code_AVATAR_INVALID": "Only JPG, PNG, WebP or GIF images up to 5 MB are supported.",
-  "error_code_FILE_TOO_LARGE": "The file is too large."
+  "error_code_FILE_TOO_LARGE": "The file is too large.",
+  "error_code_LESSON_WITHOUT_TEACHER": "This lesson no longer has a teacher, so that isn't possible.",
+  "error_code_VOCAB_ENTRY_WITHOUT_TEACHER": "This word no longer has a teacher, so it can't be changed.",
+  "error_code_FOLDER_WITHOUT_TEACHER": "This folder no longer has a teacher, so it can't be changed.",
+  "error_code_MATERIAL_WITHOUT_TEACHER": "This material no longer has a teacher, so it can't be changed."
 }

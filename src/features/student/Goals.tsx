@@ -97,7 +97,13 @@ function GoalCard({ goal, tone }: { goal: Goal; tone: Tone }) {
   return (
     <Card style={{ marginBottom: 10, position: 'relative' }}>
       <div style={{ display: 'flex', gap: 14, alignItems: 'center' }}>
-        <Ring value={goal.progress} size={58} stroke={5} tone={tone} label={`${goal.progress}%`} />
+        <Ring
+          value={goal.progress ?? 0}
+          size={58}
+          stroke={5}
+          tone={tone}
+          label={goal.progress == null ? '—' : `${goal.progress}%`}
+        />
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ fontSize: 'var(--text-card-title)', fontWeight: 700, marginBottom: 3 }}>
             {goal.description}
@@ -135,7 +141,7 @@ function GoalCard({ goal, tone }: { goal: Goal; tone: Tone }) {
             </div>
             <div className="seg">
               {PROGRESS_STEPS.map((p) => {
-                const active = Math.abs(goal.progress - p) < 5
+                const active = goal.progress != null && Math.abs(goal.progress - p) < 5
                 return (
                   <button
                     key={p}

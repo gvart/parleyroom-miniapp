@@ -353,6 +353,7 @@
   "settings_group_privacy": "Приватность",
   "edit_profile": "Редактировать профиль",
   "role_teacher": "Преподаватель",
+  "former_teacher": "Бывший преподаватель",
   "role_student": "Ученик",
   "level_label_value": "Уровень {{level}}",
   "learning_german": "Изучает немецкий",
@@ -559,5 +560,9 @@
   "error_code_CLUB_FULL": "В этом клубе нет свободных мест.",
   "error_code_NOT_TEACHERS_STUDENT": "Вступить в клуб могут только ученики этого преподавателя.",
   "error_code_AVATAR_INVALID": "Поддерживаются только изображения JPG, PNG, WebP или GIF до 5 МБ.",
-  "error_code_FILE_TOO_LARGE": "Файл слишком большой."
+  "error_code_FILE_TOO_LARGE": "Файл слишком большой.",
+  "error_code_LESSON_WITHOUT_TEACHER": "У этого урока больше нет преподавателя, поэтому это невозможно.",
+  "error_code_VOCAB_ENTRY_WITHOUT_TEACHER": "У этого слова больше нет преподавателя, его нельзя изменить.",
+  "error_code_FOLDER_WITHOUT_TEACHER": "У этой папки больше нет преподавателя, её нельзя изменить.",
+  "error_code_MATERIAL_WITHOUT_TEACHER": "У этого материала больше нет преподавателя, его нельзя изменить."
 }

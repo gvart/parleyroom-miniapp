@@ -135,7 +135,7 @@ function LiveRoom() {
     : 0
 
   const teacher = lesson?.teacher
-  const teacherName = teacher ? `${teacher.firstName} ${teacher.lastName}` : ''
+  const teacherName = teacher ? `${teacher.firstName} ${teacher.lastName}` : lesson ? t('former_teacher') : ''
   const teacherInitials = teacher
     ? `${teacher.firstName[0] ?? ''}${teacher.lastName[0] ?? ''}`.toUpperCase()
     : ''

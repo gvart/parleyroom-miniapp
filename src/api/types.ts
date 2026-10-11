@@ -62,7 +62,8 @@ export interface LessonTeacher {
 export interface PendingReschedule {
   newScheduledAt: string
   note: string | null
-  requestedBy: string
+  /** Null when the requester (a since-deleted teacher) is gone. */
+  requestedBy: string | null
 }
 
 export interface Lesson {
@@ -72,8 +73,9 @@ export interface Lesson {
   type: LessonType
   scheduledAt: string
   durationMinutes: number
-  teacherId: string
-  teacher: LessonTeacher
+  /** Null after the teacher was deleted; teacher-only actions then 409 LESSON_WITHOUT_TEACHER. */
+  teacherId: string | null
+  teacher: LessonTeacher | null
   status: LessonStatus
   level: Level | null
   maxParticipants: number | null
@@ -84,7 +86,7 @@ export interface Lesson {
   pendingReschedule?: PendingReschedule | null
   /** Teacher-only; null for students. */
   rawNotes?: string | null
-  createdBy: string
+  createdBy: string | null
   createdAt: string
   updatedAt: string
 }
@@ -491,7 +493,8 @@ export interface HomeworkSummary {
   attempt: number
   itemCount: number
   student: PersonRef
-  teacher: PersonRef
+  /** Null after the teacher was deleted. */
+  teacher: PersonRef | null
   answeredUnits: number
   totalUnits: number
   lastSavedAt: string | null
@@ -644,7 +647,8 @@ export interface Goal {
   studentId: string
   teacherId: string | null
   description: string
-  progress: number
+  /** Null when the goal has no teacher any more and progress can't be computed. */
+  progress: number | null
   setBy: GoalSetBy
   targetDate: string | null
   status: GoalStatus
@@ -671,7 +675,7 @@ export type MaterialSkill = 'SPEAKING' | 'LISTENING' | 'READING' | 'WRITING' | '
 
 export interface Material {
   id: string
-  teacherId: string
+  teacherId: string | null
   folderId: string | null
   name: string
   type: MaterialType
@@ -692,7 +696,7 @@ export interface MaterialPage {
 
 export interface MaterialFolder {
   id: string
-  teacherId: string
+  teacherId: string | null
   parentFolderId: string | null
   name: string
   materialCount: number
@@ -709,7 +713,7 @@ export interface FolderTreeNode {
 
 export interface LessonMaterial {
   material: Material
-  attachedBy: string
+  attachedBy: string | null
   attachedAt: string
 }
 

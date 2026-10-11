@@ -231,7 +231,7 @@ export function Home() {
                 }}
               >
                 <Ring
-                  value={g.progress}
+                  value={g.progress ?? 0}
                   size={44}
                   stroke={5}
                   tone={GOAL_TONES[i % GOAL_TONES.length]}
@@ -250,7 +250,7 @@ export function Home() {
                     {g.description}
                   </div>
                   <div style={{ fontSize: 'var(--text-caption)', fontWeight: 700, color: 'var(--ink-2)', marginTop: 2 }}>
-                    {g.progress}%
+                    {g.progress == null ? '—' : `${g.progress}%`}
                   </div>
                 </div>
               </div>

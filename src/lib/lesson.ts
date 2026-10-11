@@ -61,6 +61,11 @@ export function isLessonParticipant(lesson: Lesson, userId: string): boolean {
   return lesson.teacherId === userId || lesson.students.some((s) => s.id === userId)
 }
 
+/** Teacher's first name, or "Former teacher" once the teacher was deleted. */
+export function teacherFirstName(lesson: Lesson, t: TFunction): string {
+  return lesson.teacher ? lesson.teacher.firstName : t('former_teacher')
+}
+
 export function isClub(lesson: Lesson): boolean {
   return lesson.type !== 'ONE_ON_ONE'
 }
