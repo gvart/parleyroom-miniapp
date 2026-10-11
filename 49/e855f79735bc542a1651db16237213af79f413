@@ -1,0 +1,19 @@
+src/hooks/useLiveKit.ts
+  s_70e7ee9f92bd28::t_d540a571cd9594 87,178
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "49e855f79735bc542a1651db16237213af79f413",
+  "prompts": {},
+  "sessions": {
+    "s_70e7ee9f92bd28": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "015a4b79-1a93-4081-8a97-5e5a60d7eb05",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Vladlen Gladis <vladlen.gladis@deliveryhero.com>"
+    }
+  }
+}
