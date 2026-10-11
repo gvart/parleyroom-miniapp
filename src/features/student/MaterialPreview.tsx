@@ -5,17 +5,11 @@ import type { Material } from '@/api/types'
 import { API_BASE, ApiError, getApiToken } from '@/api/client'
 import { errorMessage } from '@/lib/errors'
 import { Banner, Button } from '@/ui'
+import { formatFileSize } from '@/lib/intl'
 
 interface Props {
   material: Material
   onClose: () => void
-}
-
-function bytesToLabel(bytes: number | null): string {
-  if (!bytes) return ''
-  if (bytes < 1024) return `${bytes} B`
-  if (bytes < 1024 * 1024) return `${Math.round(bytes / 1024)} KB`
-  return `${(bytes / 1024 / 1024).toFixed(1)} MB`
 }
 
 /**
@@ -85,7 +79,7 @@ export function MaterialPreview({ material, onClose }: Props) {
         </div>
         <div style={{ fontSize: 'var(--text-small)', color: 'var(--ink-2)', marginTop: 4 }}>
           {t(material.type.toLowerCase())}
-          {material.fileSize ? ` · ${bytesToLabel(material.fileSize)}` : ''}
+          {material.fileSize ? ` · ${formatFileSize(material.fileSize)}` : ''}
           {material.level ? ` · ${material.level}` : ''}
           {material.skill ? ` · ${t(material.skill.toLowerCase())}` : ''}
         </div>

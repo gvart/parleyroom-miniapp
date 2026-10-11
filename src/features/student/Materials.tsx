@@ -5,6 +5,7 @@ import { Card, EmptyState, PageHeader, Pill, Sheet, type Tone, TONE_VARS } from 
 import { useFolderTree } from '@/hooks/useMaterialFolders'
 import { useMaterials } from '@/hooks/useMaterials'
 import type { FolderTreeNode, Material, MaterialFolder, MaterialType } from '@/api/types'
+import { formatFileSize } from '@/lib/intl'
 import { MaterialPreview } from './MaterialPreview'
 
 const TYPE_TONE: Record<MaterialType, Tone> = {
@@ -19,13 +20,6 @@ const TYPE_ICON: Record<MaterialType, string> = {
   AUDIO: 'graphic_eq',
   VIDEO: 'play_circle',
   LINK: 'link',
-}
-
-function bytesToLabel(bytes: number | null): string {
-  if (!bytes) return ''
-  if (bytes < 1024) return `${bytes} B`
-  if (bytes < 1024 * 1024) return `${Math.round(bytes / 1024)} KB`
-  return `${(bytes / 1024 / 1024).toFixed(1)} MB`
 }
 
 function flattenTree(nodes: FolderTreeNode[]): MaterialFolder[] {
@@ -272,7 +266,7 @@ export function StudentMaterials() {
                       letterSpacing: '0.06em',
                     }}
                   >
-                    {m.fileSize ? bytesToLabel(m.fileSize) : t(m.type.toLowerCase())}
+                    {m.fileSize ? formatFileSize(m.fileSize) : t(m.type.toLowerCase())}
                     {m.level ? ` · ${m.level}` : ''}
                   </div>
                 </div>
