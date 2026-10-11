@@ -1,5 +1,6 @@
 import { Component, type ErrorInfo, type ReactNode } from 'react'
 import i18n from '@/i18n'
+import { errorMessage } from '@/lib/errors'
 
 interface State {
   error: Error | null
@@ -43,7 +44,7 @@ export class ErrorBoundary extends Component<{ children: ReactNode }, State> {
           </span>
           <div className="section-title">{i18n.t('something_went_wrong')}</div>
           <div style={{ fontSize: 'var(--text-small)', color: 'var(--ink-2)', maxWidth: 280 }}>
-            {this.state.error.message}
+            {errorMessage(this.state.error, i18n.t)}
           </div>
           <button
             type="button"

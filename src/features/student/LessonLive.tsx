@@ -316,11 +316,6 @@ function LiveRoom() {
             }}
           >
             {banner}
-            {live.errorMessage && (
-              <div style={{ marginTop: 6, fontSize: 'var(--text-caption)', fontWeight: 400, color: 'var(--ink-2)' }}>
-                {live.errorMessage}
-              </div>
-            )}
           </div>
         )}
 

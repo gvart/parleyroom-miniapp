@@ -5,7 +5,7 @@ import { useAuth } from '@/auth/AuthGate'
 import { Banner, Button, Sheet, SuccessState, TextField } from '@/ui'
 import { useCreateLesson, useUsers } from '@/hooks/useCreateLesson'
 import { useLessons } from '@/hooks/useLessons'
-import { hasErrorCode } from '@/lib/errors'
+import { errorMessage, hasErrorCode } from '@/lib/errors'
 import { DEFAULT_LESSON_DURATION, LESSON_DURATIONS, lessonDate, todayISO } from '@/lib/lesson'
 import { SlotPicker } from './SlotPicker'
 import type { AvailableSlot, LessonType } from '@/api/types'
@@ -405,9 +405,7 @@ export function BookLessonSheet({ open, onClose, defaultDate, initialSlot }: Boo
               <Banner tone="error">
                 {!isTeacher && hasErrorCode(create.error, ...AVAILABILITY_ERROR_CODES)
                   ? t('slot_unavailable_error')
-                  : create.error instanceof Error
-                    ? create.error.message
-                    : t('booking_failed')}
+                  : errorMessage(create.error, t, 'booking_failed')}
               </Banner>
             </div>
           )}

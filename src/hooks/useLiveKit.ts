@@ -22,7 +22,6 @@ export type LiveKitStatus =
 
 export interface UseLiveKitResult {
   status: LiveKitStatus
-  errorMessage: string | null
   room: Room | null
   remoteParticipant: RemoteParticipant | null
   localVideoTrack: LocalVideoTrack | null
@@ -42,7 +41,6 @@ function isMockUrl(url: string): boolean {
 
 export function useLiveKit(lessonId: string | undefined): UseLiveKitResult {
   const [status, setStatus] = useState<LiveKitStatus>('idle')
-  const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [remoteParticipant, setRemoteParticipant] = useState<RemoteParticipant | null>(null)
   const [localVideoTrack, setLocalVideoTrack] = useState<LocalVideoTrack | null>(null)
   const [remoteVideoTrack, setRemoteVideoTrack] = useState<RemoteTrack | null>(null)
@@ -66,7 +64,6 @@ export function useLiveKit(lessonId: string | undefined): UseLiveKitResult {
 
     async function bootstrap() {
       setStatus('fetching-token')
-      setErrorMessage(null)
 
       const lk = await import('livekit-client')
       if (cancelled) return
@@ -87,8 +84,8 @@ export function useLiveKit(lessonId: string | undefined): UseLiveKitResult {
             if (cancelled) return
             continue
           }
+          console.error('[miniapp] LiveKit token request failed', err)
           setStatus('error')
-          setErrorMessage(err instanceof Error ? err.message : 'Token request failed')
           return
         }
       }
@@ -96,9 +93,6 @@ export function useLiveKit(lessonId: string | undefined): UseLiveKitResult {
 
       if (isMockUrl(access.url)) {
         setStatus('unavailable')
-        setErrorMessage(
-          'Mock backend in use. Real LiveKit room not reachable from preview.',
-        )
         return
       }
 
@@ -181,7 +175,7 @@ export function useLiveKit(lessonId: string | undefined): UseLiveKitResult {
         } else {
           setStatus('error')
         }
-        setErrorMessage(err instanceof Error ? err.message : 'Connection failed')
+        console.error('[miniapp] LiveKit connection failed', err)
       }
     }
 
@@ -241,7 +235,6 @@ export function useLiveKit(lessonId: string | undefined): UseLiveKitResult {
 
   return {
     status,
-    errorMessage,
     room: roomRef.current,
     remoteParticipant,
     localVideoTrack,

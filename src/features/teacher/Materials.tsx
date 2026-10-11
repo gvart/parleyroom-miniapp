@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { Card, EmptyState, PageHeader, Pill, Sheet, type Tone, TONE_VARS } from '@/ui'
 import { useMaterials } from '@/hooks/useMaterials'
 import type { Material, MaterialType } from '@/api/types'
+import { formatFileSize } from '@/lib/intl'
 import { UploadMaterialSheet } from './UploadMaterialSheet'
 
 const TYPE_TONE: Record<MaterialType, Tone> = {
@@ -17,13 +18,6 @@ const TYPE_ICON: Record<MaterialType, string> = {
   AUDIO: 'graphic_eq',
   VIDEO: 'play_circle',
   LINK: 'link',
-}
-
-function bytesToLabel(bytes: number | null): string {
-  if (!bytes) return ''
-  if (bytes < 1024) return `${bytes} B`
-  if (bytes < 1024 * 1024) return `${Math.round(bytes / 1024)} KB`
-  return `${(bytes / 1024 / 1024).toFixed(1)} MB`
 }
 
 export function Materials() {
@@ -135,7 +129,7 @@ export function Materials() {
                       letterSpacing: '0.06em',
                     }}
                   >
-                    {m.fileSize ? bytesToLabel(m.fileSize) : t(m.type.toLowerCase())}
+                    {m.fileSize ? formatFileSize(m.fileSize) : t(m.type.toLowerCase())}
                   </div>
                 </div>
               </Card>
@@ -151,7 +145,7 @@ export function Materials() {
               {openMaterial.name}
             </div>
             <div style={{ fontSize: 'var(--text-small)', color: 'var(--ink-2)', marginBottom: 18 }}>
-              {t(openMaterial.type.toLowerCase())} · {bytesToLabel(openMaterial.fileSize) || '—'}
+              {t(openMaterial.type.toLowerCase())} · {formatFileSize(openMaterial.fileSize) || '—'}
             </div>
             {openMaterial.downloadUrl ? (
               <a

@@ -2,19 +2,14 @@ import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { openLink } from '@telegram-apps/sdk-react'
 import type { Material } from '@/api/types'
-import { API_BASE, getApiToken } from '@/api/client'
+import { API_BASE, ApiError, getApiToken } from '@/api/client'
+import { errorMessage } from '@/lib/errors'
 import { Banner, Button } from '@/ui'
+import { formatFileSize } from '@/lib/intl'
 
 interface Props {
   material: Material
   onClose: () => void
-}
-
-function bytesToLabel(bytes: number | null): string {
-  if (!bytes) return ''
-  if (bytes < 1024) return `${bytes} B`
-  if (bytes < 1024 * 1024) return `${Math.round(bytes / 1024)} KB`
-  return `${(bytes / 1024 / 1024).toFixed(1)} MB`
 }
 
 /**
@@ -22,10 +17,10 @@ function bytesToLabel(bytes: number | null): string {
  * Blob URL suitable for <iframe>, <audio>, <video>, <img>. The caller is
  * responsible for revoking the URL on unmount (we do it here via cleanup).
  */
-function useAuthedObjectUrl(downloadUrl: string | null): { url: string | null; loading: boolean; error: string | null } {
+function useAuthedObjectUrl(downloadUrl: string | null): { url: string | null; loading: boolean; error: unknown } {
   const [url, setUrl] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const [error, setError] = useState<unknown>(null)
 
   useEffect(() => {
     if (!downloadUrl || !downloadUrl.startsWith('/api/')) {
@@ -44,14 +39,14 @@ function useAuthedObjectUrl(downloadUrl: string | null): { url: string | null; l
       headers: { Authorization: `Bearer ${token}` },
     })
       .then(async (r) => {
-        if (!r.ok) throw new Error(`HTTP ${r.status}`)
+        if (!r.ok) throw new ApiError(r.status, null)
         const blob = await r.blob()
         if (cancelled) return
         objectUrl = URL.createObjectURL(blob)
         setUrl(objectUrl)
       })
       .catch((e: unknown) => {
-        if (!cancelled) setError(e instanceof Error ? e.message : 'failed')
+        if (!cancelled) setError(e)
       })
       .finally(() => {
         if (!cancelled) setLoading(false)
@@ -84,13 +79,13 @@ export function MaterialPreview({ material, onClose }: Props) {
         </div>
         <div style={{ fontSize: 'var(--text-small)', color: 'var(--ink-2)', marginTop: 4 }}>
           {t(material.type.toLowerCase())}
-          {material.fileSize ? ` · ${bytesToLabel(material.fileSize)}` : ''}
+          {material.fileSize ? ` · ${formatFileSize(material.fileSize)}` : ''}
           {material.level ? ` · ${material.level}` : ''}
           {material.skill ? ` · ${t(material.skill.toLowerCase())}` : ''}
         </div>
       </div>
 
-      {error && <Banner tone="error">{error}</Banner>}
+      {error != null && <Banner tone="error">{errorMessage(error, t, 'preview_failed')}</Banner>}
 
       {isLink && material.downloadUrl && (
         <Button

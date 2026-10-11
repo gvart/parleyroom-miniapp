@@ -40,3 +40,18 @@ export function formatDurationShort(seconds: number): string {
             : [Math.round(minutes / 525_600), 'year']
   return new Intl.NumberFormat(activeIntlLocale(), { style: 'unit', unit, unitDisplay: 'short' }).format(value)
 }
+
+/** "1,5 МБ" / "1,5 MB" / "12 kB" — localized file size; '' for null/0. */
+export function formatFileSize(bytes: number | null): string {
+  if (!bytes) return ''
+  const [value, unit, digits]: [number, 'byte' | 'kilobyte' | 'megabyte', number] =
+    bytes < 1024 ? [bytes, 'byte', 0]
+      : bytes < 1024 * 1024 ? [Math.round(bytes / 1024), 'kilobyte', 0]
+        : [bytes / 1024 / 1024, 'megabyte', 1]
+  return new Intl.NumberFormat(activeIntlLocale(), {
+    style: 'unit',
+    unit,
+    minimumFractionDigits: digits,
+    maximumFractionDigits: digits,
+  }).format(value)
+}

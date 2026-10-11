@@ -13,6 +13,7 @@ import {
 import { clubLabelKey, isClub, lessonTime } from '@/lib/lesson'
 import { formatShortDate } from '@/lib/intl'
 import type { Lesson } from '@/api/types'
+import { errorMessage } from '@/lib/errors'
 import { RescheduleSheet } from './RescheduleSheet'
 
 interface Props {
@@ -139,9 +140,11 @@ export function LessonActionsSheet({ open, lesson, onClose }: Props) {
           {(join.error || cancel.error || acceptReschedule.error || rejectReschedule.error || withdrawReschedule.error) && (
             <div style={{ marginBottom: 12 }}>
               <Banner tone="error">
-                {(join.error ?? cancel.error ?? acceptReschedule.error ?? rejectReschedule.error ?? withdrawReschedule.error) instanceof Error
-                  ? ((join.error ?? cancel.error ?? acceptReschedule.error ?? rejectReschedule.error ?? withdrawReschedule.error) as Error).message
-                  : t('action_failed')}
+                {errorMessage(
+                  join.error ?? cancel.error ?? acceptReschedule.error ?? rejectReschedule.error ?? withdrawReschedule.error,
+                  t,
+                  'action_failed',
+                )}
               </Banner>
             </div>
           )}

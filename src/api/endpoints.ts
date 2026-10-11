@@ -51,7 +51,6 @@ export interface UpdateProfileRequest {
   nativeLanguage?: NativeLanguage | null
   /** Set together with `locale` to dismiss the first-run language picker. */
   confirmLocale?: true
-  level?: Level | null
 }
 
 export interface LessonsQuery {
