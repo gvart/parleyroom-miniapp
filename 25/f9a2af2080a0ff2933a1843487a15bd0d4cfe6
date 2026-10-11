@@ -1,0 +1,19 @@
+.github/workflows/ci.yml
+  s_70e7ee9f92bd28::t_1511e5707c71b1 26-28
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "25f9a2af2080a0ff2933a1843487a15bd0d4cfe6",
+  "prompts": {},
+  "sessions": {
+    "s_70e7ee9f92bd28": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "015a4b79-1a93-4081-8a97-5e5a60d7eb05",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Vladlen Gladis <vladlen.gladis@deliveryhero.com>"
+    }
+  }
+}
