@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.25.1](https://github.com/gvart/parleyroom-miniapp/compare/v1.25.0...v1.25.1) (2026-10-11)
+
+
+### Bug Fixes
+
+* **avatar:** load auth-protected avatar URLs through the API with the token ([#70](https://github.com/gvart/parleyroom-miniapp/issues/70)) ([4491162](https://github.com/gvart/parleyroom-miniapp/commit/4491162c1e850d91e752f6f8cbd7011ab4edd066))
+* **i18n:** remove level selector, clarify language picker, translate errors ([#68](https://github.com/gvart/parleyroom-miniapp/issues/68)) ([a87c651](https://github.com/gvart/parleyroom-miniapp/commit/a87c6517bacc873542bd74f27d5b3bc0140d081f))
+
 ## [1.25.0](https://github.com/gvart/parleyroom-miniapp/compare/v1.24.0...v1.25.0) (2026-10-10)
 
 
