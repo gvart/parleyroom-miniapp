@@ -1,12 +1,12 @@
 import { useCallback, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate, useParams } from 'react-router-dom'
-import { Avatar, Button, Card, Pill, Ring, Section, StatChip } from '@/ui'
+import { Avatar, Banner, Button, Card, Pill, Ring, Section, StatChip, type Tone } from '@/ui'
 import { useBackButton } from '@/hooks/useBackButton'
 import { useUsers } from '@/hooks/useCreateLesson'
 import { useLessons } from '@/hooks/useLessons'
 import { useHomework } from '@/hooks/useHomework'
-import { useGoals } from '@/hooks/useGoals'
+import { useDeleteGoal, useGoals, useSetGoalStatus } from '@/hooks/useGoals'
 import { useUpdateStudentNativeLanguage } from '@/hooks/useUpdateStudentNativeLanguage'
 import { hueFor, initialsOf } from './avatarHue'
 import { lessonTime, todayISO } from '@/lib/lesson'
@@ -14,13 +14,16 @@ import { goalPercent, goalPercentLabel, goalTitle } from '@/lib/goal'
 import { formatMonthYearFromIso, formatShortDate } from '@/lib/intl'
 import { AssignHomeworkSheet } from './AssignHomeworkSheet'
 import { AssignGoalSheet } from './AssignGoalSheet'
-import type { Lesson, NativeLanguage } from '@/api/types'
+import type { Goal, Lesson, NativeLanguage } from '@/api/types'
+import { errorMessage } from '@/lib/errors'
 
 const NATIVE_LANGUAGES: Array<{ key: NativeLanguage; labelKey: string }> = [
   { key: 'ru', labelKey: 'russian' },
   { key: 'uk', labelKey: 'ukrainian' },
   { key: 'en', labelKey: 'english' },
 ]
+
+const GOAL_TONES: Tone[] = ['leaf', 'grape', 'sunny', 'sky', 'coral']
 
 const HOMEWORK_STATUS_KEY: Record<string, string> = {
   OPEN: 'status_open',
@@ -90,7 +93,7 @@ export function StudentProfile() {
   const studentName = `${student.firstName} ${student.lastName}`.trim()
   const homework = homeworkQuery.data?.homework ?? []
   const activeHomework = homework.filter((h) => h.status !== 'DONE')
-  const goals = goalsQuery.data?.goals ?? []
+  const goals = goalsQuery.data ?? []
   const activeGoals = goals.filter((g) => g.status === 'ACTIVE')
 
   return (
@@ -223,29 +226,7 @@ export function StudentProfile() {
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             {activeGoals.map((g, i) => (
-              <Card key={g.id}>
-                <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-                  <Ring
-                    value={goalPercent(g) ?? 0}
-                    size={46}
-                    stroke={4}
-                    tone={(['leaf', 'grape', 'sunny', 'sky', 'coral'] as const)[i % 5]}
-                  />
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: 'var(--text-card-title)', fontWeight: 700 }}>{goalTitle(g, t)}</div>
-                    <div style={{ fontSize: 'var(--text-caption)', color: 'var(--ink-2)' }}>
-                      {g.setBy === 'TEACHER' ? t('set_by_teacher') : t('set_by_you')}
-                      {g.targetDate ? ` · ${formatShortDate(g.targetDate)}` : ''}
-                    </div>
-                  </div>
-                  <div
-                    className="font-headline"
-                    style={{ fontSize: 'var(--text-body)', color: 'var(--ink-2)', fontWeight: 900 }}
-                  >
-                    {goalPercentLabel(g)}
-                  </div>
-                </div>
-              </Card>
+              <GoalCard key={g.id} goal={g} tone={GOAL_TONES[i % GOAL_TONES.length]} />
             ))}
           </div>
         )}
@@ -320,8 +301,117 @@ export function StudentProfile() {
         open={assignGoalOpen}
         studentId={id ?? null}
         studentName={studentName}
+        defaultLevel={student.level ?? null}
         onClose={() => setAssignGoalOpen(false)}
       />
     </div>
+  )
+}
+
+/** Active goal with the teacher's actions: mark achieved, archive or delete. Progress is computed, never set. */
+function GoalCard({ goal, tone }: { goal: Goal; tone: Tone }) {
+  const { t } = useTranslation()
+  const setStatus = useSetGoalStatus()
+  const remove = useDeleteGoal()
+  const [menuOpen, setMenuOpen] = useState(false)
+  const [confirmDelete, setConfirmDelete] = useState(false)
+
+  const meta = [
+    goal.type === 'EXAM' ? goal.targetLevel : null,
+    goal.targetDate ? formatShortDate(goal.targetDate) : null,
+  ]
+    .filter(Boolean)
+    .join(' · ')
+  const anyError = setStatus.error ?? remove.error
+
+  return (
+    <Card>
+      <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+        <Ring value={goalPercent(goal) ?? 0} size={46} stroke={4} tone={tone} />
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ fontSize: 'var(--text-card-title)', fontWeight: 700 }}>{goalTitle(goal, t)}</div>
+          {meta && <div style={{ fontSize: 'var(--text-caption)', color: 'var(--ink-2)' }}>{meta}</div>}
+          {goal.progress.percent == null && (
+            <div style={{ fontSize: 'var(--text-caption)', color: 'var(--ink-3)', marginTop: 2 }}>
+              {t('goal_checklist_empty_teacher', { level: goal.targetLevel })}
+            </div>
+          )}
+        </div>
+        <div className="font-headline" style={{ fontSize: 'var(--text-body)', color: 'var(--ink-2)', fontWeight: 900 }}>
+          {goalPercentLabel(goal)}
+        </div>
+        <button
+          type="button"
+          onClick={() => setMenuOpen((m) => !m)}
+          className="ico-btn"
+          aria-label={t('more_options')}
+          aria-expanded={menuOpen}
+          style={{ width: 38, height: 38 }}
+        >
+          <span className="ms" style={{ fontSize: 20 }} aria-hidden="true">
+            more_horiz
+          </span>
+        </button>
+      </div>
+
+      {menuOpen && (
+        <div
+          style={{
+            marginTop: 12,
+            paddingTop: 12,
+            borderTop: '1px solid var(--hair)',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 10,
+          }}
+        >
+          {anyError && <Banner tone="error">{errorMessage(anyError, t, 'action_failed')}</Banner>}
+
+          {confirmDelete ? (
+            <Banner tone="error" icon="delete">
+              <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                <span style={{ flex: 1 }}>{t('delete_goal_confirm')}</span>
+                <Button size="sm" variant="danger" loading={remove.isPending} onClick={() => remove.mutate(goal.id)}>
+                  {t('delete')}
+                </Button>
+                <Button size="sm" variant="ghost" onClick={() => setConfirmDelete(false)}>
+                  {t('cancel_no')}
+                </Button>
+              </div>
+            </Banner>
+          ) : (
+            <div style={{ display: 'flex', gap: 8 }}>
+              <Button
+                size="sm"
+                variant="primary"
+                block
+                leadingIcon="emoji_events"
+                loading={setStatus.isPending && setStatus.variables?.status === 'ACHIEVED'}
+                disabled={setStatus.isPending}
+                onClick={() => setStatus.mutate({ id: goal.id, status: 'ACHIEVED' })}
+              >
+                {t('goal_achieve')}
+              </Button>
+              <Button
+                size="sm"
+                variant="secondary"
+                block
+                leadingIcon="archive"
+                loading={setStatus.isPending && setStatus.variables?.status === 'ARCHIVED'}
+                disabled={setStatus.isPending}
+                onClick={() => setStatus.mutate({ id: goal.id, status: 'ARCHIVED' })}
+              >
+                {t('goal_archive')}
+              </Button>
+              <Button size="sm" variant="danger" aria-label={t('delete')} onClick={() => setConfirmDelete(true)}>
+                <span className="ms" style={{ fontSize: 18 }} aria-hidden="true">
+                  delete_outline
+                </span>
+              </Button>
+            </div>
+          )}
+        </div>
+      )}
+    </Card>
   )
 }

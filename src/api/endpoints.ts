@@ -7,7 +7,7 @@ import type {
   AvailableSlotsResponse,
   FolderTreeNode,
   Goal,
-  GoalPage,
+  GoalInput,
   GoalStatus,
   HomeworkCounts,
   HomeworkDetail,
@@ -232,22 +232,13 @@ export const api = {
     }),
 
   goals: (query: { studentId?: string; status?: GoalStatus } = {}) =>
-    apiFetch<GoalPage>(`/api/v1/goals${qs({ ...query })}`),
+    apiFetch<Goal[]>(`/api/v1/goals${qs({ ...query })}`),
 
-  createGoal: (body: { studentId: string; description: string; targetDate?: string | null }) =>
+  createGoal: (body: GoalInput) =>
     apiFetch<Goal>('/api/v1/goals', { method: 'POST', body }),
 
-  completeGoal: (id: string) =>
-    apiFetch<Goal>(`/api/v1/goals/${id}/complete`, { method: 'POST' }),
-
-  abandonGoal: (id: string) =>
-    apiFetch<Goal>(`/api/v1/goals/${id}/abandon`, { method: 'POST' }),
-
-  updateGoalProgress: (id: string, progress: number) =>
-    apiFetch<Goal>(`/api/v1/goals/${id}/progress`, {
-      method: 'PUT',
-      body: { progress },
-    }),
+  setGoalStatus: (id: string, status: GoalStatus) =>
+    apiFetch<Goal>(`/api/v1/goals/${id}`, { method: 'PATCH', body: { status } }),
 
   deleteGoal: (id: string) =>
     apiFetch<void>(`/api/v1/goals/${id}`, { method: 'DELETE' }),

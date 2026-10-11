@@ -1,28 +1,41 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Banner, Button, Sheet, SuccessState, TextField } from '@/ui'
+import { Banner, Button, FieldLabel, Segmented, Sheet, SuccessState, TextArea, TextField } from '@/ui'
 import { useCreateGoal } from '@/hooks/useGoals'
 import { errorMessage } from '@/lib/errors'
+import { todayISO } from '@/lib/lesson'
+import type { GoalType, Level } from '@/api/types'
+
+const LEVELS: Level[] = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2']
 
 interface Props {
   open: boolean
   studentId: string | null
   studentName?: string
+  /** The student's current level: the default target. */
+  defaultLevel: Level | null
   onClose: () => void
   onDone?: () => void
 }
 
-export function AssignGoalSheet({ open, studentId, studentName, onClose, onDone }: Props) {
+/** Teacher sets an exam goal (name + level + date) or a level goal (+ optional date). */
+export function AssignGoalSheet({ open, studentId, studentName, defaultLevel, onClose, onDone }: Props) {
   const { t } = useTranslation()
   const create = useCreateGoal()
-  const [description, setDescription] = useState('')
+  const [type, setType] = useState<GoalType>('EXAM')
+  const [examName, setExamName] = useState('')
+  const [level, setLevel] = useState<Level>(defaultLevel ?? 'A1')
   const [targetDate, setTargetDate] = useState('')
+  const [note, setNote] = useState('')
   const [submitted, setSubmitted] = useState(false)
 
   useEffect(() => {
     if (open) {
-      setDescription('')
+      setType('EXAM')
+      setExamName('')
+      setLevel(defaultLevel ?? 'A1')
       setTargetDate('')
+      setNote('')
       setSubmitted(false)
       create.reset()
     }
@@ -31,7 +44,8 @@ export function AssignGoalSheet({ open, studentId, studentName, onClose, onDone 
 
   if (!studentId) return null
 
-  const canSubmit = description.trim().length > 0 && !create.isPending
+  const isExam = type === 'EXAM'
+  const canSubmit = (!isExam || (examName.trim().length > 0 && targetDate !== '')) && !create.isPending
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -39,8 +53,11 @@ export function AssignGoalSheet({ open, studentId, studentName, onClose, onDone 
     try {
       await create.mutateAsync({
         studentId,
-        description: description.trim(),
-        targetDate: targetDate || null,
+        type,
+        ...(isExam ? { examName: examName.trim() } : {}),
+        targetLevel: level,
+        ...(targetDate ? { targetDate } : {}),
+        ...(note.trim() ? { note: note.trim() } : {}),
       })
       setSubmitted(true)
       setTimeout(() => {
@@ -68,21 +85,58 @@ export function AssignGoalSheet({ open, studentId, studentName, onClose, onDone 
           )}
 
           <div style={{ marginBottom: 14 }}>
+            <Segmented
+              ariaLabel={t('goal_type')}
+              value={type}
+              onChange={setType}
+              options={[
+                { key: 'EXAM', label: t('goal_type_exam') },
+                { key: 'LEVEL', label: t('goal_type_level') },
+              ]}
+            />
+          </div>
+
+          {isExam && (
+            <div style={{ marginBottom: 14 }}>
+              <TextField
+                label={t('goal_exam_name')}
+                placeholder={t('goal_exam_placeholder')}
+                value={examName}
+                maxLength={100}
+                onChange={(e) => setExamName(e.target.value)}
+                autoFocus
+              />
+            </div>
+          )}
+
+          <div style={{ marginBottom: 14 }}>
+            <FieldLabel>{t('goal_target_level')}</FieldLabel>
+            <Segmented
+              ariaLabel={t('goal_target_level')}
+              value={level}
+              onChange={setLevel}
+              options={LEVELS.map((l) => ({ key: l, label: l }))}
+            />
+          </div>
+
+          <div style={{ marginBottom: 14 }}>
             <TextField
-              label={t('goal_description_label')}
-              placeholder={t('goal_description_placeholder')}
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              autoFocus
+              type="date"
+              label={isExam ? t('goal_exam_date') : t('goal_target_date')}
+              value={targetDate}
+              min={todayISO()}
+              onChange={(e) => setTargetDate(e.target.value)}
             />
           </div>
 
           <div style={{ marginBottom: 18 }}>
-            <TextField
-              type="date"
-              label={t('goal_target_date')}
-              value={targetDate}
-              onChange={(e) => setTargetDate(e.target.value)}
+            <TextArea
+              label={t('goal_note')}
+              placeholder={t('goal_note_placeholder')}
+              value={note}
+              maxLength={2000}
+              rows={2}
+              onChange={(e) => setNote(e.target.value)}
             />
           </div>
 

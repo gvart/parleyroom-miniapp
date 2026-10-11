@@ -639,30 +639,47 @@ export interface NotificationPage {
   pageSize: number
 }
 
-export type GoalStatus = 'ACTIVE' | 'COMPLETED' | 'ABANDONED'
-export type GoalSetBy = 'TEACHER' | 'STUDENT'
+export type GoalType = 'EXAM' | 'LEVEL'
+export type GoalStatus = 'ACTIVE' | 'ACHIEVED' | 'ARCHIVED'
+
+/** Computed by the backend on every read, never set by hand. */
+export interface GoalProgress {
+  /** Null when the target level's grammar checklist is empty (or the teacher was deleted). */
+  percent: number | null
+  checklistEmpty: boolean
+  grammarDone: number
+  grammarTotal: number
+  topicsDone: number
+  topicsTotal: number
+  /** Negative once the date has passed. */
+  daysLeft: number | null
+  expectedPercent: number | null
+  onTrack: boolean | null
+}
 
 export interface Goal {
   id: string
   studentId: string
+  /** Null once the teacher was deleted. */
   teacherId: string | null
-  description?: string
+  type: GoalType
   examName?: string | null
-  targetLevel?: Level | null
-  /** The backend sends `{ percent }`; percent is null when it can't be computed (e.g. no teacher any more). */
-  progress: number | { percent: number | null } | null
-  setBy: GoalSetBy
-  targetDate: string | null
+  targetLevel: Level
+  targetDate?: string | null
+  note?: string | null
   status: GoalStatus
   createdAt: string
   updatedAt: string
+  progress: GoalProgress
 }
 
-export interface GoalPage {
-  goals: Goal[]
-  total: number
-  page: number
-  pageSize: number
+export interface GoalInput {
+  studentId: string
+  type: GoalType
+  examName?: string
+  targetLevel: Level
+  targetDate?: string
+  note?: string
 }
 
 export interface UserList {

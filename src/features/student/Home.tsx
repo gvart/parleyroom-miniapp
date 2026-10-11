@@ -24,7 +24,7 @@ export function Home() {
   const lessons = lessonsQuery.data?.lessons ?? []
   const unreadCount =
     notificationsQuery.data?.notifications.filter((n) => !n.viewed).length ?? 0
-  const topGoals = (goalsQuery.data?.goals ?? []).slice(0, 3)
+  const topGoals = (goalsQuery.data ?? []).slice(0, 3)
   const dueHomework = (homeworkQuery.data?.homework ?? [])
     .filter((h) => !isDoneStatus(h.status))
     .slice(0, 3)
