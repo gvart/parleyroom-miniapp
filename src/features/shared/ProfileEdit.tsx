@@ -5,9 +5,6 @@ import { useAuth } from '@/auth/AuthGate'
 import { Avatar, Banner, Button, Card, ScreenHeader } from '@/ui'
 import { useUpdateProfile } from '@/hooks/useUpdateProfile'
 import { useDeleteAvatar, useUploadAvatar } from '@/hooks/useAvatar'
-import type { Level } from '@/api/types'
-
-const LEVELS: Level[] = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2']
 
 export function ProfileEdit() {
   const { t } = useTranslation()
@@ -20,7 +17,6 @@ export function ProfileEdit() {
 
   const [firstName, setFirstName] = useState(user.firstName)
   const [lastName, setLastName] = useState(user.lastName)
-  const [level, setLevel] = useState<Level | null>(user.level ?? null)
   const [saved, setSaved] = useState(false)
   const [avatarError, setAvatarError] = useState<string | null>(null)
 
@@ -58,7 +54,6 @@ export function ProfileEdit() {
       await updateProfile.mutateAsync({
         firstName: firstName !== user.firstName ? firstName : undefined,
         lastName: lastName !== user.lastName ? lastName : undefined,
-        level: level !== user.level ? level : undefined,
       })
       await refreshUser()
       setSaved(true)
@@ -163,25 +158,9 @@ export function ProfileEdit() {
               className="glass-field"
             />
           </div>
-          <div style={{ marginBottom: 14 }}>
+          <div style={{ marginBottom: 4 }}>
             <div className="eyebrow field-label">{t('email')}</div>
             <input value={user.email} readOnly className="glass-field" style={{ opacity: 0.6 }} />
-          </div>
-          <div style={{ marginBottom: 4 }}>
-            <div className="eyebrow field-label">{t('level')}</div>
-            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-              {LEVELS.map((lv) => (
-                <button
-                  type="button"
-                  key={lv}
-                  onClick={() => setLevel(lv)}
-                  aria-pressed={level === lv}
-                  className={`chip${level === lv ? ' on' : ''}`}
-                >
-                  {lv}
-                </button>
-              ))}
-            </div>
           </div>
         </Card>
 
