@@ -1029,7 +1029,8 @@ export function installMockBackend(): void {
     firstName: role === 'TEACHER' ? 'Helena' : 'Lina',
     lastName: role === 'TEACHER' ? 'König' : 'Weber',
     initials: role === 'TEACHER' ? 'HK' : 'LW',
-    role,
+    // `?role=admin` reuses the student data set with an ADMIN profile.
+    role: params.get('role') === 'admin' ? 'ADMIN' : role,
     status: 'ACTIVE',
     locale: 'ru',
     // Student mock starts unconfirmed so the first-run language picker can be
@@ -1041,6 +1042,11 @@ export function installMockBackend(): void {
     avatarUrl: null,
     telegramId: 42,
     telegramUsername: 'devuser',
+    telegramLessonReminders: true,
+    telegramHomeworkReminders: true,
+    // Starts unreachable so the write-access prompt runs; env.ts grants it
+    // unless `?wa=deny`. `?tgsave=fail` makes reminder toggles fail.
+    telegramReachable: false,
     createdAt: '2026-03-01T00:00:00Z',
   }
 
@@ -1099,9 +1105,17 @@ export function installMockBackend(): void {
         return json(me)
       }
     }
+    if (url.endsWith('/api/v1/users/me/telegram/test') && method === 'POST') {
+      me.telegramReachable = true
+      return new Response(null, { status: 204 })
+    }
     if (url.endsWith('/api/v1/users/me')) {
       if (method === 'PATCH') {
         const patch = init?.body ? (JSON.parse(init.body as string) as Record<string, unknown>) : {}
+        if (params.get('tgsave') === 'fail' && ('telegramLessonReminders' in patch || 'telegramHomeworkReminders' in patch)) {
+          await new Promise((r) => setTimeout(r, 400))
+          return json({ detail: 'mock failure' }, 500)
+        }
         const { confirmLocale, locale, nativeLanguage, ...rest } = patch
         if (locale !== undefined && !SUPPORTED_LOCALES.includes(locale as string)) {
           return json({ detail: 'UNSUPPORTED_LOCALE' }, 400)

@@ -18,6 +18,8 @@ if (import.meta.env.DEV) {
   } as const
 
   const noInsets = { top: 0, right: 0, bottom: 0, left: 0 } as const
+  // `?wa=deny` simulates the user declining the bot-messages prompt.
+  const denyWriteAccess = new URLSearchParams(window.location.search).get('wa') === 'deny'
 
   mockTelegramEnv({
     launchParams: {
@@ -61,6 +63,10 @@ if (import.meta.env.DEV) {
       }
       if (name === 'web_app_request_content_safe_area') {
         emitEvent('content_safe_area_changed', noInsets)
+        return
+      }
+      if (name === 'web_app_request_write_access') {
+        emitEvent('write_access_requested', { status: denyWriteAccess ? 'cancelled' : 'allowed' })
       }
     },
   })

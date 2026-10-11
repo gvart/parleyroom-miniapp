@@ -51,6 +51,8 @@ export interface UpdateProfileRequest {
   nativeLanguage?: NativeLanguage | null
   /** Set together with `locale` to dismiss the first-run language picker. */
   confirmLocale?: true
+  telegramLessonReminders?: boolean
+  telegramHomeworkReminders?: boolean
 }
 
 export interface LessonsQuery {
@@ -167,6 +169,10 @@ export const api = {
       method: 'POST',
       body: { initData },
     }),
+
+  /** Sends a test message via the bot; succeeding marks the user reachable. */
+  sendTelegramTest: () =>
+    apiFetch<void>('/api/v1/users/me/telegram/test', { method: 'POST' }),
 
   me: () => apiFetch<UserProfile>('/api/v1/users/me'),
 

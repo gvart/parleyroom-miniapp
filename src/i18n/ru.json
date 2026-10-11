@@ -571,5 +571,23 @@
   "error_code_LESSON_WITHOUT_TEACHER": "У этого урока больше нет преподавателя, поэтому это невозможно.",
   "error_code_VOCAB_ENTRY_WITHOUT_TEACHER": "У этого слова больше нет преподавателя, его нельзя изменить.",
   "error_code_FOLDER_WITHOUT_TEACHER": "У этой папки больше нет преподавателя, её нельзя изменить.",
-  "error_code_MATERIAL_WITHOUT_TEACHER": "У этого материала больше нет преподавателя, его нельзя изменить."
+  "error_code_MATERIAL_WITHOUT_TEACHER": "У этого материала больше нет преподавателя, его нельзя изменить.",
+
+  "tg_notifications_title": "Напоминания в Telegram",
+  "tg_notifications_sub": "Получайте напоминания от бота прямо в Telegram.",
+  "tg_reminders_group": "Напоминания",
+  "tg_lesson_reminders": "Напоминания об уроках",
+  "tg_lesson_reminders_sub": "За день и за час до каждого урока",
+  "tg_homework_reminders": "Напоминания о домашних заданиях",
+  "tg_homework_reminders_sub": "Когда скоро срок сдачи",
+  "tg_unreachable_hint": "Бот пока не может вам писать. Разрешите сообщения, чтобы получать напоминания.",
+  "tg_allow_messages": "Разрешить сообщения",
+  "tg_access_denied": "Сообщения не разрешены. Можно попробовать снова в любой момент.",
+  "tg_access_unsupported": "Ваша версия Telegram не позволяет сделать это здесь. Откройте чат с ботом и нажмите «Старт».",
+  "tg_send_test": "Отправить тестовое сообщение",
+  "tg_test_sent": "Тестовое сообщение отправлено. Загляните в чат с ботом.",
+  "tg_test_failed": "Не удалось отправить тестовое сообщение.",
+  "tg_save_failed": "Не удалось сохранить настройки напоминаний.",
+  "error_code_TELEGRAM_NOT_LINKED": "Ваш аккаунт Telegram ещё не привязан.",
+  "error_code_TELEGRAM_UNREACHABLE": "Бот не может вам писать. Разрешите сообщения и попробуйте снова."
 }
