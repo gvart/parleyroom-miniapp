@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.25.2](https://github.com/gvart/parleyroom-miniapp/compare/v1.25.1...v1.25.2) (2026-10-11)
+
+
+### Bug Fixes
+
+* **ui:** handle lessons, homework and goals whose teacher was deleted ([#71](https://github.com/gvart/parleyroom-miniapp/issues/71)) ([bdf8ab0](https://github.com/gvart/parleyroom-miniapp/commit/bdf8ab0cf35049afcee06fa2cbaf00d52cbe049a))
+* **ui:** read goal percent and title from the current goal response ([#73](https://github.com/gvart/parleyroom-miniapp/issues/73)) ([e4fc22c](https://github.com/gvart/parleyroom-miniapp/commit/e4fc22cc6f2d3f227c78bb80f0fc045c30cddb0b))
+
 ## [1.25.1](https://github.com/gvart/parleyroom-miniapp/compare/v1.25.0...v1.25.1) (2026-10-11)
 
 
