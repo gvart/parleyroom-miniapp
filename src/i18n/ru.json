@@ -140,6 +140,7 @@
   "empty_goals_title": "Поставьте первую цель",
   "empty_goals_sub": "Небольшие ежедневные цели создают импульс.",
   "goal_target_label": "Цель",
+  "goal_reach_level": "Достичь уровня {{level}}",
   "goal_description_label": "Что вы хотите сделать?",
   "goal_description_placeholder": "Говорить по-немецки 30 минут в день",
   "goal_target_date": "Дата достижения (необязательно)",

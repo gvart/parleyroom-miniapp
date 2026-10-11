@@ -136,6 +136,7 @@
   "empty_goals_title": "Setz dein erstes Ziel",
   "empty_goals_sub": "Kleine tägliche Ziele bringen Schwung.",
   "goal_target_label": "Ziel",
+  "goal_reach_level": "{{level}} erreichen",
   "goal_description_label": "Was möchtest du tun?",
   "goal_description_placeholder": "Täglich 30 Minuten sprechen",
   "goal_target_date": "Zieldatum (optional)",

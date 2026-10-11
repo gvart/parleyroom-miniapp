@@ -14,6 +14,7 @@ import {
 } from '@/hooks/useGoals'
 import type { Goal } from '@/api/types'
 import { errorMessage } from '@/lib/errors'
+import { goalPercent, goalPercentLabel, goalTitle } from '@/lib/goal'
 
 const TONES: Tone[] = ['leaf', 'grape', 'sunny', 'coral', 'sky', 'accent']
 const PROGRESS_STEPS = [0, 25, 50, 75, 100] as const
@@ -92,21 +93,22 @@ function GoalCard({ goal, tone }: { goal: Goal; tone: Tone }) {
     ? `${meta} · ${t('target_by', { date: formatShortDate(goal.targetDate) })}`
     : meta
 
+  const percent = goalPercent(goal)
   const anyError = complete.error ?? abandon.error ?? remove.error ?? updateProgress.error
 
   return (
     <Card style={{ marginBottom: 10, position: 'relative' }}>
       <div style={{ display: 'flex', gap: 14, alignItems: 'center' }}>
         <Ring
-          value={goal.progress ?? 0}
+          value={percent ?? 0}
           size={58}
           stroke={5}
           tone={tone}
-          label={goal.progress == null ? '—' : `${goal.progress}%`}
+          label={goalPercentLabel(goal)}
         />
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ fontSize: 'var(--text-card-title)', fontWeight: 700, marginBottom: 3 }}>
-            {goal.description}
+            {goalTitle(goal, t)}
           </div>
           <div style={{ fontSize: 'var(--text-small)', fontWeight: 600, color: 'var(--ink-2)' }}>{targetMeta}</div>
         </div>
@@ -141,7 +143,7 @@ function GoalCard({ goal, tone }: { goal: Goal; tone: Tone }) {
             </div>
             <div className="seg">
               {PROGRESS_STEPS.map((p) => {
-                const active = goal.progress != null && Math.abs(goal.progress - p) < 5
+                const active = percent != null && Math.abs(percent - p) < 5
                 return (
                   <button
                     key={p}
