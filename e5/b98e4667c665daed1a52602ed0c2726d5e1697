@@ -1,0 +1,51 @@
+src/lib/errors.ts
+  s_70e7ee9f92bd28::t_0df11ad06bb2a2 1,3-17,23-34
+src/auth/AuthGate.tsx
+  s_70e7ee9f92bd28::t_5be81112e199cc 19,96,275
+src/features/shared/ChangePassword.tsx
+  s_70e7ee9f92bd28::t_b35184b1e7d569 6,172
+src/features/shared/ProfileEdit.tsx
+  s_70e7ee9f92bd28::t_f54fe8160401b2 8,37,47,170
+src/features/student/BookLessonSheet.tsx
+  s_70e7ee9f92bd28::t_aec1a31d0c0058 8,408
+src/features/student/Goals.tsx
+  s_70e7ee9f92bd28::t_de5fb8ea2ddb05 16,157,297
+src/features/student/LessonActionsSheet.tsx
+  s_70e7ee9f92bd28::t_7a1a100a8837a7 16,143-147
+src/features/student/MaterialPreview.tsx
+  s_70e7ee9f92bd28::t_9b71671c80eb6c 5-6,26,29,48,55,94
+src/features/student/RescheduleSheet.tsx
+  s_70e7ee9f92bd28::t_e2986ecb03a57a 6,119
+src/features/teacher/AssignGoalSheet.tsx
+  s_70e7ee9f92bd28::t_7c6f2b29a55dca 5,92
+src/features/teacher/AssignHomeworkSheet.tsx
+  s_70e7ee9f92bd28::t_67f79f95640551 5,112
+src/features/teacher/LessonCompleteSheet.tsx
+  s_70e7ee9f92bd28::t_2e8990a31fe138 6,89
+src/features/teacher/UploadMaterialSheet.tsx
+  s_70e7ee9f92bd28::t_41f99440578971 6,79
+src/i18n/de.json
+  s_70e7ee9f92bd28::t_dea5df341c8405 232,517-556
+src/i18n/en.json
+  s_70e7ee9f92bd28::t_262048b41e7bdb 232,517-556
+src/i18n/ru.json
+  s_70e7ee9f92bd28::t_f6f96241683241 238,523-562
+src/layout/ErrorBoundary.tsx
+  s_70e7ee9f92bd28::t_12ac4ce121ae7c 3,47
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "e5b98e4667c665daed1a52602ed0c2726d5e1697",
+  "prompts": {},
+  "sessions": {
+    "s_70e7ee9f92bd28": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "015a4b79-1a93-4081-8a97-5e5a60d7eb05",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Vladlen Gladis <vladlen.gladis@deliveryhero.com>"
+    }
+  }
+}
