@@ -1,0 +1,29 @@
+src/features/student/MaterialPreview.tsx
+  s_70e7ee9f92bd28::t_fa1943d2def3f3 8,82
+src/features/student/Materials.tsx
+  s_70e7ee9f92bd28::t_13a13bf533fca7 8,269
+src/features/teacher/Materials.tsx
+  s_70e7ee9f92bd28::t_0309b8c4bdb2d8 6,132,148
+src/features/teacher/UploadMaterialSheet.tsx
+  s_70e7ee9f92bd28::t_db0d34565ca773 7,167
+src/i18n/de.json
+  s_70e7ee9f92bd28::t_5565e6b6aefb6b 482
+src/lib/intl.ts
+  s_70e7ee9f92bd28::t_28e2ce55239e41 43-57
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "57571f801e0fa313e46992fea9c303be337068c9",
+  "prompts": {},
+  "sessions": {
+    "s_70e7ee9f92bd28": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "015a4b79-1a93-4081-8a97-5e5a60d7eb05",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Vladlen Gladis <vladlen.gladis@deliveryhero.com>"
+    }
+  }
+}
