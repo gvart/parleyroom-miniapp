@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.25.3](https://github.com/gvart/parleyroom-miniapp/compare/v1.25.2...v1.25.3) (2026-10-11)
+
+
+### Bug Fixes
+
+* **goals:** use the current goal API ([#74](https://github.com/gvart/parleyroom-miniapp/issues/74)) ([bc8f663](https://github.com/gvart/parleyroom-miniapp/commit/bc8f663df55e5a59653cdc59ce0334d97d6cf44b))
+
 ## [1.25.2](https://github.com/gvart/parleyroom-miniapp/compare/v1.25.1...v1.25.2) (2026-10-11)
 
 
