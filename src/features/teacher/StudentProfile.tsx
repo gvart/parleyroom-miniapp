@@ -106,7 +106,7 @@ export function StudentProfile() {
 
       <div style={{ padding: '16px 16px 20px', textAlign: 'center' }}>
         <div style={{ display: 'inline-flex' }}>
-          <Avatar hue={hueFor(student.id)} initials={initialsOf(student)} size={88} />
+          <Avatar hue={hueFor(student.id)} initials={initialsOf(student)} size={88} src={student.avatarUrl} />
         </div>
         <h1 className="page-h1" style={{ marginTop: 14 }}>
           {studentName}

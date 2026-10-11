@@ -190,7 +190,7 @@ export function TeacherHome() {
                 className="tap"
                 style={{ minWidth: 140, padding: '14px 14px 16px', flexShrink: 0, cursor: 'pointer', borderRadius: 24 }}
               >
-                <Avatar hue={hueFor(s.id)} initials={initialsOf(s)} size={38} />
+                <Avatar hue={hueFor(s.id)} initials={initialsOf(s)} size={38} src={s.avatarUrl} />
                 <div
                   style={{
                     fontSize: 'var(--text-body)',

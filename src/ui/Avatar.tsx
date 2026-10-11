@@ -1,3 +1,6 @@
+import { useEffect, useState } from 'react'
+import { useAuthedFile } from '@/lib/authedFile'
+
 interface AvatarProps {
   hue?: number
   initials?: string
@@ -14,6 +17,15 @@ export function Avatar({
   live = false,
   src,
 }: AvatarProps) {
+  // Backend avatar URLs are relative, auth-protected API paths; load those
+  // through the token and render the blob. Absolute/blob/data URLs pass through.
+  const isApiPath = !!src && !/^(https?:|blob:|data:)/.test(src)
+  const authed = useAuthedFile(isApiPath ? src : null)
+  const imgSrc = isApiPath ? authed.url : src
+  const [broken, setBroken] = useState(false)
+  useEffect(() => setBroken(false), [imgSrc])
+  const photo = imgSrc && !broken ? imgSrc : null
+
   return (
     <div
       className="font-headline"
@@ -21,7 +33,7 @@ export function Avatar({
         width: size,
         height: size,
         borderRadius: 999,
-        background: src
+        background: photo
           ? 'var(--bg-2)'
           : `radial-gradient(circle at 32% 22%, oklch(0.86 0.12 ${hue}) 0%, oklch(0.56 0.16 ${hue}) 45%, oklch(0.44 0.15 ${hue}) 100%)`,
         display: 'flex',
@@ -31,17 +43,18 @@ export function Avatar({
         textShadow: '0 1px 1px rgba(0,0,0,0.25)',
         fontWeight: 800,
         fontSize: size * 0.36,
-        boxShadow: src
+        boxShadow: photo
           ? '0 0 0 2px var(--glass-border), var(--shadow-1)'
           : `inset 0 1px 1px rgba(255,255,255,0.55), inset 0 -2px 4px oklch(0.3 0.12 ${hue} / 0.35), 0 0 0 2px var(--glass-border), 0 4px 12px -2px oklch(0.5 0.16 ${hue} / 0.35)`,
         position: 'relative',
         flexShrink: 0,
       }}
     >
-      {src ? (
+      {photo ? (
         <img
-          src={src}
+          src={photo}
           alt={initials}
+          onError={() => setBroken(true)}
           style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', borderRadius: 999 }}
         />
       ) : (
