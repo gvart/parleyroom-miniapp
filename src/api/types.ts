@@ -27,6 +27,11 @@ export interface UserProfile {
   avatarUrl?: string | null
   telegramId?: number | null
   telegramUsername?: string | null
+  /** Telegram reminder preferences; absent on backends that predate them. */
+  telegramLessonReminders?: boolean
+  telegramHomeworkReminders?: boolean
+  /** Whether the bot is allowed to message this user (write access granted). */
+  telegramReachable?: boolean
   createdAt: string
 }
 

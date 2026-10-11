@@ -565,5 +565,23 @@
   "error_code_LESSON_WITHOUT_TEACHER": "This lesson no longer has a teacher, so that isn't possible.",
   "error_code_VOCAB_ENTRY_WITHOUT_TEACHER": "This word no longer has a teacher, so it can't be changed.",
   "error_code_FOLDER_WITHOUT_TEACHER": "This folder no longer has a teacher, so it can't be changed.",
-  "error_code_MATERIAL_WITHOUT_TEACHER": "This material no longer has a teacher, so it can't be changed."
+  "error_code_MATERIAL_WITHOUT_TEACHER": "This material no longer has a teacher, so it can't be changed.",
+
+  "tg_notifications_title": "Telegram reminders",
+  "tg_notifications_sub": "Get reminders from the bot right in Telegram.",
+  "tg_reminders_group": "Reminders",
+  "tg_lesson_reminders": "Lesson reminders",
+  "tg_lesson_reminders_sub": "A day and an hour before each lesson",
+  "tg_homework_reminders": "Homework reminders",
+  "tg_homework_reminders_sub": "When homework is due soon",
+  "tg_unreachable_hint": "The bot can't message you yet. Allow messages so reminders can reach you.",
+  "tg_allow_messages": "Allow messages",
+  "tg_access_denied": "Messages weren't allowed. You can try again any time.",
+  "tg_access_unsupported": "Your Telegram version can't grant this here. Open the bot chat and press Start instead.",
+  "tg_send_test": "Send test message",
+  "tg_test_sent": "Test message sent. Check your chat with the bot.",
+  "tg_test_failed": "Couldn't send the test message.",
+  "tg_save_failed": "Couldn't save your reminder settings.",
+  "error_code_TELEGRAM_NOT_LINKED": "Your Telegram account isn't linked yet.",
+  "error_code_TELEGRAM_UNREACHABLE": "The bot can't message you. Allow messages and try again."
 }

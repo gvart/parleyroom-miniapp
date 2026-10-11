@@ -17,6 +17,7 @@ import i18n, { DEFAULT_LOCALE, normalizeLocale } from '@/i18n'
 import { FirstRunLocalePicker } from '@/features/shared/FirstRunLocalePicker'
 import { Button } from '@/ui'
 import { errorMessage } from '@/lib/errors'
+import { requestBotWriteAccess, shouldAutoRequestWriteAccess } from '@/lib/telegramWriteAccess'
 
 const TOKEN_KEY = 'parleyroom.access'
 
@@ -132,6 +133,18 @@ export function AuthGate({ children }: { children: ReactNode }) {
       prev.kind === 'ready' ? { ...prev, user } : prev,
     )
   }, [])
+
+  // Right after linking (or any open where the bot still can't reach a
+  // linked user), ask Telegram once per session for bot write access so
+  // reminders can be delivered. Settings has the manual retry.
+  const readyUser = status.kind === 'ready' ? status.user : null
+  useEffect(() => {
+    if (!readyUser || !shouldAutoRequestWriteAccess(readyUser)) return
+    requestBotWriteAccess()
+      .then((result) => (result === 'granted' ? refreshUser() : undefined))
+      .catch((err) => console.warn('[miniapp] write access request failed', err))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [readyUser?.id])
 
   if (status.kind === 'checking') return <SplashScreen />
   if (status.kind === 'error') return <ErrorScreen message={status.message} />

@@ -19,6 +19,10 @@ export function Settings() {
     { icon: 'language', label: t('interface_language_title'), to: '/settings/language' },
     { icon: 'palette', label: t('appearance_title'), to: '/settings/appearance' },
   ]
+  // Hidden until the backend exposes the preferences, and for admins (no reminders).
+  if (user.role !== 'ADMIN' && user.telegramLessonReminders !== undefined) {
+    accountItems.push({ icon: 'notifications', label: t('tg_notifications_title'), to: '/settings/notifications' })
+  }
   if (user.role === 'STUDENT') {
     accountItems.push({
       icon: 'translate',

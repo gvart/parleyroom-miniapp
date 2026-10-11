@@ -565,5 +565,23 @@
   "error_code_LESSON_WITHOUT_TEACHER": "Diese Stunde hat keine Lehrkraft mehr, deshalb ist das nicht möglich.",
   "error_code_VOCAB_ENTRY_WITHOUT_TEACHER": "Dieses Wort hat keine Lehrkraft mehr und kann nicht geändert werden.",
   "error_code_FOLDER_WITHOUT_TEACHER": "Dieser Ordner hat keine Lehrkraft mehr und kann nicht geändert werden.",
-  "error_code_MATERIAL_WITHOUT_TEACHER": "Dieses Material hat keine Lehrkraft mehr und kann nicht geändert werden."
+  "error_code_MATERIAL_WITHOUT_TEACHER": "Dieses Material hat keine Lehrkraft mehr und kann nicht geändert werden.",
+
+  "tg_notifications_title": "Telegram-Erinnerungen",
+  "tg_notifications_sub": "Erhalte Erinnerungen vom Bot direkt in Telegram.",
+  "tg_reminders_group": "Erinnerungen",
+  "tg_lesson_reminders": "Stundenerinnerungen",
+  "tg_lesson_reminders_sub": "Einen Tag und eine Stunde vor jeder Stunde",
+  "tg_homework_reminders": "Hausaufgaben-Erinnerungen",
+  "tg_homework_reminders_sub": "Wenn Hausaufgaben bald fällig sind",
+  "tg_unreachable_hint": "Der Bot kann dir noch nicht schreiben. Erlaube Nachrichten, damit dich Erinnerungen erreichen.",
+  "tg_allow_messages": "Nachrichten erlauben",
+  "tg_access_denied": "Nachrichten wurden nicht erlaubt. Du kannst es jederzeit erneut versuchen.",
+  "tg_access_unsupported": "Deine Telegram-Version kann das hier nicht erlauben. Öffne den Chat mit dem Bot und tippe auf Start.",
+  "tg_send_test": "Testnachricht senden",
+  "tg_test_sent": "Testnachricht gesendet. Schau in deinen Chat mit dem Bot.",
+  "tg_test_failed": "Die Testnachricht konnte nicht gesendet werden.",
+  "tg_save_failed": "Deine Erinnerungseinstellungen konnten nicht gespeichert werden.",
+  "error_code_TELEGRAM_NOT_LINKED": "Dein Telegram-Konto ist noch nicht verknüpft.",
+  "error_code_TELEGRAM_UNREACHABLE": "Der Bot kann dir nicht schreiben. Erlaube Nachrichten und versuche es erneut."
 }

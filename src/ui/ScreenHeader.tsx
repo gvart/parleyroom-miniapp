@@ -1,11 +1,11 @@
 import { useCallback, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { useBackButton } from '@/hooks/useBackButton'
 
 interface ScreenHeaderProps {
   title: ReactNode
-  /** Defaults to `navigate(-1)`. */
+  /** Defaults to `navigate(-1)`, or the parent path when this is the first entry (deep link). */
   onBack?: () => void
   action?: ReactNode
 }
@@ -20,7 +20,15 @@ interface ScreenHeaderProps {
 export function ScreenHeader({ title, onBack, action }: ScreenHeaderProps) {
   const { t } = useTranslation()
   const navigate = useNavigate()
-  const back = useCallback(() => (onBack ? onBack() : navigate(-1)), [onBack, navigate])
+  const { pathname } = useLocation()
+  const back = useCallback(() => {
+    if (onBack) return onBack()
+    // Opened straight at this screen (e.g. from a bot reminder button): there's
+    // no in-app history to pop, so go up to the parent path instead.
+    const idx = (window.history.state as { idx?: number } | null)?.idx ?? 0
+    if (idx > 0) navigate(-1)
+    else navigate(pathname.replace(/\/[^/]+\/?$/, '') || '/', { replace: true })
+  }, [onBack, navigate, pathname])
   const nativeBackArmed = useBackButton(back)
 
   return (
