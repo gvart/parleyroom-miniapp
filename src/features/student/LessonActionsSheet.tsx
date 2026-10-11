@@ -40,12 +40,14 @@ export function LessonActionsSheet({ open, lesson, onClose }: Props) {
   const enrolled = lesson.students.some((s) => s.id === user.id)
   const capacity = lesson.maxParticipants
   const atCapacity = capacity != null && lesson.students.length >= capacity
-  const canJoin = club && !enrolled && !atCapacity && lesson.status !== 'CANCELLED'
+  // The teacher was deleted: joining and moving the lesson need their calendar (409 LESSON_WITHOUT_TEACHER).
+  const hasTeacher = lesson.teacherId !== null
+  const canJoin = hasTeacher && club && !enrolled && !atCapacity && lesson.status !== 'CANCELLED'
   const pendingReschedule = lesson.pendingReschedule
   const rescheduleProposedByMe = pendingReschedule?.requestedBy === user.id
   // Backend only allows rescheduling CONFIRMED lessons (400 LESSON_INVALID_STATE
   // otherwise) — a pending REQUEST isn't scheduled yet, there's nothing to move.
-  const canReschedule = lesson.status === 'CONFIRMED' && !pendingReschedule
+  const canReschedule = hasTeacher && lesson.status === 'CONFIRMED' && !pendingReschedule
   const canCancel =
     lesson.status !== 'CANCELLED' && lesson.status !== 'COMPLETED'
   // Offline (in-person) lessons have no video room to join.
@@ -201,15 +203,17 @@ export function LessonActionsSheet({ open, lesson, onClose }: Props) {
 
             {pendingReschedule && !rescheduleProposedByMe && (
               <>
-                <Button
-                  variant="primary"
-                  block
-                  leadingIcon="check"
-                  loading={acceptReschedule.isPending}
-                  onClick={handleAcceptReschedule}
-                >
-                  {t('reschedule_accept')}
-                </Button>
+                {hasTeacher && (
+                  <Button
+                    variant="primary"
+                    block
+                    leadingIcon="check"
+                    loading={acceptReschedule.isPending}
+                    onClick={handleAcceptReschedule}
+                  >
+                    {t('reschedule_accept')}
+                  </Button>
+                )}
                 <Button
                   variant="secondary"
                   block

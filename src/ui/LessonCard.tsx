@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/auth/AuthGate'
 import { Card } from './Card'
 import { Pill } from './Pill'
-import { clubLabelKey, isClub, lessonDateLabel, lessonTime } from '@/lib/lesson'
+import { clubLabelKey, isClub, lessonDateLabel, lessonTime, teacherFirstName } from '@/lib/lesson'
 import type { Lesson } from '@/api/types'
 
 export type LessonCardVariant = 'hero' | 'row' | 'compact'
@@ -41,6 +41,7 @@ function HeroCard({ lesson }: { lesson: Lesson }) {
   const navigate = useNavigate()
   const live = lesson.status === 'IN_PROGRESS'
   const offline = lesson.offline
+  const teacherName = teacherFirstName(lesson, t)
 
   return (
     <Card className={`animate-in${live ? ' lesson-live' : ''}`} style={{ padding: 22 }}>
@@ -69,9 +70,9 @@ function HeroCard({ lesson }: { lesson: Lesson }) {
       <h2 className="page-h1" style={{ position: 'relative', marginTop: 14 }}>
         {lesson.topic}
       </h2>
-      {(lesson.teacher.firstName || offline) && (
+      {(teacherName || offline) && (
         <div style={{ position: 'relative', marginTop: 8, display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
-          {lesson.teacher.firstName && (
+          {teacherName && (
             <div
               style={{
                 display: 'inline-flex',
@@ -85,7 +86,7 @@ function HeroCard({ lesson }: { lesson: Lesson }) {
               <span className="ms" style={{ fontSize: 18 }} aria-hidden="true">
                 person
               </span>
-              {lesson.teacher.firstName}
+              {teacherName}
             </div>
           )}
           {offline && <InPersonPill />}
@@ -186,7 +187,7 @@ function RowCard({ lesson, onOpen }: { lesson: Lesson; onOpen?: (lesson: Lesson)
           <div style={{ fontSize: 'var(--text-small)', fontWeight: 700, color: 'var(--ink-2)' }}>
             {club
               ? `${participants}${capacity ? `/${capacity}` : ''} · ${lesson.level ?? '—'} · ${lesson.durationMinutes}m`
-              : `${lesson.teacher.firstName || t('role_teacher')} · ${lesson.level ?? '—'} · ${lesson.durationMinutes}m`}
+              : `${teacherFirstName(lesson, t) || t('role_teacher')} · ${lesson.level ?? '—'} · ${lesson.durationMinutes}m`}
           </div>
         </div>
         <span className="ms" style={{ fontSize: 20, color: 'var(--ink-3)' }} aria-hidden="true">
@@ -250,7 +251,7 @@ function CompactCard({ lesson, onOpen }: { lesson: Lesson; onOpen?: (lesson: Les
         {lessonTime(lesson.scheduledAt)} · {lesson.durationMinutes}m ·{' '}
         {club
           ? `${lesson.students.length}${lesson.maxParticipants ? `/${lesson.maxParticipants}` : ''}`
-          : lesson.teacher.firstName}
+          : teacherFirstName(lesson, t)}
       </div>
     </button>
   )

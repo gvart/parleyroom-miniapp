@@ -225,7 +225,7 @@ export function StudentProfile() {
               <Card key={g.id}>
                 <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
                   <Ring
-                    value={g.progress}
+                    value={g.progress ?? 0}
                     size={46}
                     stroke={4}
                     tone={(['leaf', 'grape', 'sunny', 'sky', 'coral'] as const)[i % 5]}
@@ -241,7 +241,7 @@ export function StudentProfile() {
                     className="font-headline"
                     style={{ fontSize: 'var(--text-body)', color: 'var(--ink-2)', fontWeight: 900 }}
                   >
-                    {g.progress}%
+                    {g.progress == null ? '—' : `${g.progress}%`}
                   </div>
                 </div>
               </Card>
