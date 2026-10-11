@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.26.0](https://github.com/gvart/parleyroom-miniapp/compare/v1.25.3...v1.26.0) (2026-10-11)
+
+
+### Features
+
+* **settings:** telegram notification toggles and write access ([#76](https://github.com/gvart/parleyroom-miniapp/issues/76)) ([b298ad5](https://github.com/gvart/parleyroom-miniapp/commit/b298ad59d1fd7cd42d4eed14425e783489174ba6))
+
 ## [1.25.3](https://github.com/gvart/parleyroom-miniapp/compare/v1.25.2...v1.25.3) (2026-10-11)
 
 
