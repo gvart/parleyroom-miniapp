@@ -1,0 +1,25 @@
+src/features/shared/FirstRunLocalePicker.tsx
+  s_70e7ee9f92bd28::t_82082884139fbb 86-91
+src/i18n/de.json
+  s_70e7ee9f92bd28::t_1e08b4f6b8b722 356-358
+src/i18n/en.json
+  s_70e7ee9f92bd28::t_c6e2606da9da36 356-358
+src/i18n/ru.json
+  s_70e7ee9f92bd28::t_3fff1cfc4e871b 362-364
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "4859aa2f8979fdfe56adc9219e1c02e5f41d2ff4",
+  "prompts": {},
+  "sessions": {
+    "s_70e7ee9f92bd28": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "015a4b79-1a93-4081-8a97-5e5a60d7eb05",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Vladlen Gladis <vladlen.gladis@deliveryhero.com>"
+    }
+  }
+}
