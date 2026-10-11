@@ -83,6 +83,12 @@ export function FirstRunLocalePicker({ user, onConfirmed }: Props) {
           })}
         </div>
 
+        {user.role === 'STUDENT' && (
+          <p style={{ margin: '0 0 18px', fontSize: 'var(--text-caption)', color: 'var(--ink-2)', lineHeight: 1.45 }}>
+            {t('choose_language_translation_hint')}
+          </p>
+        )}
+
         <Button block loading={saving} onClick={() => void confirm()}>
           {t('continue_cta')}
         </Button>
