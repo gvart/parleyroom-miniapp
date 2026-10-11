@@ -3,6 +3,8 @@
 // Lets the miniapp render in a normal browser when the real backend
 // is unavailable or when localhost isn't in the CORS allowlist.
 
+import type { Goal, GoalInput } from '@/api/types'
+
 interface MockUser {
   role: 'STUDENT' | 'TEACHER'
 }
@@ -423,55 +425,50 @@ const NOTIFICATION_TEMPLATES: MockNotification[] = [
 // scope so a single in-app POST /viewed sticks until the page reloads.
 const viewedNotificationIds = new Set<string>()
 
-interface MockGoal {
-  id: string
-  studentId: string
-  teacherId: string | null
-  description: string
-  progress: number
-  setBy: string
-  targetDate: string | null
-  status: string
-  createdAt: string
-  updatedAt: string
+function mockGoalProgress(percent: number | null, onTrack: boolean | null) {
+  return {
+    percent,
+    checklistEmpty: percent === null,
+    grammar: { total: 10, practiced: 5, covered: 2, needsWork: 1, notCovered: 2 },
+    topics: { total: 4, covered: 2 },
+    grammarDone: 5,
+    grammarTotal: 10,
+    topicsDone: 2,
+    topicsTotal: 4,
+    daysLeft: 30,
+    expectedPercent: onTrack === null ? null : 55,
+    onTrack,
+  }
 }
 
-let goalsList: MockGoal[] = [
+let goalsList: Goal[] = [
   {
     id: 'g1',
     studentId: 'u-mock',
     teacherId: 't1',
-    description: 'Speak 30 minutes a day',
-    progress: 72,
-    setBy: 'TEACHER',
-    targetDate: '2026-04-30',
+    type: 'EXAM',
+    examName: 'telc B1',
+    targetLevel: 'B1',
+    targetDate: '2026-12-15',
+    note: null,
     status: 'ACTIVE',
-    createdAt: '2026-03-01T00:00:00Z',
-    updatedAt: '2026-03-15T00:00:00Z',
+    createdAt: '2026-09-01T00:00:00Z',
+    updatedAt: '2026-09-15T00:00:00Z',
+    progress: mockGoalProgress(62, true),
   },
   {
     id: 'g2',
     studentId: 'u-mock',
-    teacherId: null,
-    description: 'Learn 10 new words this week',
-    progress: 60,
-    setBy: 'STUDENT',
-    targetDate: '2026-04-22',
-    status: 'ACTIVE',
-    createdAt: '2026-03-14T00:00:00Z',
-    updatedAt: '2026-03-15T00:00:00Z',
-  },
-  {
-    id: 'g3',
-    studentId: 'u-mock',
     teacherId: 't1',
-    description: 'Finish 3 reading tasks',
-    progress: 33,
-    setBy: 'TEACHER',
-    targetDate: '2026-04-30',
+    type: 'LEVEL',
+    examName: null,
+    targetLevel: 'B2',
+    targetDate: null,
+    note: null,
     status: 'ACTIVE',
-    createdAt: '2026-03-01T00:00:00Z',
-    updatedAt: '2026-03-15T00:00:00Z',
+    createdAt: '2026-09-14T00:00:00Z',
+    updatedAt: '2026-09-15T00:00:00Z',
+    progress: mockGoalProgress(null, null),
   },
 ]
 
@@ -1692,43 +1689,40 @@ export function installMockBackend(): void {
       const filtered = type ? all.filter((m) => m.type === type) : all
       return json({ materials: filtered, total: filtered.length, page: 1, pageSize: 20 })
     }
-    const goalActionMatch = url.match(/\/api\/v1\/goals\/([^/]+)\/(complete|abandon)$/)
-    if (goalActionMatch && method === 'POST') {
-      const [, id, action] = goalActionMatch
-      goalsList = goalsList.map((g) =>
-        g.id === id
-          ? { ...g, status: action === 'complete' ? 'COMPLETED' : 'ABANDONED', progress: action === 'complete' ? 100 : g.progress }
-          : g,
-      )
+    const goalMatch = url.match(/\/api\/v1\/goals\/([^/?]+)$/)
+    if (goalMatch && method === 'PATCH') {
+      const [, id] = goalMatch
+      const body = JSON.parse((init?.body as string) ?? '{}') as { status?: Goal['status'] }
+      goalsList = goalsList.map((g) => (g.id === id && body.status ? { ...g, status: body.status } : g))
       return json(goalsList.find((g) => g.id === id) ?? goalsList[0])
     }
+    if (goalMatch && method === 'DELETE') {
+      goalsList = goalsList.filter((g) => g.id !== goalMatch[1])
+      return new Response(null, { status: 204 })
+    }
     if (url.endsWith('/api/v1/goals') && method === 'POST') {
-      const body = init?.body
-        ? (JSON.parse(init.body as string) as {
-            description: string
-            targetDate?: string | null
-          })
-        : { description: 'New goal', targetDate: null }
-      const created = {
+      const body = JSON.parse((init?.body as string) ?? '{}') as GoalInput
+      const created: Goal = {
         id: `g-${Date.now()}`,
-        studentId: 'u-mock',
-        teacherId: null,
-        description: body.description,
-        progress: 0,
-        setBy: 'STUDENT',
+        studentId: body.studentId,
+        teacherId: 'u-mock',
+        type: body.type,
+        examName: body.examName ?? null,
+        targetLevel: body.targetLevel,
         targetDate: body.targetDate ?? null,
+        note: body.note ?? null,
         status: 'ACTIVE',
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
+        progress: mockGoalProgress(0, true),
       }
       goalsList = [...goalsList, created]
-      return json(created)
+      return json(created, 201)
     }
     if (url.includes('/api/v1/goals')) {
       const sp = new URL(url, 'http://x').searchParams
       const status = sp.get('status')
-      const filtered = status ? goalsList.filter((g) => g.status === status) : goalsList
-      return json({ goals: filtered, total: filtered.length, page: 1, pageSize: 20 })
+      return json(status ? goalsList.filter((g) => g.status === status) : goalsList)
     }
 
     return original(input, init)

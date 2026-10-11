@@ -1,10 +1,9 @@
 import type { TFunction } from 'i18next'
 import type { Goal } from '@/api/types'
 
-/** Progress percent, or null when the backend can't compute it (e.g. the goal's teacher was deleted). */
+/** Progress percent, or null when the backend can't compute it (empty checklist, or the goal's teacher was deleted). */
 export function goalPercent(goal: Goal): number | null {
-  const p = goal.progress
-  return typeof p === 'number' ? p : (p?.percent ?? null)
+  return goal.progress.percent
 }
 
 export function goalPercentLabel(goal: Goal): string {
@@ -12,7 +11,13 @@ export function goalPercentLabel(goal: Goal): string {
   return percent == null ? '—' : `${percent}%`
 }
 
-/** Older goals carry a free-text description; auto-tracked ones only an exam name or a target level. */
+/** "telc B1" for an exam goal, "Reach B1" for a level goal. */
 export function goalTitle(goal: Goal, t: TFunction): string {
-  return goal.description || goal.examName || (goal.targetLevel ? t('goal_reach_level', { level: goal.targetLevel }) : '')
+  return goal.type === 'EXAM' && goal.examName ? goal.examName : t('goal_reach_level', { level: goal.targetLevel })
+}
+
+/** Why a goal has no percent yet; null when it has one. */
+export function goalPercentHint(goal: Goal, t: TFunction): string | null {
+  if (goal.progress.percent != null) return null
+  return goal.teacherId ? t('goal_progress_pending') : t('goal_teacher_gone')
 }
