@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { Banner, Button } from '@/ui'
 import { haptic } from '@/lib/haptics'
 import type { HomeworkUpload, HomeworkResponseType } from '@/api/types'
-import { useAuthedFile } from '../lib/authedFile'
+import { useAuthedFile } from '@/lib/authedFile'
 import { AudioRecorder } from './AudioRecorder'
 
 export type MediaKind = Exclude<HomeworkResponseType, 'TEXT'>

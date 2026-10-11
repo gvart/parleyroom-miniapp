@@ -1,6 +1,6 @@
 import { Fragment } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useAuthedFile } from '../lib/authedFile'
+import { useAuthedFile } from '@/lib/authedFile'
 import { isRichEmpty } from '../lib/richText'
 import { splitGaps } from '../lib/blocks'
 import type { Block, DocumentVocabEntry, ExamPartBlock, GrammarBoxBlock, MediaBlock, Question, WritingTaskBlock } from '@/api/types'

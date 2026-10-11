@@ -73,7 +73,7 @@ export function TeacherStudents() {
                 onClick={() => navigate(`/students/${s.id}`)}
                 className="row-btn"
               >
-                <Avatar hue={hueFor(s.id)} initials={initialsOf(s)} size={42} />
+                <Avatar hue={hueFor(s.id)} initials={initialsOf(s)} size={42} src={s.avatarUrl} />
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ fontSize: 'var(--text-card-title)', fontWeight: 800 }}>
                     {s.firstName} {s.lastName}
