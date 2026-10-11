@@ -10,6 +10,7 @@ import { useGoals } from '@/hooks/useGoals'
 import { useUpdateStudentNativeLanguage } from '@/hooks/useUpdateStudentNativeLanguage'
 import { hueFor, initialsOf } from './avatarHue'
 import { lessonTime, todayISO } from '@/lib/lesson'
+import { goalPercent, goalPercentLabel, goalTitle } from '@/lib/goal'
 import { formatMonthYearFromIso, formatShortDate } from '@/lib/intl'
 import { AssignHomeworkSheet } from './AssignHomeworkSheet'
 import { AssignGoalSheet } from './AssignGoalSheet'
@@ -225,13 +226,13 @@ export function StudentProfile() {
               <Card key={g.id}>
                 <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
                   <Ring
-                    value={g.progress ?? 0}
+                    value={goalPercent(g) ?? 0}
                     size={46}
                     stroke={4}
                     tone={(['leaf', 'grape', 'sunny', 'sky', 'coral'] as const)[i % 5]}
                   />
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: 'var(--text-card-title)', fontWeight: 700 }}>{g.description}</div>
+                    <div style={{ fontSize: 'var(--text-card-title)', fontWeight: 700 }}>{goalTitle(g, t)}</div>
                     <div style={{ fontSize: 'var(--text-caption)', color: 'var(--ink-2)' }}>
                       {g.setBy === 'TEACHER' ? t('set_by_teacher') : t('set_by_you')}
                       {g.targetDate ? ` · ${formatShortDate(g.targetDate)}` : ''}
@@ -241,7 +242,7 @@ export function StudentProfile() {
                     className="font-headline"
                     style={{ fontSize: 'var(--text-body)', color: 'var(--ink-2)', fontWeight: 900 }}
                   >
-                    {g.progress == null ? '—' : `${g.progress}%`}
+                    {goalPercentLabel(g)}
                   </div>
                 </div>
               </Card>

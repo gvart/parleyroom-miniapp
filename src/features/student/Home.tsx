@@ -7,6 +7,7 @@ import { useNotifications } from '@/hooks/useNotifications'
 import { useGoals } from '@/hooks/useGoals'
 import { Card, LessonCard, PageHeader, Pill, Ring, Section, type PillTone, type Tone } from '@/ui'
 import { isLessonParticipant } from '@/lib/lesson'
+import { goalPercent, goalPercentLabel, goalTitle } from '@/lib/goal'
 import { computeDue, dueLabel, isDoneStatus } from '@/lib/homework'
 
 const GOAL_TONES: Tone[] = ['leaf', 'grape', 'sunny']
@@ -231,7 +232,7 @@ export function Home() {
                 }}
               >
                 <Ring
-                  value={g.progress ?? 0}
+                  value={goalPercent(g) ?? 0}
                   size={44}
                   stroke={5}
                   tone={GOAL_TONES[i % GOAL_TONES.length]}
@@ -247,10 +248,10 @@ export function Home() {
                       whiteSpace: 'nowrap',
                     }}
                   >
-                    {g.description}
+                    {goalTitle(g, t)}
                   </div>
                   <div style={{ fontSize: 'var(--text-caption)', fontWeight: 700, color: 'var(--ink-2)', marginTop: 2 }}>
-                    {g.progress == null ? '—' : `${g.progress}%`}
+                    {goalPercentLabel(g)}
                   </div>
                 </div>
               </div>

@@ -646,9 +646,11 @@ export interface Goal {
   id: string
   studentId: string
   teacherId: string | null
-  description: string
-  /** Null when the goal has no teacher any more and progress can't be computed. */
-  progress: number | null
+  description?: string
+  examName?: string | null
+  targetLevel?: Level | null
+  /** The backend sends `{ percent }`; percent is null when it can't be computed (e.g. no teacher any more). */
+  progress: number | { percent: number | null } | null
   setBy: GoalSetBy
   targetDate: string | null
   status: GoalStatus
