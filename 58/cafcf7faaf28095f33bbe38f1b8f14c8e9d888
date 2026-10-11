@@ -1,0 +1,41 @@
+src/api/endpoints.ts
+  s_70e7ee9f92bd28::t_3fa2fdadc8839c 10,235,237,240-241
+src/api/types.ts
+  s_70e7ee9f92bd28::t_f251dbce35a730 642-658,663,665,667-669,673,676-682
+src/dev/mockBackend.ts
+  s_70e7ee9f92bd28::t_2604db09854d8f 6-7,428-441,444,449-453,455-457,463-467,469-471,1692-1696,1699-1702,1704-1705,1707-1711,1713,1717,1720,1725
+src/features/student/Goals.tsx
+  s_70e7ee9f92bd28::t_63eeea3c83db10 2,4,6,10,15,20,23,37-44,47,49,54-55,57-58,60-64,67-71
+src/features/student/Home.tsx
+  s_70e7ee9f92bd28::t_fce92fa48605da 27
+src/features/teacher/AssignGoalSheet.tsx
+  s_70e7ee9f92bd28::t_90c97245a1e000 3,6-9,15-16,21-22,25-27,29,34-36,38,47-48,56-60,88-95,99-122,125,127,132-142
+src/features/teacher/StudentProfile.tsx
+  s_70e7ee9f92bd28::t_42efcb9fe548f2 4,9,17-18,26-27,96,229,304,310-417
+src/hooks/useGoals.ts
+  s_70e7ee9f92bd28::t_45be3ffbf52e57 3,5,15,19,26-27,30
+src/i18n/de.json
+  s_70e7ee9f92bd28::t_c868c37db08968 134-135,138-153,557
+src/i18n/en.json
+  s_70e7ee9f92bd28::t_6a66a8b7288319 134-135,138-153,557
+src/i18n/ru.json
+  s_70e7ee9f92bd28::t_a418c56813407c 138-139,142-157,563
+src/lib/goal.ts
+  s_70e7ee9f92bd28::t_47f427e3b15151 4,6,14,16-22
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "58cafcf7faaf28095f33bbe38f1b8f14c8e9d888",
+  "prompts": {},
+  "sessions": {
+    "s_70e7ee9f92bd28": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "015a4b79-1a93-4081-8a97-5e5a60d7eb05",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Vladlen Gladis <vladlen.gladis@deliveryhero.com>"
+    }
+  }
+}
