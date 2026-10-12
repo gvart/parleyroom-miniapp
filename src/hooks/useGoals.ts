@@ -1,45 +1,26 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { api } from '@/api/endpoints'
-import type { GoalInput, GoalStatus } from '@/api/types'
+import type { MyGoalResponse, SelfAssessmentInput } from '@/api/types'
 
-/** Goals with their computed progress. Students get their own; teachers the ones they set. */
-export function useGoals(params?: { studentId?: string; status?: GoalStatus }) {
-  const studentId = params?.studentId
-  const status = params?.status
+const MY_GOAL_KEY = ['goals', 'my'] as const
+
+/** The student's active goal; pass `enabled: false` while the `roadmap` flag is off (the route 404s). */
+export function useMyGoal(enabled: boolean) {
   return useQuery({
-    queryKey: ['goals', studentId ?? 'self', status ?? 'all'],
-    queryFn: () => api.goals({ studentId, status }),
+    queryKey: MY_GOAL_KEY,
+    queryFn: () => api.myGoal(),
+    enabled,
   })
 }
 
-/** Teacher only. */
-export function useCreateGoal() {
+/** Answers with the refreshed goal, so the cache is replaced instead of refetched. */
+export function useSelfAssessMilestone() {
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: (body: GoalInput) => api.createGoal(body),
-    onSuccess: () => {
-      void qc.invalidateQueries({ queryKey: ['goals'] })
-    },
-  })
-}
-
-/** The goal's teacher only: mark it achieved, archive it or reactivate it. */
-export function useSetGoalStatus() {
-  const qc = useQueryClient()
-  return useMutation({
-    mutationFn: ({ id, status }: { id: string; status: GoalStatus }) => api.setGoalStatus(id, status),
-    onSuccess: () => {
-      void qc.invalidateQueries({ queryKey: ['goals'] })
-    },
-  })
-}
-
-export function useDeleteGoal() {
-  const qc = useQueryClient()
-  return useMutation({
-    mutationFn: (id: string) => api.deleteGoal(id),
-    onSuccess: () => {
-      void qc.invalidateQueries({ queryKey: ['goals'] })
+    mutationFn: ({ milestoneId, body }: { milestoneId: string; body: SelfAssessmentInput }) =>
+      api.selfAssessMilestone(milestoneId, body),
+    onSuccess: (data: MyGoalResponse) => {
+      qc.setQueryData(MY_GOAL_KEY, data)
     },
   })
 }

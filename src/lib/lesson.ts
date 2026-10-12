@@ -2,12 +2,33 @@ import type { TFunction } from 'i18next'
 import type { Lesson } from '@/api/types'
 import { formatShortDate, formatWeekdayShort } from './intl'
 
-export function lessonDate(scheduledAt: string): string {
-  return scheduledAt.slice(0, 10)
+// Lessons arrive as instants (`scheduledAt` with an offset, usually UTC). Never
+// slice the ISO string: a 10:00 Berlin lesson would show as 08:00. Both helpers
+// use the device's time zone unless `timeZone` (an IANA name) is given.
+
+function zonedParts(iso: string, timeZone?: string): Record<string, string> {
+  const parts = new Intl.DateTimeFormat('en-GB', {
+    timeZone,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hourCycle: 'h23',
+  }).formatToParts(new Date(iso))
+  return Object.fromEntries(parts.map((p) => [p.type, p.value]))
 }
 
-export function lessonTime(scheduledAt: string): string {
-  return scheduledAt.slice(11, 16)
+/** Local calendar day of an instant, `YYYY-MM-DD` (comparable with `todayISO()`). */
+export function lessonDate(scheduledAt: string, timeZone?: string): string {
+  const p = zonedParts(scheduledAt, timeZone)
+  return `${p.year}-${p.month}-${p.day}`
+}
+
+/** Local wall-clock time of an instant, 24-hour `HH:mm`. */
+export function lessonTime(scheduledAt: string, timeZone?: string): string {
+  const p = zonedParts(scheduledAt, timeZone)
+  return `${p.hour}:${p.minute}`
 }
 
 export function todayISO(): string {

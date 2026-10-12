@@ -55,3 +55,15 @@ export function formatFileSize(bytes: number | null): string {
     maximumFractionDigits: digits,
   }).format(value)
 }
+
+/** "15 дек. 2026 г." / "15. Dez. 2026" / "Dec 15, 2026" from a `YYYY-MM-DD` date. */
+export function formatDateWithYear(iso: string): string {
+  return new Intl.DateTimeFormat(activeIntlLocale(), { day: 'numeric', month: 'short', year: 'numeric' }).format(
+    new Date(`${iso.slice(0, 10)}T00:00:00`),
+  )
+}
+
+/** "62 %" / "62%" — `value` is 0–100. */
+export function formatPercent(value: number): string {
+  return new Intl.NumberFormat(activeIntlLocale(), { style: 'percent', maximumFractionDigits: 0 }).format(value / 100)
+}

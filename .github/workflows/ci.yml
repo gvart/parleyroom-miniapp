@@ -26,6 +26,9 @@ jobs:
       - name: Check i18n keys
         run: npm run check:i18n
 
+      - name: Test
+        run: npm test
+
       - name: Build
         run: npm run build
         env:

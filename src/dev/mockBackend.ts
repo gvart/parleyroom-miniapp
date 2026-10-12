@@ -3,7 +3,7 @@
 // Lets the miniapp render in a normal browser when the real backend
 // is unavailable or when localhost isn't in the CORS allowlist.
 
-import type { Goal, GoalInput } from '@/api/types'
+import type { MyGoalResponse } from '@/api/types'
 
 interface MockUser {
   role: 'STUDENT' | 'TEACHER'
@@ -425,52 +425,34 @@ const NOTIFICATION_TEMPLATES: MockNotification[] = [
 // scope so a single in-app POST /viewed sticks until the page reloads.
 const viewedNotificationIds = new Set<string>()
 
-function mockGoalProgress(percent: number | null, onTrack: boolean | null) {
+// `?goal=none` → no active goal, `?goal=preparing` → NO_ROADMAP; default has a pending self-assessment.
+function mockMyGoal(variant: string | null): MyGoalResponse {
+  if (variant === 'none') return { goal: null }
+  const preparing = variant === 'preparing'
   return {
-    percent,
-    checklistEmpty: percent === null,
-    grammar: { total: 10, practiced: 5, covered: 2, needsWork: 1, notCovered: 2 },
-    topics: { total: 4, covered: 2 },
-    grammarDone: 5,
-    grammarTotal: 10,
-    topicsDone: 2,
-    topicsTotal: 4,
-    daysLeft: 30,
-    expectedPercent: onTrack === null ? null : 55,
-    onTrack,
+    goal: {
+      id: 'g1',
+      title: 'telc B1 im Dezember',
+      deadline: addDaysISO(70),
+      progressPercent: preparing ? null : 38,
+      status: preparing ? 'NO_ROADMAP' : 'ON_TRACK',
+      milestones: preparing
+        ? []
+        : [1, 2, 3, 4, 5, 6, 7].map((position) => ({
+            id: `m${position}`,
+            position,
+            done: position < 3,
+            current: position === 3,
+          })),
+      currentCanDo: preparing ? null : 'Ich kann über meine Arbeit und meinen Alltag sprechen.',
+      nextCanDo: preparing ? null : 'Ich kann eine formelle E-Mail schreiben.',
+      coveredTitles: preparing ? [] : ['Sich vorstellen', 'Wohnen und Nachbarschaft'],
+      pendingSelfAssessment: preparing
+        ? null
+        : { milestoneId: 'm2', canDo: 'Ich kann meine Wohnung beschreiben und eine Wohnungsanzeige verstehen.' },
+    },
   }
 }
-
-let goalsList: Goal[] = [
-  {
-    id: 'g1',
-    studentId: 'u-mock',
-    teacherId: 't1',
-    type: 'EXAM',
-    examName: 'telc B1',
-    targetLevel: 'B1',
-    targetDate: '2026-12-15',
-    note: null,
-    status: 'ACTIVE',
-    createdAt: '2026-09-01T00:00:00Z',
-    updatedAt: '2026-09-15T00:00:00Z',
-    progress: mockGoalProgress(62, true),
-  },
-  {
-    id: 'g2',
-    studentId: 'u-mock',
-    teacherId: 't1',
-    type: 'LEVEL',
-    examName: null,
-    targetLevel: 'B2',
-    targetDate: null,
-    note: null,
-    status: 'ACTIVE',
-    createdAt: '2026-09-14T00:00:00Z',
-    updatedAt: '2026-09-15T00:00:00Z',
-    progress: mockGoalProgress(null, null),
-  },
-]
 
 function notificationsBody() {
   const now = Date.now()
@@ -1047,8 +1029,11 @@ export function installMockBackend(): void {
     // Starts unreachable so the write-access prompt runs; env.ts grants it
     // unless `?wa=deny`. `?tgsave=fail` makes reminder toggles fail.
     telegramReachable: false,
+    // `?roadmap=off` turns the goal feature flag off.
+    features: { roadmap: params.get('roadmap') !== 'off' },
     createdAt: '2026-03-01T00:00:00Z',
   }
+  let myGoal = mockMyGoal(params.get('goal'))
 
   const original = window.fetch.bind(window)
 
@@ -1703,40 +1688,12 @@ export function installMockBackend(): void {
       const filtered = type ? all.filter((m) => m.type === type) : all
       return json({ materials: filtered, total: filtered.length, page: 1, pageSize: 20 })
     }
-    const goalMatch = url.match(/\/api\/v1\/goals\/([^/?]+)$/)
-    if (goalMatch && method === 'PATCH') {
-      const [, id] = goalMatch
-      const body = JSON.parse((init?.body as string) ?? '{}') as { status?: Goal['status'] }
-      goalsList = goalsList.map((g) => (g.id === id && body.status ? { ...g, status: body.status } : g))
-      return json(goalsList.find((g) => g.id === id) ?? goalsList[0])
+    if (url.endsWith('/api/v1/goals/my')) {
+      return json(myGoal)
     }
-    if (goalMatch && method === 'DELETE') {
-      goalsList = goalsList.filter((g) => g.id !== goalMatch[1])
-      return new Response(null, { status: 204 })
-    }
-    if (url.endsWith('/api/v1/goals') && method === 'POST') {
-      const body = JSON.parse((init?.body as string) ?? '{}') as GoalInput
-      const created: Goal = {
-        id: `g-${Date.now()}`,
-        studentId: body.studentId,
-        teacherId: 'u-mock',
-        type: body.type,
-        examName: body.examName ?? null,
-        targetLevel: body.targetLevel,
-        targetDate: body.targetDate ?? null,
-        note: body.note ?? null,
-        status: 'ACTIVE',
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        progress: mockGoalProgress(0, true),
-      }
-      goalsList = [...goalsList, created]
-      return json(created, 201)
-    }
-    if (url.includes('/api/v1/goals')) {
-      const sp = new URL(url, 'http://x').searchParams
-      const status = sp.get('status')
-      return json(status ? goalsList.filter((g) => g.status === status) : goalsList)
+    if (url.match(/\/api\/v1\/goals\/my\/milestones\/[^/]+\/self-assessment$/) && method === 'POST') {
+      if (myGoal.goal) myGoal = { goal: { ...myGoal.goal, pendingSelfAssessment: null } }
+      return json(myGoal)
     }
 
     return original(input, init)

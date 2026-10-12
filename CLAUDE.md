@@ -1,6 +1,6 @@
 # miniapp
 
-The Telegram Mini App front-door for **Parleyroom**. Students get the full learning loop (book, reschedule, join shared lessons, live video, reflect, vocab SRS, homework, goals, materials with in-app JWT preview). Teachers get a working management surface (today timeline with start-lesson CTA, request acceptance, student profile with assign-homework / assign-goal / submission review, start & complete live lessons, material upload).
+The Telegram Mini App front-door for **Parleyroom**. Students get the full learning loop (book, reschedule, join shared lessons, live video, reflect, vocab SRS, homework, goals, materials with in-app JWT preview). Teachers get a working management surface (today timeline with start-lesson CTA, request acceptance, student profile with assign-homework / submission review (goals are managed in the portal), start & complete live lessons, material upload).
 
 Production: Cloudflare Pages, project `parleyroom-miniapp`, served at `https://miniapp.sprachrobbe.com`. Backend at `https://api.sprachrobbe.com` (env var `VITE_API_BASE_URL`).
 
@@ -48,7 +48,7 @@ src/
                       Notifications
     teacher/        — TeacherHome, Students, StudentProfile, Materials,
                       UploadMaterialSheet, AssignHomeworkSheet,
-                      AssignGoalSheet, LessonCompleteSheet
+                      LessonCompleteSheet
   lib/
     lesson.ts       — date helpers (todayISO, lessonTime, isClub, …)
   i18n.ts           — i18next bootstrap
@@ -94,6 +94,7 @@ OpenAPI at `http://rose.local/swagger/documentation.yaml` (LAN only). Critical t
 ```
 npm run dev       # http://localhost:5174 — mocked Telegram env, talks to localhost:8080
 npm run build     # tsc -b && vite build → dist/
+npm test          # vitest (jsdom, TZ=Europe/Berlin)
 npm run preview
 ```
 
@@ -121,7 +122,7 @@ Full list in `src/api/endpoints.ts`. Lesson lifecycle beyond the obvious:
 - `POST /lessons/{id}/complete` — teacher-only. Body accepts `teacherNotes`, `teacherWentWell`, `teacherWorkingOn` (all optional).
 - `POST /lessons/{id}/reflect` — student-only. Body accepts `studentReflection`, `studentHardToday` (at least one required).
 - `POST /homework` — teacher assigns. Body: `{ studentId, title, category, description?, lessonId?, dueDate? }`. Enum values in `types.ts`.
-- `PUT /goals/{id}/progress` body `{ progress }` (0-100). Separate from `/complete` and `/abandon`.
+- `GET /goals/my` — the student's active goal (path, can-dos, pending self-assessment); `POST /goals/my/milestones/{id}/self-assessment` body `{ answer: YES | PARTLY | NOT_YET, comment? }`. Behind the `roadmap` feature flag (`user.features.roadmap`; off → 404). Teachers manage goals in the portal.
 
 ## Out of scope (follow-ups)
 

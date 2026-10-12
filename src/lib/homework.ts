@@ -53,3 +53,11 @@ export function isDoneStatus(s: HomeworkStatus): boolean {
 export function isReworkStatus(h: { status: HomeworkStatus; lastOutcome: HomeworkOutcome | null }): boolean {
   return h.status === 'OPEN' && h.lastOutcome === 'RETURNED'
 }
+
+/**
+ * Homework the student has to act on: OPEN, including work returned for rework.
+ * SUBMITTED / REVIEWED wait on the teacher and DONE is finished.
+ */
+export function needsStudent(h: { status: HomeworkStatus }): boolean {
+  return isOpenStatus(h.status)
+}

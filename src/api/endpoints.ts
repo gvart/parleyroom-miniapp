@@ -6,9 +6,6 @@ import type {
   AuthResponse,
   AvailableSlotsResponse,
   FolderTreeNode,
-  Goal,
-  GoalInput,
-  GoalStatus,
   HomeworkCounts,
   HomeworkDetail,
   HomeworkPage,
@@ -23,6 +20,7 @@ import type {
   MaterialPage,
   MaterialSkill,
   MaterialType,
+  MyGoalResponse,
   NativeLanguage,
   NotificationPage,
   NounArticle,
@@ -32,6 +30,7 @@ import type {
   PracticeQueue,
   PracticeRating,
   PracticeStats,
+  SelfAssessmentInput,
   StartLessonResponse,
   TelegramLink,
   UserProfile,
@@ -237,17 +236,14 @@ export const api = {
       body: { notificationIds },
     }),
 
-  goals: (query: { studentId?: string; status?: GoalStatus } = {}) =>
-    apiFetch<Goal[]>(`/api/v1/goals${qs({ ...query })}`),
+  /** Student only; 404 while the `roadmap` feature flag is off. */
+  myGoal: () => apiFetch<MyGoalResponse>('/api/v1/goals/my'),
 
-  createGoal: (body: GoalInput) =>
-    apiFetch<Goal>('/api/v1/goals', { method: 'POST', body }),
-
-  setGoalStatus: (id: string, status: GoalStatus) =>
-    apiFetch<Goal>(`/api/v1/goals/${id}`, { method: 'PATCH', body: { status } }),
-
-  deleteGoal: (id: string) =>
-    apiFetch<void>(`/api/v1/goals/${id}`, { method: 'DELETE' }),
+  selfAssessMilestone: (milestoneId: string, body: SelfAssessmentInput) =>
+    apiFetch<MyGoalResponse>(`/api/v1/goals/my/milestones/${milestoneId}/self-assessment`, {
+      method: 'POST',
+      body,
+    }),
 
   users: (page = 1, pageSize = 100) =>
     apiFetch<UserList>(`/api/v1/users${qs({ page, pageSize })}`),
