@@ -9,6 +9,7 @@ import { Card, LessonCard, PageHeader, Pill, Section, type PillTone } from '@/ui
 import { isLessonParticipant } from '@/lib/lesson'
 import { roadmapEnabled } from '@/lib/goal'
 import { computeDue, dueLabel, needsStudent } from '@/lib/homework'
+import { greetingKey } from '@/lib/greeting'
 import { GoalHomeCard } from './goal/GoalHomeCard'
 
 export function Home() {
@@ -47,7 +48,7 @@ export function Home() {
   return (
     <div>
       <PageHeader
-        eyebrow={t('good_morning')}
+        eyebrow={t(greetingKey())}
         title={user.firstName}
         action={
           <button

@@ -8,6 +8,7 @@ import { useNotifications } from '@/hooks/useNotifications'
 import { useAcceptLesson, useCancelLesson } from '@/hooks/useLessonActions'
 import { Avatar, Button, Card, EmptyState, InPersonPill, PageHeader, Pill, Section, StatChip } from '@/ui'
 import { isClub, lessonDate, lessonTime, todayISO } from '@/lib/lesson'
+import { greetingKey } from '@/lib/greeting'
 import type { Lesson, UserProfile } from '@/api/types'
 
 function minutesUntil(scheduledAt: string): number {
@@ -58,7 +59,7 @@ export function TeacherHome() {
   return (
     <div>
       <PageHeader
-        eyebrow={t('good_morning')}
+        eyebrow={t(greetingKey())}
         title={user.firstName}
         sub={
           <>
