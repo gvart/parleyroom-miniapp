@@ -41,7 +41,8 @@ type Status =
   | { kind: 'needsLink' }
   | { kind: 'linking' }
   | { kind: 'ready'; user: UserProfile; accessToken: string }
-  | { kind: 'error'; message: string }
+  /** `emailFallback`: offer the email/password form (needs Telegram init data to link afterwards). */
+  | { kind: 'error'; message: string; emailFallback: boolean }
 
 export function AuthGate({ children }: { children: ReactNode }) {
   const { t } = useTranslation()
@@ -75,7 +76,7 @@ export function AuthGate({ children }: { children: ReactNode }) {
 
     async function bootstrap() {
       if (!rawInitData) {
-        setStatus({ kind: 'error', message: t('no_init_data') })
+        setStatus({ kind: 'error', message: t('no_init_data'), emailFallback: false })
         return
       }
       try {
@@ -92,9 +93,11 @@ export function AuthGate({ children }: { children: ReactNode }) {
           setStatus({ kind: 'needsLink' })
           return
         }
+        // Any other failure (401 bad signature, 5xx, offline): still let the user in with email.
         setStatus({
           kind: 'error',
           message: errorMessage(err, t, 'unknown_error'),
+          emailFallback: true,
         })
       }
     }
@@ -147,14 +150,21 @@ export function AuthGate({ children }: { children: ReactNode }) {
   }, [readyUser?.id])
 
   if (status.kind === 'checking') return <SplashScreen />
-  if (status.kind === 'error') return <ErrorScreen message={status.message} />
+  if (status.kind === 'error') {
+    return (
+      <ErrorScreen
+        message={status.message}
+        onEmailSignIn={status.emailFallback ? () => setStatus({ kind: 'needsLink' }) : undefined}
+      />
+    )
+  }
   if (status.kind === 'needsLink' || status.kind === 'linking') {
     return (
       <LinkForm
         rawInitData={rawInitData}
         isSubmitting={status.kind === 'linking'}
         onStart={() => setStatus({ kind: 'linking' })}
-        onError={(message) => setStatus({ kind: 'error', message })}
+        onError={(message) => setStatus({ kind: 'error', message, emailFallback: true })}
         onSuccess={(accessToken, user) => {
           setApiToken(accessToken)
           sessionStorage.setItem(TOKEN_KEY, accessToken)
@@ -227,7 +237,7 @@ function SplashScreen() {
   )
 }
 
-function ErrorScreen({ message }: { message: string }) {
+function ErrorScreen({ message, onEmailSignIn }: { message: string; onEmailSignIn?: () => void }) {
   const { t } = useTranslation()
   return (
     <div
@@ -258,6 +268,11 @@ function ErrorScreen({ message }: { message: string }) {
       <Button leadingIcon="refresh" onClick={() => window.location.reload()} style={{ marginTop: 10 }}>
         {t('try_again')}
       </Button>
+      {onEmailSignIn && (
+        <Button variant="secondary" leadingIcon="mail" onClick={onEmailSignIn}>
+          {t('sign_in_with_email')}
+        </Button>
+      )}
     </div>
   )
 }
