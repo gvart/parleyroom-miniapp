@@ -1,0 +1,23 @@
+src/features/student/Home.tsx
+  s_6b341267e99e70::t_7e1ffa7afb3165 11,28,170
+src/lib/homework.test.ts
+  s_6b341267e99e70::t_b614d83db4fd50 1-23
+src/lib/homework.ts
+  s_6b341267e99e70::t_9ebc2202496e84 56-63
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "944801d264fb2bc02e9a4458864195fd1b87b881",
+  "prompts": {},
+  "sessions": {
+    "s_6b341267e99e70": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3c10af3d-8cd0-4bc3-89fd-cb390bc038be",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Vladlen Gladis <vladlen.gladis@deliveryhero.com>"
+    }
+  }
+}
