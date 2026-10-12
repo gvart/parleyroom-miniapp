@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.28.0](https://github.com/gvart/parleyroom-miniapp/compare/v1.27.0...v1.28.0) (2026-10-12)
+
+
+### Features
+
+* **homework:** floating word bank + no zoom in the Mini App ([#81](https://github.com/gvart/parleyroom-miniapp/issues/81)) ([59cf003](https://github.com/gvart/parleyroom-miniapp/commit/59cf003b01bc2321c935a84e83ecf5a6bd32f5b2))
+
+
+### Bug Fixes
+
+* **home:** greet by time of day instead of always Good morning ([#82](https://github.com/gvart/parleyroom-miniapp/issues/82)) ([9bf2008](https://github.com/gvart/parleyroom-miniapp/commit/9bf2008bbbefbb450e941e9eab244e0c8880c594))
+
 ## [1.27.0](https://github.com/gvart/parleyroom-miniapp/compare/v1.26.0...v1.27.0) (2026-10-12)
 
 
