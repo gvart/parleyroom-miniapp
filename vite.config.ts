@@ -1,3 +1,4 @@
+/// <reference types="vitest/config" />
 import { fileURLToPath, URL } from 'node:url'
 import { defineConfig, loadEnv, type Plugin } from 'vite'
 import react from '@vitejs/plugin-react'
@@ -24,4 +25,10 @@ export default defineConfig(({ mode }) => ({
   },
   server: { port: 5174 },
   preview: { port: 5174 },
+  test: {
+    environment: 'jsdom',
+    setupFiles: ['./src/test/setup.ts'],
+    // A fixed device zone so time-zone tests don't depend on the machine running them.
+    env: { TZ: 'Europe/Berlin' },
+  },
 }))
