@@ -8,7 +8,7 @@ import { useGoals } from '@/hooks/useGoals'
 import { Card, LessonCard, PageHeader, Pill, Ring, Section, type PillTone, type Tone } from '@/ui'
 import { isLessonParticipant } from '@/lib/lesson'
 import { goalPercent, goalPercentLabel, goalTitle } from '@/lib/goal'
-import { computeDue, dueLabel, isDoneStatus } from '@/lib/homework'
+import { computeDue, dueLabel, needsStudent } from '@/lib/homework'
 
 const GOAL_TONES: Tone[] = ['leaf', 'grape', 'sunny']
 
@@ -25,9 +25,7 @@ export function Home() {
   const unreadCount =
     notificationsQuery.data?.notifications.filter((n) => !n.viewed).length ?? 0
   const topGoals = (goalsQuery.data ?? []).slice(0, 3)
-  const dueHomework = (homeworkQuery.data?.homework ?? [])
-    .filter((h) => !isDoneStatus(h.status))
-    .slice(0, 3)
+  const dueHomework = (homeworkQuery.data?.homework ?? []).filter(needsStudent)
   const now = new Date().toISOString()
   // My own upcoming lesson — not another student's blank busy slot — soonest first.
   const nextLesson = lessons
@@ -169,7 +167,7 @@ export function Home() {
           action={sectionLink(t('open'), '/homework')}
         >
           <Card padded={false} className="row-list" style={{ overflow: 'hidden' }}>
-            {dueHomework.map((h) => {
+            {dueHomework.slice(0, 3).map((h) => {
               const due = computeDue(h.dueDate)
               const tone: PillTone =
                 due.kind === 'overdue' ? 'live' : due.kind === 'today' ? 'warn' : 'neutral'
