@@ -1,4 +1,4 @@
-import { Fragment, useRef, useState, type ReactNode } from 'react'
+import { Fragment, useMemo, useRef, useState, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { TextArea } from '@/ui'
 import type { Block, ChoiceItem, DocumentVocabEntry, GapFillBlock, GapResult, HomeworkUnit, Option, Question, WritingItem } from '@/api/types'
@@ -8,6 +8,9 @@ import { isRichEmpty } from '../lib/richText'
 import { splitGaps } from '../lib/blocks'
 import { countWords, unitKey, type AnswerMap, type UnitAnswer } from '../lib/answers'
 import { RichView } from './RichView'
+import { WordBankTray, usePrefersReducedMotion, useWordBankDock } from './WordBankTray'
+import { gapSlots, nextEmpty, placeWord, usedChips } from '../lib/wordBank'
+import { haptic } from '@/lib/haptics'
 
 export interface AnswerContext {
   answers: AnswerMap
@@ -196,129 +199,202 @@ function ResultBadge({ correct }: { correct: boolean }) {
   )
 }
 
-/* --- Gap fill: inputs inline in the sentence; word-box chips fill the focused gap --- */
+/* --- Gap fill: with a word box, gaps are tap targets filled from the box (docked to the
+   bottom while the exercise is on screen); without one, inputs the student types into --- */
 
 function GapFill({ block, ctx, unit }: { block: GapFillBlock; ctx: AnswerContext; unit: UnitFn }) {
+  const words = (block.wordBox ?? []).filter(Boolean)
+  if (ctx.onChange && words.length > 0) return <WordBankGapFill block={block} words={words} ctx={ctx} unit={unit} />
+  return <TypedGapFill block={block} ctx={ctx} unit={unit} />
+}
+
+function gapValues(block: GapFillBlock, ctx: AnswerContext, itemId: string, n: number) {
+  const g = ctx.answers[unitKey({ assignmentItemId: ctx.itemId, blockId: block.id, itemId })]?.gaps ?? []
+  return Array.from({ length: n }, (_, i) => g[i] ?? '')
+}
+
+function TypedGapFill({ block, ctx, unit }: { block: GapFillBlock; ctx: AnswerContext; unit: UnitFn }) {
   const { t } = useTranslation()
   const words = (block.wordBox ?? []).filter(Boolean)
-  const focused = useRef<{ itemId: string; gap: number } | null>(null)
-  const refs = useRef(new Map<string, HTMLInputElement>())
-  const [, bump] = useState(0)
   const editable = !!ctx.onChange
 
-  const gapsOf = (itemId: string, n: number) => {
-    const g = ctx.answers[unitKey({ assignmentItemId: ctx.itemId, blockId: block.id, itemId })]?.gaps ?? []
-    return Array.from({ length: n }, (_, i) => g[i] ?? '')
-  }
   const setGap = (itemId: string, n: number, gap: number, value: string) => {
-    const next = gapsOf(itemId, n)
+    const next = gapValues(block, ctx, itemId, n)
     next[gap] = value
     ctx.onChange?.(unitKey({ assignmentItemId: ctx.itemId, blockId: block.id, itemId }), { gaps: next })
-  }
-  const used = new Set(
-    block.items.flatMap((it) => ctx.answers[unitKey({ assignmentItemId: ctx.itemId, blockId: block.id, itemId: it.id })]?.gaps ?? []).map((w) => w.trim()),
-  )
-
-  /** Tap a chip: fill the focused gap, else the first empty one. */
-  const pick = (word: string) => {
-    let target = focused.current
-    if (!target) {
-      for (const it of block.items) {
-        const n = splitGaps(it.text).length - 1
-        const idx = gapsOf(it.id, n).findIndex((g) => !g.trim())
-        if (idx >= 0) {
-          target = { itemId: it.id, gap: idx }
-          break
-        }
-      }
-    }
-    if (!target) return
-    const it = block.items.find((x) => x.id === target.itemId)
-    if (!it) return
-    setGap(it.id, splitGaps(it.text).length - 1, target.gap, word)
-    refs.current.get(`${target.itemId}:${target.gap}`)?.focus()
-    bump((x) => x + 1)
   }
 
   return (
     <div>
       <Instructions text={block.instructions} />
       {words.length > 0 && (
-        <div
-          style={{ marginTop: 10, display: 'flex', flexWrap: 'wrap', gap: 6, borderRadius: 14, border: '1px dashed var(--hair-strong)', padding: 10 }}
-          role="group"
-          aria-label={t('hw_word_box')}
-          lang="de"
-        >
-          {words.map((w, i) =>
-            editable ? (
-              <button
-                key={i}
-                type="button"
-                onPointerDown={(e) => e.preventDefault()}
-                onClick={() => pick(w)}
-                className="chip"
-                style={used.has(w) ? { textDecoration: 'line-through', color: 'var(--ink-3)' } : undefined}
-                data-testid="word-chip"
-              >
-                {w}
-              </button>
-            ) : (
-              <span key={i} className="chip">
-                {w}
-              </span>
-            ),
-          )}
+        <div className="hw-word-box" role="group" aria-label={t('hw_word_box')} lang="de">
+          {words.map((w, i) => (
+            <span key={i} className="chip">
+              {w}
+            </span>
+          ))}
         </div>
       )}
       <ItemList>
         {block.items.map((item, i) => {
           const parts = splitGaps(item.text)
           const n = parts.length - 1
-          const values = gapsOf(item.id, n)
+          const values = gapValues(block, ctx, item.id, n)
           const k = unitKey({ assignmentItemId: ctx.itemId, blockId: block.id, itemId: item.id })
           return (
             <Item key={item.id} n={i + 1}>
               {unit(
                 item.id,
-                <>
-                  <p style={{ fontSize: 'var(--text-body)', lineHeight: 2.2, color: 'var(--ink)', margin: 0 }} lang="de">
-                    {parts.map((part, pi) => (
-                      <Fragment key={pi}>
-                        {part}
-                        {pi < n &&
-                          (editable ? (
-                            <input
-                              ref={(el) => {
-                                if (el) refs.current.set(`${item.id}:${pi}`, el)
-                                else refs.current.delete(`${item.id}:${pi}`)
-                              }}
-                              value={values[pi]}
-                              onChange={(e) => setGap(item.id, n, pi, e.target.value)}
-                              onFocus={() => {
-                                focused.current = { itemId: item.id, gap: pi }
-                              }}
-                              aria-label={t('hw_gap_label', { n: pi + 1, item: i + 1 })}
-                              autoCapitalize="off"
-                              autoCorrect="off"
-                              spellCheck={false}
-                              size={Math.max(6, values[pi].length + 1)}
-                              className="hw-gap"
-                              data-testid="gap-input"
-                            />
-                          ) : (
-                            <GapRead value={values[pi]} result={ctx.units.get(k)?.gapResults?.[pi]} />
-                          ))}
-                      </Fragment>
-                    ))}
-                    {item.hint && <span style={{ marginLeft: 6, fontSize: 'var(--text-small)', color: 'var(--ink-3)' }}>({item.hint})</span>}
-                  </p>
-                </>,
+                <p className="hw-gap-line" lang="de">
+                  {parts.map((part, pi) => (
+                    <Fragment key={pi}>
+                      {part}
+                      {pi < n &&
+                        (editable ? (
+                          <input
+                            value={values[pi]}
+                            onChange={(e) => setGap(item.id, n, pi, e.target.value)}
+                            aria-label={t('hw_gap_label', { n: pi + 1, item: i + 1 })}
+                            autoCapitalize="off"
+                            autoCorrect="off"
+                            spellCheck={false}
+                            size={Math.max(6, values[pi].length + 1)}
+                            className="hw-gap"
+                            data-testid="gap-input"
+                          />
+                        ) : (
+                          <GapRead value={values[pi]} result={ctx.units.get(k)?.gapResults?.[pi]} />
+                        ))}
+                    </Fragment>
+                  ))}
+                  <Hint text={item.hint} />
+                </p>,
               )}
             </Item>
           )
         })}
       </ItemList>
+    </div>
+  )
+}
+
+function Hint({ text }: { text?: string | null }) {
+  return text ? <span style={{ marginLeft: 6, fontSize: 'var(--text-small)', color: 'var(--ink-3)' }}>({text})</span> : null
+}
+
+function WordBankGapFill({ block, words, ctx, unit }: { block: GapFillBlock; words: string[]; ctx: AnswerContext; unit: UnitFn }) {
+  const { t } = useTranslation()
+  const slots = useMemo(() => gapSlots(block.items), [block.items])
+  const values = slots.map((s) => gapValues(block, ctx, s.itemId, s.count)[s.gap])
+  const used = usedChips(words, values)
+  const done = values.filter((v) => v.trim()).length
+  const complete = slots.length > 0 && done === slots.length
+
+  const [chosen, setChosen] = useState<number | null>(null)
+  const [said, setSaid] = useState('')
+  const active = chosen !== null && !values[chosen]?.trim() ? chosen : nextEmpty(values)
+
+  const exerciseRef = useRef<HTMLDivElement>(null)
+  const bankRef = useRef<HTMLDivElement>(null)
+  const gapRefs = useRef<(HTMLButtonElement | null)[]>([])
+  const docked = useWordBankDock(exerciseRef, bankRef, true) && !complete
+  const reduce = usePrefersReducedMotion()
+
+  /** Write changed slots back, one answer per sentence. */
+  const commit = (next: string[]) => {
+    const changed = new Set(slots.filter((_, i) => next[i] !== values[i]).map((s) => s.itemId))
+    for (const itemId of changed) {
+      const gaps = slots.map((s, i) => [s, next[i]] as const).filter(([s]) => s.itemId === itemId).map(([, v]) => v)
+      ctx.onChange?.(unitKey({ assignmentItemId: ctx.itemId, blockId: block.id, itemId }), { gaps })
+    }
+  }
+
+  const pick = (index: number, fromTrayKeyboard: boolean) => {
+    if (active === null) return
+    const word = words[index]
+    const placed = placeWord(words, values, word, active)
+    commit(placed.values)
+    haptic('light')
+    setChosen(placed.active)
+    setSaid(t('hw_word_placed', { word, n: active + 1 }))
+    if (placed.active !== null) gapRefs.current[placed.active]?.scrollIntoView?.({ block: 'nearest', behavior: reduce ? 'auto' : 'smooth' })
+    // The tray slides away once every gap is filled; keep keyboard focus in the exercise.
+    else if (fromTrayKeyboard) gapRefs.current[active]?.focus()
+  }
+
+  const tapGap = (i: number) => {
+    if (values[i].trim()) {
+      const next = [...values]
+      next[i] = ''
+      commit(next)
+      setSaid(t('hw_gap_cleared', { n: i + 1 }))
+    }
+    setChosen(i)
+  }
+
+  return (
+    <div ref={exerciseRef}>
+      <Instructions text={block.instructions} />
+      <div ref={bankRef} className="hw-word-box" role="group" aria-label={t('hw_word_box')} lang="de">
+        {words.map((w, i) => (
+          <button
+            key={i}
+            type="button"
+            onPointerDown={(e) => e.preventDefault()}
+            onClick={() => pick(i, false)}
+            className="wb-word"
+            data-used={used[i] || undefined}
+            data-testid="word-chip"
+          >
+            {w}
+          </button>
+        ))}
+      </div>
+      <ItemList>
+        {block.items.map((item, i) => {
+          const parts = splitGaps(item.text)
+          return (
+            <Item key={item.id} n={i + 1}>
+              {unit(
+                item.id,
+                <p className="hw-gap-line" lang="de">
+                  {parts.map((part, pi) => {
+                    const s = slots.findIndex((x) => x.itemId === item.id && x.gap === pi)
+                    const v = values[s]?.trim()
+                    return (
+                      <Fragment key={pi}>
+                        {part}
+                        {pi < parts.length - 1 && (
+                          <button
+                            ref={(el) => {
+                              gapRefs.current[s] = el
+                            }}
+                            type="button"
+                            onClick={() => tapGap(s)}
+                            className="hw-gap hw-gap-btn"
+                            data-active={s === active || undefined}
+                            data-filled={v ? true : undefined}
+                            aria-label={`${t('hw_gap_label', { n: pi + 1, item: i + 1 })}: ${v || t('hw_gap_empty')}`}
+                            data-testid="gap"
+                          >
+                            <span key={v}>{v || '\u00a0'}</span>
+                          </button>
+                        )}
+                      </Fragment>
+                    )
+                  })}
+                  <Hint text={item.hint} />
+                </p>,
+              )}
+            </Item>
+          )
+        })}
+      </ItemList>
+      <p className="sr-only" aria-live="polite" data-testid="gap-announcer">
+        {said}
+      </p>
+      <WordBankTray open={docked} words={words} used={used} done={done} total={slots.length} onPick={pick} />
     </div>
   )
 }
