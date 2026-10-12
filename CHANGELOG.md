@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.27.0](https://github.com/gvart/parleyroom-miniapp/compare/v1.26.0...v1.27.0) (2026-10-12)
+
+
+### Features
+
+* **goals:** student goal path with self-assessment ([#78](https://github.com/gvart/parleyroom-miniapp/issues/78)) ([b3b7382](https://github.com/gvart/parleyroom-miniapp/commit/b3b7382ed5a8d7f7f5a5d5e2ff50e0d00d281484))
+
+
+### Bug Fixes
+
+* vocab dates in the device time zone, calendar label contrast (A-015) ([#80](https://github.com/gvart/parleyroom-miniapp/issues/80)) ([b6fb882](https://github.com/gvart/parleyroom-miniapp/commit/b6fb882851e4907879fb516d6d44f53a2b445dd0))
+
 ## [1.26.0](https://github.com/gvart/parleyroom-miniapp/compare/v1.25.3...v1.26.0) (2026-10-11)
 
 
