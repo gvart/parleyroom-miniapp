@@ -32,6 +32,8 @@ export interface UserProfile {
   telegramHomeworkReminders?: boolean
   /** Whether the bot is allowed to message this user (write access granted). */
   telegramReachable?: boolean
+  /** Server-side feature flags by name (e.g. `roadmap`); only on `/users/me`. */
+  features?: Record<string, boolean>
   createdAt: string
 }
 
@@ -644,47 +646,49 @@ export interface NotificationPage {
   pageSize: number
 }
 
-export type GoalType = 'EXAM' | 'LEVEL'
-export type GoalStatus = 'ACTIVE' | 'ACHIEVED' | 'ARCHIVED'
+export type GoalTrackStatus = 'ON_TRACK' | 'AHEAD' | 'BEHIND' | 'NO_ROADMAP'
+export type SelfAssessmentAnswer = 'YES' | 'PARTLY' | 'NOT_YET'
 
-/** Computed by the backend on every read, never set by hand. */
-export interface GoalProgress {
-  /** Null when the target level's grammar checklist is empty (or the teacher was deleted). */
-  percent: number | null
-  checklistEmpty: boolean
-  grammarDone: number
-  grammarTotal: number
-  topicsDone: number
-  topicsTotal: number
-  /** Negative once the date has passed. */
-  daysLeft: number | null
-  expectedPercent: number | null
-  onTrack: boolean | null
-}
-
-export interface Goal {
+/** One dot on the student's path: no topic details on purpose. */
+export interface StudentMilestone {
   id: string
-  studentId: string
-  /** Null once the teacher was deleted. */
-  teacherId: string | null
-  type: GoalType
-  examName?: string | null
-  targetLevel: Level
-  targetDate?: string | null
-  note?: string | null
-  status: GoalStatus
-  createdAt: string
-  updatedAt: string
-  progress: GoalProgress
+  position: number
+  done: boolean
+  /** The first milestone not marked done; none once all are done. */
+  current: boolean
 }
 
-export interface GoalInput {
-  studentId: string
-  type: GoalType
-  examName?: string
-  targetLevel: Level
-  targetDate?: string
-  note?: string
+/** A milestone the teacher marked done that the student hasn't rated yet. */
+export interface PendingSelfAssessment {
+  milestoneId: string
+  canDo: string
+}
+
+/** `GET /goals/my` — the student's ACTIVE goal, deliberately minimal. */
+export interface StudentGoal {
+  id: string
+  title: string
+  /** `YYYY-MM-DD`. */
+  deadline: string
+  /** Null without a roadmap (status NO_ROADMAP). */
+  progressPercent?: number | null
+  status: GoalTrackStatus
+  milestones: StudentMilestone[]
+  currentCanDo?: string | null
+  nextCanDo?: string | null
+  /** Titles of the done milestones. */
+  coveredTitles: string[]
+  pendingSelfAssessment?: PendingSelfAssessment | null
+}
+
+export interface MyGoalResponse {
+  /** Null when the student has no active goal. */
+  goal?: StudentGoal | null
+}
+
+export interface SelfAssessmentInput {
+  answer: SelfAssessmentAnswer
+  comment?: string | null
 }
 
 export interface UserList {

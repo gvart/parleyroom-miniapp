@@ -1245,3 +1245,51 @@ html.bg-paused .blob {
   background: var(--accent-soft);
   color: var(--accent-ink);
 }
+
+/* Student goal path: one dot per milestone, filled up to the current one */
+.goal-path {
+  display: flex;
+  align-items: center;
+  min-height: 24px;
+}
+.goal-path-line {
+  flex: 1;
+  min-width: 4px;
+  height: 3px;
+  border-radius: 999px;
+  background: var(--hair-strong);
+}
+.goal-path-line.on {
+  background: var(--accent-face);
+}
+.goal-path-dot {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--bg-3);
+  box-shadow: inset 0 0 0 1.5px var(--hair-strong);
+}
+.goal-path-dot[data-state='done'] {
+  width: 18px;
+  height: 18px;
+  background: var(--accent-face);
+  color: var(--on-accent);
+  box-shadow: none;
+}
+.goal-path-dot[data-state='current'] {
+  width: 24px;
+  height: 24px;
+  background: var(--accent-soft);
+  box-shadow: inset 0 0 0 3px var(--accent-face), 0 0 0 4px var(--accent-soft);
+}
+.goal-path-dot[data-state='current']::after {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent-face);
+}

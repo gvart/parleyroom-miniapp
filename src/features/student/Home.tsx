@@ -4,13 +4,12 @@ import { useAuth } from '@/auth/AuthGate'
 import { useLessons } from '@/hooks/useLessons'
 import { useHomework } from '@/hooks/useHomework'
 import { useNotifications } from '@/hooks/useNotifications'
-import { useGoals } from '@/hooks/useGoals'
-import { Card, LessonCard, PageHeader, Pill, Ring, Section, type PillTone, type Tone } from '@/ui'
+import { useMyGoal } from '@/hooks/useGoals'
+import { Card, LessonCard, PageHeader, Pill, Section, type PillTone } from '@/ui'
 import { isLessonParticipant } from '@/lib/lesson'
-import { goalPercent, goalPercentLabel, goalTitle } from '@/lib/goal'
+import { roadmapEnabled } from '@/lib/goal'
 import { computeDue, dueLabel, needsStudent } from '@/lib/homework'
-
-const GOAL_TONES: Tone[] = ['leaf', 'grape', 'sunny']
+import { GoalHomeCard } from './goal/GoalHomeCard'
 
 export function Home() {
   const { t } = useTranslation()
@@ -19,12 +18,11 @@ export function Home() {
   const lessonsQuery = useLessons()
   const homeworkQuery = useHomework()
   const notificationsQuery = useNotifications()
-  const goalsQuery = useGoals({ status: 'ACTIVE' })
+  const goal = useMyGoal(roadmapEnabled(user)).data?.goal
 
   const lessons = lessonsQuery.data?.lessons ?? []
   const unreadCount =
     notificationsQuery.data?.notifications.filter((n) => !n.viewed).length ?? 0
-  const topGoals = (goalsQuery.data ?? []).slice(0, 3)
   const dueHomework = (homeworkQuery.data?.homework ?? []).filter(needsStudent)
   const now = new Date().toISOString()
   // My own upcoming lesson — not another student's blank busy slot — soonest first.
@@ -156,6 +154,8 @@ export function Home() {
         </div>
       )}
 
+      {goal && <GoalHomeCard goal={goal} />}
+
       {dueHomework.length > 0 && (
         <Section
           eyebrow={t('homework')}
@@ -212,51 +212,6 @@ export function Home() {
         </Section>
       )}
 
-      {topGoals.length > 0 && (
-        <Section
-          eyebrow={t('goals')}
-          title={t('your_rhythm')}
-          action={sectionLink(t('view_all'), '/goals')}
-        >
-          <Card onClick={() => navigate('/goals')} style={{ cursor: 'pointer' }}>
-            {topGoals.map((g, i) => (
-              <div
-                key={g.id}
-                style={{
-                  display: 'flex',
-                  gap: 14,
-                  alignItems: 'center',
-                  marginTop: i === 0 ? 0 : 16,
-                }}
-              >
-                <Ring
-                  value={goalPercent(g) ?? 0}
-                  size={44}
-                  stroke={5}
-                  tone={GOAL_TONES[i % GOAL_TONES.length]}
-                />
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div
-                    style={{
-                      fontSize: 'var(--text-body)',
-                      fontWeight: 700,
-                      lineHeight: 1.3,
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      whiteSpace: 'nowrap',
-                    }}
-                  >
-                    {goalTitle(g, t)}
-                  </div>
-                  <div style={{ fontSize: 'var(--text-caption)', fontWeight: 700, color: 'var(--ink-2)', marginTop: 2 }}>
-                    {goalPercentLabel(g)}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </Card>
-        </Section>
-      )}
     </div>
   )
 }

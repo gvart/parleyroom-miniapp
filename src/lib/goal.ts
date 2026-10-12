@@ -1,23 +1,28 @@
 import type { TFunction } from 'i18next'
-import type { Goal } from '@/api/types'
+import type { GoalTrackStatus, StudentGoal, UserProfile } from '@/api/types'
+import type { PillTone } from '@/ui'
 
-/** Progress percent, or null when the backend can't compute it (empty checklist, or the goal's teacher was deleted). */
-export function goalPercent(goal: Goal): number | null {
-  return goal.progress.percent
+/** Goals live behind the server-side `roadmap` flag; while it's off the goal routes 404. */
+export function roadmapEnabled(user: Pick<UserProfile, 'role' | 'features'>): boolean {
+  return user.role === 'STUDENT' && user.features?.roadmap === true
 }
 
-export function goalPercentLabel(goal: Goal): string {
-  const percent = goalPercent(goal)
-  return percent == null ? '—' : `${percent}%`
+/** "Milestone 3 of 7" / "All milestones done": the text alternative for the path. */
+export function pathLabel(goal: StudentGoal, t: TFunction): string {
+  const total = goal.milestones.length
+  const current = goal.milestones.findIndex((m) => m.current)
+  if (current < 0) return t('goal_all_done')
+  return t('goal_milestone_of', { current: current + 1, total })
 }
 
-/** "telc B1" for an exam goal, "Reach B1" for a level goal. */
-export function goalTitle(goal: Goal, t: TFunction): string {
-  return goal.type === 'EXAM' && goal.examName ? goal.examName : t('goal_reach_level', { level: goal.targetLevel })
+const STATUS_TONE: Record<Exclude<GoalTrackStatus, 'NO_ROADMAP'>, PillTone> = {
+  AHEAD: 'accent',
+  ON_TRACK: 'moss',
+  BEHIND: 'warn',
 }
 
-/** Why a goal has no percent yet; null when it has one. */
-export function goalPercentHint(goal: Goal, t: TFunction): string | null {
-  if (goal.progress.percent != null) return null
-  return goal.teacherId ? t('goal_progress_pending') : t('goal_teacher_gone')
+/** Encouraging chip for a goal with a roadmap; null while the teacher is still preparing it. */
+export function statusChip(status: GoalTrackStatus, t: TFunction): { tone: PillTone; label: string } | null {
+  if (status === 'NO_ROADMAP') return null
+  return { tone: STATUS_TONE[status], label: t(`goal_status_${status}`) }
 }
