@@ -234,6 +234,25 @@ body {
   -webkit-tap-highlight-color: transparent;
 }
 
+/* No zoom, ever (user decision 2026-10-12; the viewport meta blocks pinch).
+   iOS zooms into any focused field under 16px, whatever the meta says, so
+   every text field is at least 16px; `!important` beats inline sizes too.
+   `manipulation` drops double-tap zoom (and the 300ms tap delay). */
+input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+textarea,
+select {
+  font-size: max(16px, 1em) !important;
+}
+a,
+button,
+input,
+select,
+textarea,
+label,
+[role="button"] {
+  touch-action: manipulation;
+}
+
 #root {
   position: relative;
   height: 100%;
