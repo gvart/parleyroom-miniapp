@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { Card, EmptyState, PageHeader, Pill, type PillTone, Ring } from '@/ui'
 import { useVocab } from '@/hooks/useVocab'
 import { usePracticeStats } from '@/hooks/usePractice'
-import { vocabDueLabel, vocabHeadword, vocabMeaning, wordTypeLabelKey } from '@/lib/vocab'
+import { vocabAddedLabel, vocabDueLabel, vocabHeadword, vocabMeaning, wordTypeLabelKey } from '@/lib/vocab'
 import type { VocabStatus } from '@/api/types'
 
 type Filter = 'all' | VocabStatus
@@ -148,7 +148,7 @@ export function Vocab() {
                   <Pill tone={STATUS_TONE[w.status]}>{t(STATUS_LABEL_KEY[w.status])}</Pill>
                   <div style={{ fontSize: 'var(--text-label)', fontWeight: 700, color: 'var(--ink-3)' }}>
                     {t(wordTypeLabelKey(w.wordType))}
-                    {vocabDueLabel(w.due, t) ? ` · ${vocabDueLabel(w.due, t)}` : ` · ${w.addedAt.slice(5, 10)}`}
+                    {vocabDueLabel(w.due, t) ? ` · ${vocabDueLabel(w.due, t)}` : ` · ${vocabAddedLabel(w.addedAt)}`}
                   </div>
                 </div>
               </div>
