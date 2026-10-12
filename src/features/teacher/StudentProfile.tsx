@@ -9,7 +9,7 @@ import { useHomework } from '@/hooks/useHomework'
 import { useDeleteGoal, useGoals, useSetGoalStatus } from '@/hooks/useGoals'
 import { useUpdateStudentNativeLanguage } from '@/hooks/useUpdateStudentNativeLanguage'
 import { hueFor, initialsOf } from './avatarHue'
-import { lessonTime, todayISO } from '@/lib/lesson'
+import { lessonDate, lessonTime, todayISO } from '@/lib/lesson'
 import { goalPercent, goalPercentLabel, goalTitle } from '@/lib/goal'
 import { formatMonthYearFromIso, formatShortDate } from '@/lib/intl'
 import { AssignHomeworkSheet } from './AssignHomeworkSheet'
@@ -53,7 +53,7 @@ export function StudentProfile() {
     const today = todayISO()
     return (lessonsQuery.data?.lessons ?? [])
       .filter((l) => l.students.some((s) => s.id === id))
-      .filter((l) => l.scheduledAt.slice(0, 10) >= today)
+      .filter((l) => lessonDate(l.scheduledAt) >= today)
       .sort((a, b) => a.scheduledAt.localeCompare(b.scheduledAt))
       .slice(0, 4)
   }, [lessonsQuery.data, id])

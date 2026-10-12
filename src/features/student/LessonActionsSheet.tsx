@@ -133,7 +133,7 @@ export function LessonActionsSheet({ open, lesson, onClose }: Props) {
             <div style={{ marginBottom: 16 }}>
               <Banner tone="warn" icon="schedule">
                 {t(rescheduleProposedByMe ? 'reschedule_proposed_by_you_note' : 'reschedule_pending_note', {
-                  time: `${pendingReschedule.newScheduledAt.slice(0, 10)} ${pendingReschedule.newScheduledAt.slice(11, 16)}`,
+                  time: `${formatShortDate(pendingReschedule.newScheduledAt)} ${lessonTime(pendingReschedule.newScheduledAt)}`,
                 })}
               </Banner>
             </div>
