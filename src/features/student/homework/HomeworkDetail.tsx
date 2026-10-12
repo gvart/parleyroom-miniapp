@@ -75,7 +75,8 @@ export function HomeworkDetail() {
     if (!editableNow) return
     const scroller = document.getElementById('root')
     if (!scroller) return
-    scroller.style.scrollPaddingBottom = `calc(var(--keyboard-inset, 0px) + ${SUBMIT_BAR_SPACE}px)`
+    // A docked word box (WordBankTray) takes the Submit bar's place and publishes its height.
+    scroller.style.scrollPaddingBottom = `calc(var(--keyboard-inset, 0px) + max(${SUBMIT_BAR_SPACE}px, var(--wordbank-space, 0px)))`
     return () => {
       scroller.style.removeProperty('scroll-padding-bottom')
     }
@@ -209,7 +210,7 @@ export function HomeworkDetail() {
 
   return (
     <div
-      style={{ paddingTop: TOP_INSET, paddingBottom: editable ? SUBMIT_BAR_SPACE + 40 : 24 }}
+      style={{ paddingTop: TOP_INSET, paddingBottom: editable ? `calc(max(${SUBMIT_BAR_SPACE}px, var(--wordbank-space, 0px)) + 40px)` : 24 }}
       onFocus={onFieldFocus}
       onBlur={onFieldBlur}
     >
@@ -271,6 +272,7 @@ export function HomeworkDetail() {
 
       {showSubmitBar && (
         <div
+          className="hw-submit-bar"
           style={{
             position: 'fixed',
             left: 0,

@@ -234,6 +234,25 @@ body {
   -webkit-tap-highlight-color: transparent;
 }
 
+/* No zoom, ever (user decision 2026-10-12; the viewport meta blocks pinch).
+   iOS zooms into any focused field under 16px, whatever the meta says, so
+   every text field is at least 16px; `!important` beats inline sizes too.
+   `manipulation` drops double-tap zoom (and the 300ms tap delay). */
+input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+textarea,
+select {
+  font-size: max(16px, 1em) !important;
+}
+a,
+button,
+input,
+select,
+textarea,
+label,
+[role="button"] {
+  touch-action: manipulation;
+}
+
 #root {
   position: relative;
   height: 100%;
@@ -1176,7 +1195,7 @@ html.bg-paused .blob {
   color: var(--ink);
   text-align: center;
 }
-.hw-gap:focus {
+input.hw-gap:focus {
   outline: none;
   border-bottom-color: var(--accent-ink);
   background: var(--accent-soft);
@@ -1184,6 +1203,139 @@ html.bg-paused .blob {
 .hw-gap-read {
   min-height: 28px;
   padding: 2px 8px;
+}
+.hw-gap-line {
+  margin: 0;
+  font-size: var(--text-body);
+  line-height: 2.4;
+  color: var(--ink);
+}
+
+/* ─── Word box: in-flow chips + the tray docked to the bottom ─── */
+.hw-word-box {
+  margin-top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  border-radius: 14px;
+  border: 1px dashed var(--hair-strong);
+  padding: 10px;
+}
+/* A gap filled from the word box: tap to choose it, tap again to empty it. */
+.hw-gap-btn {
+  min-height: 32px;
+  vertical-align: middle;
+  cursor: pointer;
+  transition: border-color 200ms var(--spring-snappy), background-color 200ms var(--spring-snappy), box-shadow 200ms var(--spring-snappy);
+}
+.hw-gap-btn[data-active] {
+  border-bottom-color: var(--accent-ink);
+  background: var(--accent-soft);
+  box-shadow: 0 0 0 2px var(--accent-ink);
+}
+.hw-gap-btn[data-filled]:not([data-active]) {
+  border-bottom-color: var(--accent-ink);
+}
+.hw-gap-btn:focus-visible {
+  outline: 2px solid var(--accent-ink);
+  outline-offset: 2px;
+}
+.hw-gap-btn[data-filled] > span {
+  display: inline-block;
+  animation: wb-pop 280ms var(--spring-bouncy) both;
+}
+@keyframes wb-pop {
+  from { transform: scale(0.6); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+.wb-word {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0 16px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--accent-ink) 30%, transparent);
+  background: var(--accent-soft);
+  color: var(--accent-ink);
+  font: inherit;
+  font-size: var(--text-lead);
+  font-weight: 800;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color 200ms var(--spring-snappy), color 200ms var(--spring-snappy), transform var(--spring-bouncy-ms) var(--spring-bouncy);
+}
+.wb-word:active {
+  transform: scale(0.94);
+  transition-duration: 90ms;
+}
+.wb-word[data-used] {
+  border-color: var(--hair);
+  background: var(--bg-2);
+  color: var(--ink-3);
+  text-decoration: line-through;
+}
+.wb-tray {
+  position: fixed;
+  z-index: 45;
+  left: 8px;
+  right: 8px;
+  bottom: calc(var(--tg-viewport-safe-area-inset-bottom, env(safe-area-inset-bottom)) + var(--tg-viewport-content-safe-area-inset-bottom, 0px) + 8px);
+  padding: 10px 12px 12px;
+  border-radius: 24px;
+  transform: translateY(calc(100% + 40px));
+  visibility: hidden;
+  transition: transform 200ms cubic-bezier(0.4, 0, 1, 1), visibility 0s linear 200ms;
+}
+.wb-tray[data-open] {
+  transform: none;
+  visibility: visible;
+  /* ~240ms with a little overshoot: a spring, sized for something that docks. */
+  transition: transform 240ms cubic-bezier(0.2, 1.3, 0.4, 1), visibility 0s;
+}
+.wb-tray[data-reduced] {
+  transition: none;
+}
+.wb-tray-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0 4px 8px;
+}
+.wb-tray-count {
+  font-size: var(--text-caption);
+  font-weight: 800;
+  color: var(--ink-2);
+  font-variant-numeric: tabular-nums;
+}
+.wb-tray-words {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+}
+.wb-tray-row {
+  display: flex;
+  gap: 6px;
+  width: max-content;
+}
+.wb-tray-words::-webkit-scrollbar {
+  display: none;
+}
+/* The Submit bar steps aside while the tray holds the bottom of the screen. */
+html[data-wordbank] .hw-submit-bar {
+  display: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .wb-tray,
+  .wb-tray[data-open] {
+    transition: none;
+  }
+  .hw-gap-btn[data-filled] > span {
+    animation: none;
+  }
 }
 .hw-option {
   display: flex;
