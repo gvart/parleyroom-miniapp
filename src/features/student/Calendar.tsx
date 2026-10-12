@@ -215,7 +215,8 @@ export function Calendar() {
                         letterSpacing: '0.06em',
                         textTransform: 'uppercase',
                         fontWeight: 800,
-                        opacity: 0.8,
+                        // A muted ink token, not opacity: 80% of the accent ink fails contrast (A-015).
+                        color: active || d.isToday ? 'inherit' : 'var(--ink-2)',
                       }}
                     >
                       {d.label}
