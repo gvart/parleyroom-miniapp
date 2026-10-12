@@ -1,0 +1,25 @@
+src/features/student/LessonActionsSheet.tsx
+  s_6b341267e99e70::t_a7abbe38679916 136
+src/features/teacher/StudentProfile.tsx
+  s_6b341267e99e70::t_c91b67efaebc13 12,56
+src/lib/lesson.test.ts
+  s_6b341267e99e70::t_c46fe1e0588703 1-40
+src/lib/lesson.ts
+  s_6b341267e99e70::t_08c27aa9ce2ddc 5-25,28-31
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "40e3d57e258127d75383d2bf929858c9b564b8d7",
+  "prompts": {},
+  "sessions": {
+    "s_6b341267e99e70": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3c10af3d-8cd0-4bc3-89fd-cb390bc038be",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Vladlen Gladis <vladlen.gladis@deliveryhero.com>"
+    }
+  }
+}
