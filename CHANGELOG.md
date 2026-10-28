@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.29.0](https://github.com/gvart/parleyroom-miniapp/compare/v1.28.0...v1.29.0) (2026-10-28)
+
+
+### Features
+
+* **settings:** add vocabulary review reminder toggle ([#84](https://github.com/gvart/parleyroom-miniapp/issues/84)) ([af7e792](https://github.com/gvart/parleyroom-miniapp/commit/af7e79297d603b6e4134e11d8149755b1c783943))
+
 ## [1.28.0](https://github.com/gvart/parleyroom-miniapp/compare/v1.27.0...v1.28.0) (2026-10-12)
 
 
