@@ -6,11 +6,13 @@ import { Banner, Button, Card, ScreenHeader, Section } from '@/ui'
 import { errorMessage } from '@/lib/errors'
 import { requestBotWriteAccess } from '@/lib/telegramWriteAccess'
 
-type Pref = 'telegramLessonReminders' | 'telegramHomeworkReminders'
+type Pref = 'telegramLessonReminders' | 'telegramHomeworkReminders' | 'telegramVocabReminders'
 
+// Teachers read `<sub>_teacher`; vocabulary review is students only.
 const PREF_LABELS: Record<Pref, { label: string; sub: string; icon: string }> = {
   telegramLessonReminders: { label: 'tg_lesson_reminders', sub: 'tg_lesson_reminders_sub', icon: 'event' },
   telegramHomeworkReminders: { label: 'tg_homework_reminders', sub: 'tg_homework_reminders_sub', icon: 'edit_note' },
+  telegramVocabReminders: { label: 'tg_vocab_reminders', sub: 'tg_vocab_reminders_sub', icon: 'style' },
 }
 
 export function TelegramNotifications() {
@@ -24,8 +26,13 @@ export function TelegramNotifications() {
   const [asking, setAsking] = useState(false)
   const [testing, setTesting] = useState(false)
 
+  const teacher = user.role === 'TEACHER'
   const prefs: Pref[] =
-    user.role === 'STUDENT' ? ['telegramLessonReminders', 'telegramHomeworkReminders'] : ['telegramLessonReminders']
+    user.role === 'STUDENT'
+      ? ['telegramLessonReminders', 'telegramHomeworkReminders', 'telegramVocabReminders']
+      : teacher
+        ? ['telegramLessonReminders', 'telegramHomeworkReminders']
+        : ['telegramLessonReminders']
   const reachable = user.telegramReachable === true
 
   function valueOf(pref: Pref): boolean {
@@ -120,7 +127,7 @@ export function TelegramNotifications() {
                 </span>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ fontSize: 'var(--text-body)', fontWeight: 700 }}>{t(label)}</div>
-                  <div style={{ fontSize: 'var(--text-small)', fontWeight: 600, color: 'var(--ink-2)' }}>{t(sub)}</div>
+                  <div style={{ fontSize: 'var(--text-small)', fontWeight: 600, color: 'var(--ink-2)' }}>{t(teacher ? `${sub}_teacher` : sub)}</div>
                 </div>
                 <button
                   type="button"

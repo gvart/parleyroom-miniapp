@@ -30,6 +30,7 @@ export interface UserProfile {
   /** Telegram reminder preferences; absent on backends that predate them. */
   telegramLessonReminders?: boolean
   telegramHomeworkReminders?: boolean
+  telegramVocabReminders?: boolean
   /** Whether the bot is allowed to message this user (write access granted). */
   telegramReachable?: boolean
   /** Server-side feature flags by name (e.g. `roadmap`); only on `/users/me`. */

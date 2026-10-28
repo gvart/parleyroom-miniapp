@@ -1026,6 +1026,7 @@ export function installMockBackend(): void {
     telegramUsername: 'devuser',
     telegramLessonReminders: true,
     telegramHomeworkReminders: true,
+    telegramVocabReminders: true,
     // Starts unreachable so the write-access prompt runs; env.ts grants it
     // unless `?wa=deny`. `?tgsave=fail` makes reminder toggles fail.
     telegramReachable: false,
@@ -1097,7 +1098,7 @@ export function installMockBackend(): void {
     if (url.endsWith('/api/v1/users/me')) {
       if (method === 'PATCH') {
         const patch = init?.body ? (JSON.parse(init.body as string) as Record<string, unknown>) : {}
-        if (params.get('tgsave') === 'fail' && ('telegramLessonReminders' in patch || 'telegramHomeworkReminders' in patch)) {
+        if (params.get('tgsave') === 'fail' && ['telegramLessonReminders', 'telegramHomeworkReminders', 'telegramVocabReminders'].some((k) => k in patch)) {
           await new Promise((r) => setTimeout(r, 400))
           return json({ detail: 'mock failure' }, 500)
         }

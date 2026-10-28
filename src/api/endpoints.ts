@@ -52,6 +52,7 @@ export interface UpdateProfileRequest {
   confirmLocale?: true
   telegramLessonReminders?: boolean
   telegramHomeworkReminders?: boolean
+  telegramVocabReminders?: boolean
 }
 
 export interface LessonsQuery {
