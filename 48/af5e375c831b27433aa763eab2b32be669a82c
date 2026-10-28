@@ -1,0 +1,31 @@
+src/features/shared/TelegramNotifications.tsx
+  s_81d0f71760d0cb::t_acc628113e8dfd 31-35
+src/api/endpoints.ts
+  s_81d0f71760d0cb::t_84e4e6b506ce0a 55
+src/api/types.ts
+  s_81d0f71760d0cb::t_69c7d503e5e184 33
+src/dev/mockBackend.ts
+  s_81d0f71760d0cb::t_b983c2e7df1ba8 1029,1101
+src/i18n/de.json
+  s_81d0f71760d0cb::t_1ada3d6aac7486 573-580
+src/i18n/en.json
+  s_81d0f71760d0cb::t_8fea1cca2544ae 573-580
+src/i18n/ru.json
+  s_81d0f71760d0cb::t_20ed0aff49663e 579-586
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "48af5e375c831b27433aa763eab2b32be669a82c",
+  "prompts": {},
+  "sessions": {
+    "s_81d0f71760d0cb": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "5ea60677-0754-409d-85f3-9e5e9e54178e",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Vladlen Gladis <vladlen.gladis@deliveryhero.com>"
+    }
+  }
+}
